@@ -1,19 +1,30 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import HomeView from '../views/HomeView.vue'
+import LoginView from '../views/LoginView.vue'
 
 const routes = [
   {
     path: '/',
+    name: 'login',
+    component: LoginView,
+    meta: { title: 'Login' }
+  },
+  {
+    path: '/home',
     name: 'home',
-    component: HomeView
+    component: () => import('@/views/HomeView.vue'),
+    meta: { title: 'Principal' }
+  },
+  {
+    path: '/login',
+    name: 'Login',
+    component: LoginView,
+    meta: { title: 'Login' }
   },
   {
     path: '/about',
     name: 'about',
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "about" */ '../views/AboutView.vue')
+    component: () => import(/* webpackChunkName: "about" */ '../views/AboutView.vue'),
+    meta: { title: 'About' }
   }
 ]
 
@@ -21,5 +32,10 @@ const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),
   routes
 })
+
+// Cambia el título de la pestaña según la ruta
+router.afterEach((to) => {
+  document.title = to.meta.title || 'Autolavado';
+});
 
 export default router
