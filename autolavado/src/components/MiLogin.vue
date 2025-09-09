@@ -54,7 +54,7 @@ body{
     max-width: 220px;
     width: 100%;
     padding: 30px 30px;
-    background: rgba(249, 249, 249, 0.5);
+    background: rgba(249, 249, 249, 0.76);
     border-radius: 8px;
     box-shadow: 0 2px 45px #000e;
     display: flex;
@@ -85,14 +85,15 @@ body{
 }
 
 .login button {
-    width: 100%;
+    width: 50%;
     padding: 10px;
     background: #000000;
     color: #fff;
     border: none;
     border-radius: 4px;
     font-weight: bold;
-    margin-top: auto;
+    margin: 5px 0 5px 0;
+    cursor: pointer;
 }
 
 
@@ -112,5 +113,9 @@ body{
 
 .registro-link:hover {
     text-decoration: underline;
+}
+
+.login button:hover {
+    background: #333;
 }
 </style>

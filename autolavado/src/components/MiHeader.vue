@@ -3,13 +3,13 @@
         <img src="@/assets/logo.jpg" alt="Logo">
     </div>
    <menu class="menu">
-        <li>inicio</li>
-        <li>lavado de autos</li>
-        <li>lavado interior</li>
-        <li>combos</li>
-        <li>tienda</li>
-        <li>nosotros</li>
-        <li>contacto</li>
+        <li>Inicio</li>
+        <li>Lavado de autos</li>
+        <li>Lavado interior</li>
+        <li>Combos</li>
+        <li>Tienda</li>
+        <li>Nosotros</li>
+        <li>Contacto</li>
    </menu>
 </template>
 
@@ -37,9 +37,10 @@ export default {
     color:white;
     gap: 50px;
     padding: 20px;
+    font-weight: bold;
 }
 .menu li{
     cursor: pointer;
-    font-size: 15px;
+    font-size: 20px;
 }
 </style>
