@@ -1,6 +1,6 @@
 <template>
     <div class="logo">
-        <img src="@/assets/logo.jpg" alt="Logo">
+        <img src="../../assets/imagenesHome/logo.jpg" alt="Logo">
     </div>
    <menu class="menu">
         <li>Inicio</li>
@@ -15,7 +15,7 @@
 
 <script>
 export default {
-    name: 'MiHeader'
+    name: 'AutolavadoHeader'
 }
 
 </script>
@@ -43,4 +43,27 @@ export default {
     cursor: pointer;
     font-size: 20px;
 }
+@media (max-width: 1024px)
+{
+    .menu {
+        display:grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 20px;
+    }
+    .menu li {
+        margin-bottom: 10px;
+        font-size: 15px;
+    }
+
+}
+@media (max-width: 600px) {
+    .menu {
+        display:grid;
+        grid-template-columns: repeat(2, 1fr);
+    }
+    .menu li {
+        margin-bottom: 10px;
+    }
+}
+
 </style>

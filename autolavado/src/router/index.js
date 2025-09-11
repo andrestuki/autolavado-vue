@@ -1,5 +1,8 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import LoginView from '../views/LoginView.vue'
+import ProductosView from '@/views/ProductosView.vue';
+import MecanicoView from '@/views/mecanicoView.vue';
+import AutolavadoView from '@/views/autolavadoView.vue';
 
 const routes = [
   {
@@ -7,6 +10,24 @@ const routes = [
     name: 'login',
     component: LoginView,
     meta: { title: 'Login' }
+  },
+  {
+    path: '/productos',
+    name: 'productos',
+    component: ProductosView,
+    meta: { title: 'Productos' }
+  },
+  {
+    path:'/mecanico',
+    name: 'mecanico',
+    component: MecanicoView,
+    meta: { title: 'Mecanico' }
+  },
+  {
+    path: '/autolavado',
+    name: 'autolavado',
+    component:AutolavadoView,
+    meta: { title: 'Autolavado' }
   },
   {
     path: '/home',

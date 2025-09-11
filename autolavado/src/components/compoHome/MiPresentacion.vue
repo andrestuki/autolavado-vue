@@ -1,6 +1,6 @@
 <template>
     <div class="presentacion">
-        <img src="../assets/carro1.avif" alt="">
+        <img src="../../assets/imagenesHome/carro1.avif" alt="">
         <div class="descripcion">
             <h2>Lavado de Autos</h2>
         </div>
@@ -35,10 +35,11 @@ export default {
     margin-left: 0;
     margin-top: -190px;  
 }
-.descripcion h2 {
-    font-size: 5rem;
-    margin-bottom: 0.4em;
-}
+ .descripcion h2 {
+    font-size: 4rem;
+    margin-bottom: 3em;
+    }
+
 .presentacion {
     display: flex;
     flex-direction: column;
@@ -73,5 +74,48 @@ export default {
     font-weight: bold;
     font-size: 30px;
 }
+@media (max-width:1024px){
+    .presentacion img{
+        display: block;
+        margin-top: 40px;
+        height: 250px;
+        width: auto;
+        margin-left: auto;
+        margin-right: 20%;
+    }
+    .descripcion {
+        color: white;
+        display: block;
+        margin-right: 20%;
+        margin-left: 200px;
+        margin-top: -10px;  
+    }
+    .descripcion h2 {
+    font-size: 2rem;
+    margin-bottom: 3em;
+    }
+}
+@media (max-width:600px){
+    .presentacion img{
+        display: block;
+        margin-top: 40px;
+        height: 200px;
+        width: auto;
+        margin-left: auto;
+        margin-right: 20%;
+    }
+    .descripcion {
+        color: white;
+        display: block;
+        margin-right: 10%;
+        margin-left: 20px;
+        margin-top: 10px;  
+    }
+    .descripcion h2 {
+    font-size: 2rem;
+    margin-bottom: 3em;
+    }
+}
+
 
 </style>

@@ -5,7 +5,7 @@
 </template>
 
 <script>
-import MiLogin from '@/components/MiLogin.vue';
+import MiLogin from '@/components/compoHome/MiLogin.vue';
 
 export default {
 name: 'LoginView',
@@ -18,7 +18,7 @@ components: {
 <style scoped>
 .login-page-bg {
     min-height: 100vh;
-    background: url('@/assets/fondooojpeg.jpeg') no-repeat center;
+    background: url('@/assets/imagenesHome/fondooojpeg.jpeg') no-repeat center;
     background-size: cover;
     display: flex;
     align-items: center;
