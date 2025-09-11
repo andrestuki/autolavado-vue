@@ -24,16 +24,17 @@ export default {
 .logo img {
    height: 120px;
    width: auto;
-   
+   border-radius: 50%;
+   margin: 10px;
 }
 .logo{
-    background-color: black;
+    background-color: #252525;
 }
 .menu{
     display: flex;
     justify-content: center;
     list-style: none;
-    background-color: black;
+    background-color: #1d1d1d;
     color:white;
     gap: 50px;
     padding: 20px;

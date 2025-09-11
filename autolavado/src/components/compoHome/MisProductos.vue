@@ -40,6 +40,12 @@ export default {
 .producto {
     position: relative;
 }
+
+.producto:hover {
+    transform: scale(1.030);
+    transition: transform 0.3s ease;
+}
+
 .productos {
     
     display: grid;

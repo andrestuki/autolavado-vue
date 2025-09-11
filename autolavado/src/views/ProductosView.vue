@@ -1,9 +1,11 @@
 <template>
   <ProductosHeader></ProductosHeader>
   <ProductosCatalogo></ProductosCatalogo>
+  <MiFooter></MiFooter>
 </template>
 
 <script>
+import MiFooter from '@/components/compoHome/MiFooter.vue';
 import ProductosCatalogo from '@/components/compoProductos/ProductosCatalogo.vue';
 import ProductosHeader from '@/components/compoProductos/ProductosHeader.vue';
 
@@ -15,7 +17,8 @@ export default {
   name: 'productosView',
   components: {
    ProductosHeader,
-   ProductosCatalogo
+   ProductosCatalogo,
+   MiFooter
   }
 }
 </script>

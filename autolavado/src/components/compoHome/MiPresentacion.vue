@@ -46,8 +46,8 @@ export default {
     justify-content: center;
     align-items: center;
     width: 100%;
-    padding-bottom: 30px;
     height: 320px;
+    padding-top: 50px;
     background-color: #0b0da5;
 }
 .mainContent {
@@ -71,6 +71,7 @@ export default {
 
 .lbBienvenida {
     margin-top: 65px;
+    padding: 40px;
     font-weight: bold;
     font-size: 30px;
 }

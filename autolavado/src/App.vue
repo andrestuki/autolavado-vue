@@ -19,6 +19,16 @@
   color: #2c3e50;
 }
 
+body, #app {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.footer {
+    margin-top: auto;
+}
+
 
 nav a {
   font-weight: bold;

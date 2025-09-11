@@ -1,9 +1,11 @@
 <template>
     <AutolavadoHeader></AutolavadoHeader>
+    <MiFooter></MiFooter>
 </template>
 
 <script>
 import AutolavadoHeader from '@/components/compoAutolavado/AutolavadoHeader.vue';
+import MiFooter from '@/components/compoHome/MiFooter.vue';
 
 
 
@@ -14,7 +16,8 @@ import AutolavadoHeader from '@/components/compoAutolavado/AutolavadoHeader.vue'
 export default {
   name: 'autolavadoView',
   components: {
-    AutolavadoHeader
+    AutolavadoHeader,
+    MiFooter
   
  
   }

@@ -77,7 +77,6 @@
         border-radius: 20px;
     }
     .carta {
-   
     width: 100%;
     height: 100%;
     box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
