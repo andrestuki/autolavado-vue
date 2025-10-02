@@ -1,18 +1,35 @@
 <template>
     <div class="presentacion">
-        <img src="../../assets/imagenesHome/carro1.avif" alt="">
-        <div class="descripcion">
-            <h2>Lavado de Autos</h2>
+        <div class="inicio-presentacion">
+            <div class="inicio-titulo">
+                <p>Car wash<br>El mejor <br>Servicio</p>
+            </div>
+            <div class="inicio-descripcion">
+                <p>Limpieza profesional para tu auto con rapidez, <br> calidad y confianza.</p>
+            </div>
+            
+            <div class="inicio-buttons">
+                <button class="btn-primary">Reserva tu cita</button>
+                <button class="btn-secondary">Ver servicios</button>
+            </div>
         </div>
+            
+            <div class="burbujas">
+                <img src="../../assets/imagenesHome/burbuja1.jpg" alt="" class="burbuja1"><img />
+                <img src="../../assets/imagenesHome/burbuja2.webp" alt="" class="burbuja2"><img />
+            </div>
+            <img src="../../assets/imagenesHome/burbujas.png" alt="" class="burbuja3"><img />
+            <img src="../../assets/imagenesHome/burbujas.png" alt="" class="burbuja4"><img />
+            <img src="../../assets/imagenesHome/burbujas.png" alt="" class="burbuja5"><img />
+            <img src="../../assets/imagenesHome/burbujas.png" alt="" class="burbuja6"><img />
+            <img src="../../assets/imagenesHome/burbujas.png" alt="" class="burbuja7"><img />
+            <img src="../../assets/imagenesHome/burbujas.png" alt="" class="burbuja8"><img />
+        <img src="../../assets/imagenesHome/presentacion.jpeg" alt="" class="img-presentacion">
     </div>
-    <div class="mainContent">
-        <h2 class="lbBienvenida">Bienvenido a nuestro autolavado, donde la excelencia en el cuidado de tu vehículo es nuestra prioridad. 
-            Ofrecemos una amplia gama de servicios de lavado y detallado para mantener tu auto en perfectas condiciones.
-            Nuestro equipo de profesionales utiliza productos de alta calidad y técnicas avanzadas para garantizar un acabado impecable. 
-            Ya sea que necesites un lavado rápido o un servicio completo de detallado, estamos aquí para superar tus expectativas.
-            Visítanos y experimenta la diferencia de un autolavado dedicado a la satisfacción del cliente. </h2>
-        <div class="blackBorder"></div>
-    </div>
+
+
+
+
 
 </template>
 
@@ -23,100 +40,191 @@ export default {
 </script>
 
 <style>
-.presentacion img{
-    display: block;
-    margin-left: auto;
-    margin-right: 12%;
-}
-.descripcion {
-    color: white;
-    display: block;
-    margin-right: 47%;
-    margin-left: 0;
-    margin-top: -190px;  
-}
- .descripcion h2 {
-    font-size: 4rem;
-    margin-bottom: 3em;
-    }
-
 .presentacion {
+    background-color: rgb(51, 50, 50);
+    width: 100%;
+    height: 600px;
+    position: relative; 
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: inset 0px 6px 8px rgb(34, 34, 34);
+    z-index: 2;
+}
+
+.inicio-presentacion {
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    width: 100%;
-    height: 320px;
-    padding-top: 50px;
-    background-color: #0b0da5;
+    height: 80%;
+    padding: 40px 30px;
+    margin-left: 1rem;
 }
-.mainContent {
+
+.img-presentacion {
+    margin-left: auto;
     display: flex;
-    flex-direction: column;
-    height: auto;
-    justify-content: center;
-    border-top: black 10px solid;
-    align-items: center;
-    text-align: center;
-    padding: 0;
-    list-style-type: circle;
-    background-color: #f0f0f0;
-    gap: 80px;
+    justify-content: flex-end;
+    width: 40%;
+    height: 100%;
 }
 
-.blackBorder {
-    width: 100%;
-    border: black 5px solid;
-}
-
-.lbBienvenida {
-    margin-top: 65px;
-    padding: 40px;
+.inicio-titulo p {
+    color: white;
+    display: flex;
     font-weight: bold;
-    font-size: 30px;
-}
-@media (max-width:1024px){
-    .presentacion img{
-        display: block;
-        margin-top: 40px;
-        height: 250px;
-        width: auto;
-        margin-left: auto;
-        margin-right: 20%;
-    }
-    .descripcion {
-        color: white;
-        display: block;
-        margin-right: 20%;
-        margin-left: 200px;
-        margin-top: -10px;  
-    }
-    .descripcion h2 {
-    font-size: 2rem;
-    margin-bottom: 3em;
-    }
-}
-@media (max-width:600px){
-    .presentacion img{
-        display: block;
-        margin-top: 40px;
-        height: 200px;
-        width: auto;
-        margin-left: auto;
-        margin-right: 20%;
-    }
-    .descripcion {
-        color: white;
-        display: block;
-        margin-right: 10%;
-        margin-left: 20px;
-        margin-top: 10px;  
-    }
-    .descripcion h2 {
-    font-size: 2rem;
-    margin-bottom: 3em;
-    }
+    font-size: 70px;
+    font-family: 'Montserrat', sans-serif;
 }
 
+.inicio-descripcion p {
+    color: white;
+    display: flex;
+    font-size: 17px;
+    margin: 1rem 0 1rem 0;
+    font-family: 'Roboto', sans-serif;
+    width: 100%;
+}
 
+.inicio-buttons {
+    margin-top: 20px;
+    display: flex;
+    gap: 20px;
+}
+
+.inicio-buttons button{
+        box-shadow: 2px 2px 8px rgb(19, 19, 19);
+        transition: all ease-in-out 100ms;
+}
+
+.inicio-buttons button:hover{
+        scale: 1.05;
+}
+
+.inicio-buttons .btn-primary:hover{
+        background-color: rgb(230, 71, 71);
+}
+
+.inicio-buttons .btn-secondary:hover{
+        background-color: rgb(90, 90, 90);
+}
+
+.btn-primary {
+    background-color: rgb(214, 26, 26);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 5px;
+    font-family: 'Roboto', sans-serif;
+}
+
+.btn-secondary {
+    background-color: rgb(66, 66, 66);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 5px;
+    font-family: 'Roboto', sans-serif;
+}
+
+.burbujas {
+    display: flex;
+    position: absolute;
+    flex-direction: column;
+    margin-top: 1rem;
+    top: 1%;
+    right: 43%;
+    gap: 30px;
+}
+
+.burbuja1 {
+    width: 175px;
+    height: 175px;
+    margin-left: 20px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid white;
+}
+
+.burbuja2 {
+    width: 125px;
+    height: 125px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid white;
+
+
+}
+
+.burbuja3 {
+    width: 50px;
+    height: 50px;
+    position: absolute;
+    top: 80%;
+    right: 70%;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid white;
+}
+
+.burbuja4 {
+    width: 60px;
+    height: 60px;
+    position: absolute;
+    top: 20%;
+    right: 60%;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid white;
+}
+
+.burbuja5 {
+    width: 150px;
+    height: 150px;
+    position: absolute;
+    top: 90%;
+    right: 50%;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid white;
+}
+
+.burbuja6 {
+    width: 40px;
+    height: 40px;
+    position: absolute;
+    top: 40%;
+    right: 70%;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid white;
+}
+
+.burbuja7 {
+    width: 80px;
+    height: 80px;
+    position: absolute;
+    top: 50%;
+    right: 60%;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid white;
+}
+
+.burbuja8 {
+    width: 60px;
+    height: 60px;
+    position: absolute;
+    top: 70%;
+    right: 50%;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid white;
+}
 </style>

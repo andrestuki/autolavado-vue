@@ -1,27 +1,38 @@
 <template>
-    <div class="productos">
-        <div class="producto">
-            <router-link to="/autolavado">
-                <img src="../../assets/imagenesHome/autolavado.jpeg" alt="">
-                <div class="texto">Autolavado</div>
-            </router-link>
+
+    <div class="textos">
+        <h4 class="servicios-titulo">Servicios de Lavado</h4>
+        <p class="servicios-descripcion">Vehículos limpios - Buen servicio <br>
+            Precios asequibles
+        </p>
+    </div>
+    <div class="servicios">
+        <div class="servicio">
+            <img src="../../assets/imagenesHome/hidroespuma.webp" alt="">
+            <p class="texto-imagen">LAVADO CON<br><span >HIDROESPUMA</span> </p>
+            <p class="texto-invisible">PERSONAL<br>EXPERTO<br>CAPACITADO</p>
         </div>
-        <div class="producto">
-            <router-link to="/mecanico">
-                <img src="../../assets/imagenesHome/mecanico.jpg" alt="">
-                <div class="texto">Mecánico</div>
-            </router-link>
-            
+        <div class="servicio">
+            <img src="../../assets/imagenesHome/pulidora.png" alt="">
+            <p class="texto-imagen">PULIDORA SIN<br><span >ABRASIVOS</span></p>
+            <p class="texto-invisible">POLICHADOL<br>RESTAURACIÓN<br>COMPLETA</p>
+
         </div>
-        <div class="producto">
-            <router-link to="/productos">
-                <img src="../../assets/imagenesHome/productos.jpg" alt="">
-                <div class="texto">Productos</div>
-            </router-link>
+        <div class="servicio">
+            <img src="../../assets/imagenesHome/detallada.jpg" alt="">
+            <p class="texto-imagen">LIMPIEZA<br><span>DETAILING</span> </p>
+            <p class="texto-invisible">ASPIRADO<br>TAPICERÍA<br>PERFUME</p>
+
+        </div>
+        <div class="servicio">
+            <img src="../../assets/imagenesHome/motor.webp" alt="">
+            <p class="texto-imagen">LAVADO DE<br><span>MOTOR/CHASIS</span> </p>
+            <p class="texto-invisible">LIMPIEZA<br>SIN DAÑOS<br>ELÉCTRICOS</p>
+
         </div>
     </div>
-</template>
 
+</template>
 <script>
 export default {
     name: "MisProductos"
@@ -31,75 +42,82 @@ export default {
 </script>
 
 <style>
-.productos img{
-    border-radius: 5%;
+
+.textos{
+    text-align: center;
+    margin-top: -20px;
+    margin-bottom: 20px;
+    margin: 80px;
+}
+.servicios-titulo{
+    font-size: 25px;
+    
+    color: #8f86f5;
+}
+.servicios-descripcion{
+    font-size: 3.5rem;
+    font-weight: bold;
+    color: rgb(60, 60, 150);
+}
+.servicios{
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+    margin-top: -150px;
+    padding: 100px;
+    overflow: hidden;
+}
+.servicio img{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
     width: 100%;
-    height: 600px;
+    height: 440px;
+    object-fit: cover; /* dios */
+    display: block;
+    filter: brightness(0.7);
+    border-radius: 10px;
+
+}
+
+.texto-imagen{
+    
+    position:relative;
+    color: white;
+    display: flex;
+    flex-direction:column; 
+    align-items: flex-start;
+    top:-390px;
+    left: 40px;
+    font-size: 1.2rem;
+    
+}
+.texto-imagen span{
+    font-weight: bold;
+    font-size: 30px;
+}
+.texto-invisible{
+    position:relative;
+    color: white;
+    display: flex;
+    flex-direction:column; 
+    align-items: flex-end;
+    top:-150px;
+    left: -60px;
+    opacity: 0;
+    font-size: 1rem;
+    padding-right: 10px;         
+    border-right: 6px solid white; 
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+
+.servicio:hover .texto-invisible {
+   
+    transform: translateY(-10px);
+    opacity:1;
     cursor: pointer;
 }
-.producto {
-    position: relative;
-}
-
-.producto:hover {
-    transform: scale(1.030);
-    transition: transform 0.3s ease;
-}
-
-.productos {
     
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 40px;
-    margin: 50px;
-    
-}
-
-.texto {
-  position: absolute;
-  top: 500px; 
-  left: 30px;
-  font-size: 2rem;
-  color: white;
-  background: rgba(0,0,0,0.5); 
-  padding: 10px 10px;
-  border-radius: 5px;
-  cursor: pointer;
-}
-@media (max-width:1024px){
-    .productos {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 30px;
-        margin: 20px;
-    }
-    .productos img{
-        height: 400px;
-    }
-    .texto {
-        top: 350px; 
-        left: 20px;
-        font-size: 1.8rem;
-        padding: 8px 8px;
-    }
-}
-@media (max-width:600px){
-    .productos {
-        display: flex;
-        flex-direction: column;
-        gap: 20px;
-        margin: 10px;
-    }
-    .productos img{
-        height: 300px;
-    }
-    .texto {
-        top: 250px; 
-        left: 20px;
-        font-size: 1.5rem;
-        padding: 5px 5px;
-    }
-}
-
-
 </style>

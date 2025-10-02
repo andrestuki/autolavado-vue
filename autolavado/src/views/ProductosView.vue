@@ -1,5 +1,5 @@
 <template>
-  <ProductosHeader></ProductosHeader>
+  <MiHeader></MiHeader>
   <ProductosCatalogo></ProductosCatalogo>
   <MiFooter></MiFooter>
 </template>
@@ -7,7 +7,7 @@
 <script>
 import MiFooter from '@/components/compoHome/MiFooter.vue';
 import ProductosCatalogo from '@/components/compoProductos/ProductosCatalogo.vue';
-import ProductosHeader from '@/components/compoProductos/ProductosHeader.vue';
+import MiHeader from '@/components/compoHome/MiHeader.vue';
 
 // @ is an alias to /src
 
@@ -16,7 +16,7 @@ import ProductosHeader from '@/components/compoProductos/ProductosHeader.vue';
 export default {
   name: 'productosView',
   components: {
-   ProductosHeader,
+   MiHeader,
    ProductosCatalogo,
    MiFooter
   }

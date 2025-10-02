@@ -1,11 +1,11 @@
 <template>
-  <MecanicoHeader></MecanicoHeader>
+  <MiHeader></MiHeader>
   <MiFooter></MiFooter>
 </template>
 
 <script>
 import MiFooter from '@/components/compoHome/MiFooter.vue';
-import MecanicoHeader from '@/components/compoMecanico/MecanicoHeader.vue';
+import MiHeader from '@/components/compoHome/MiHeader.vue';
 
 
 
@@ -16,9 +16,9 @@ import MecanicoHeader from '@/components/compoMecanico/MecanicoHeader.vue';
 export default {
   name: 'mecanicoView',
   components: {
-    MecanicoHeader,
+    MiHeader,
     MiFooter
-   
+  
   }
 }
 </script>

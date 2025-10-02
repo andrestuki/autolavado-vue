@@ -2,7 +2,7 @@
 
     <footer class="footer">
         <div>
-        <img src="/img/logo.f8c8b5db.jpg" alt="logo">
+            <img src="../../assets/imagenesHome/logo.png" alt="logo">
         <li>Contacto</li>
         <li>Trabaja con nosotros</li>
         <li>Acuerdo legal</li>
@@ -26,13 +26,13 @@ export default {
     display: flex;
     justify-content: space-evenly;
     align-items: center;
-    background-color: #1d1d1d;
+    background-color: rgb(43, 43, 43);
     color: white;
     text-align: center;
     padding: 20px 0;
     position: relative;
     bottom: 0;
-    height: 200px;
+    height: 130px;
     width: 100%;
 }
 
