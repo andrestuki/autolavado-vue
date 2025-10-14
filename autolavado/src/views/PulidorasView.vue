@@ -13,17 +13,17 @@ import MisPulidoras from '@/components/CompoPulidoras.vue/MisPulidoras.vue';
 export default {
   name: 'productosView',
   components: {
-   MiHeader,
+    MiHeader,
     MisPulidoras,
-   MiFooter,
-  
+    MiFooter,
+
   }
 }
 
 
 </script>
 <style>
-*{
+* {
   margin: 0;
   padding: 0;
   box-sizing: border-box;

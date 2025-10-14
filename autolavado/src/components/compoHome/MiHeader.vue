@@ -10,6 +10,10 @@
         <a href=""><li>Lavado de autos</li></a>
         <a href=""><li>Tienda</li></a>
         <a href=""><li>Contacto</li></a>
+        <a href=""><li>Registrarse</li></a>
+        <router-link to="/admin">
+          <li>Admin</li>
+        </router-link>
         <input type="text" placeholder="Buscar..." class="buscador">
       </ul>
     </nav>
@@ -67,16 +71,14 @@ header {
 
 .menu ul a{
   text-decoration: none;
+  padding: 13px;
+  transition: ease-in-out 200ms;
+  border-radius: 20px;
   color: white;
 }
 
 .menu ul a:hover{
-  color: white;
-  transition: 0.3s;
   background-color: rgb(224, 25, 25);
-  padding: 13px;
-  border-radius: 18px;
-
 }
 
 .menu ul {

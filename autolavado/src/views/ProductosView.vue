@@ -1,28 +1,28 @@
 <template>
   <MiHeader></MiHeader>
   <DataView>
-    
-  </DataView> 
+
+  </DataView>
   <MiFooter></MiFooter>
 </template>
 
 <script>
-import MiFooter from '@/components/compoHome/MiFooter.vue'  
+import MiFooter from '@/components/compoHome/MiFooter.vue'
 import MiHeader from '@/components/compoHome/MiHeader.vue';
 
 
 export default {
   name: 'productosView',
   components: {
-   MiHeader,
-   MiFooter
+    MiHeader,
+    MiFooter
   }
 }
 
 
 </script>
 <style>
-*{
+* {
   margin: 0;
   padding: 0;
   box-sizing: border-box;

@@ -9,12 +9,12 @@
     <div class="servicios">
         <div class="servicio">
             <img src="../../assets/imagenesHome/hidroespuma.webp" alt="">
-            <p class="texto-imagen">LAVADO CON<br><span >HIDROESPUMA</span> </p>
+            <p class="texto-imagen">LAVADO CON<br><span>HIDROESPUMA</span> </p>
             <p class="texto-invisible">PERSONAL<br>EXPERTO<br>CAPACITADO</p>
         </div>
         <div class="servicio">
             <img src="../../assets/imagenesHome/pulidora.png" alt="">
-            <p class="texto-imagen">PULIDORA SIN<br><span >ABRASIVOS</span></p>
+            <p class="texto-imagen">PULIDORA SIN<br><span>ABRASIVOS</span></p>
             <p class="texto-invisible">POLICHADOL<br>RESTAURACIÓN<br>COMPLETA</p>
 
         </div>
@@ -36,33 +36,36 @@
 <script>
 export default {
     name: "MisProductos"
-    
+
 }
 
 </script>
 
 <style>
-
-*{
+* {
     text-decoration: none;
 }
-.textos{
+
+.textos {
     text-align: center;
     margin-top: -20px;
     margin-bottom: 20px;
     margin: 80px;
 }
-.servicios-titulo{
+
+.servicios-titulo {
     font-size: 25px;
-    
+
     color: #8f86f5;
 }
-.servicios-descripcion{
+
+.servicios-descripcion {
     font-size: 3.5rem;
     font-weight: bold;
     color: rgb(60, 60, 150);
 }
-.servicios{
+
+.servicios {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     gap: 20px;
@@ -70,57 +73,63 @@ export default {
     padding: 100px;
     overflow: hidden;
 }
-.servicio img{
+
+.servicio img {
     display: flex;
     align-items: center;
     justify-content: center;
     margin: 0 auto;
     width: 100%;
     height: 440px;
-    object-fit: cover; /* dios */
+    object-fit: cover;
+    /* dios */
     display: block;
     filter: brightness(0.7);
     border-radius: 10px;
 
 }
 
-.texto-imagen{
-    
-    position:relative;
+.texto-imagen {
+
+    position: relative;
     color: white;
     display: flex;
-    flex-direction:column; 
+    flex-direction: column;
     align-items: flex-start;
-    top:-390px;
+    top: -390px;
     left: 40px;
     font-size: 1.2rem;
-    
+
 }
-.texto-imagen span{
+
+.texto-imagen span {
     font-weight: bold;
     font-size: 30px;
 }
-.texto-invisible{
-    position:relative;
+
+.texto-invisible {
+    position: relative;
     color: white;
     display: flex;
-    flex-direction:column; 
+    flex-direction: column;
     align-items: flex-end;
-    top:-150px;
+    top: -150px;
     left: -60px;
     opacity: 0;
     font-size: 1rem;
-    padding-right: 10px;         
-    border-right: 6px solid white; 
+    padding-right: 10px;
+    border-right: 6px solid white;
     transition: opacity 0.3s ease, transform 0.3s ease;
 }
 
+.servicio {
+    transition: ease-in-out 300ms;
+}
 
 .servicio:hover .texto-invisible {
-   
+
     transform: translateY(-10px);
-    opacity:1;
+    opacity: 1;
     cursor: pointer;
 }
-    
 </style>

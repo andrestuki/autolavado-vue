@@ -4,7 +4,7 @@ import LoginView from '../views/LoginView.vue'
 
 const routes = [
   {
-    path: '/',
+    path: '/login',
     name: 'login',
     component: LoginView,
     meta: { title: 'Login' }
@@ -16,9 +16,16 @@ const routes = [
     meta: { title: 'Pulidoras' }
 
   },
+  {
+    path:'/admin',
+    name:'admin',
+    component: ()=> import('@/views/AdminView.vue'),
+    meta:{title: 'admin'}
+    // Cicharp T_T... no he estudiado... solo es manejo de apis no?... endpoints y esa mkada
+  },
   
   {
-    path: '/home',
+    path: '/',
     name: 'home',
     component: () => import('@/views/HomeView.vue'),
     meta: { title: 'Principal' }
