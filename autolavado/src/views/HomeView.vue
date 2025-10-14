@@ -3,6 +3,7 @@
     <MiPresentacion></MiPresentacion>
     <SobreNosotros></SobreNosotros>
     <MisProductos></MisProductos>
+    <MisCatalogos></MisCatalogos>
     <MisPaquetes></MisPaquetes>
     <MiFooter></MiFooter>
 
@@ -14,6 +15,7 @@
 import MiFooter from '@/components/compoHome/MiFooter.vue';
 import MiHeader from '@/components/compoHome/MiHeader.vue';
 import MiPresentacion from '@/components/compoHome/MiPresentacion.vue'
+import MisCatalogos from '@/components/compoHome/MisCatalogos.vue';
 import MisPaquetes from '@/components/compoHome/MisPaquetes.vue';
 import MisProductos from '@/components/compoHome/MisProductos.vue';
 import SobreNosotros from '@/components/compoHome/SobreNosotros.vue';
@@ -25,6 +27,7 @@ export default {
     MiHeader,
     MiPresentacion,
     MisProductos,
+    MisCatalogos,
     MiFooter,
     MisPaquetes,
     SobreNosotros

@@ -1,21 +1,22 @@
 <template>
   <MiHeader></MiHeader>
-  <DataView>
-    
-  </DataView> 
+  <MisPulidoras></MisPulidoras>
   <MiFooter></MiFooter>
 </template>
 
 <script>
-import MiFooter from '@/components/compoHome/MiFooter.vue'  
+import MiFooter from '@/components/compoHome/MiFooter.vue'
 import MiHeader from '@/components/compoHome/MiHeader.vue';
+import MisPulidoras from '@/components/CompoPulidoras.vue/MisPulidoras.vue';
 
 
 export default {
   name: 'productosView',
   components: {
    MiHeader,
-   MiFooter
+    MisPulidoras,
+   MiFooter,
+  
   }
 }
 

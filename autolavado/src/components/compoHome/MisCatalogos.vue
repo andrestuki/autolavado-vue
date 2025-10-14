@@ -1,33 +1,36 @@
 <template>
 
     <div class="textos">
-        <h4 class="servicios-titulo">Servicios de Lavado</h4>
-        <p class="servicios-descripcion">Vehículos limpios - Buen servicio <br>
+        <h4 class="servicios-titulo">Productos de Lavado</h4>
+        <p class="servicios-descripcion">Vehículos limpios - Buenos Productos <br>
             Precios asequibles
         </p>
     </div>
     <div class="servicios">
         <div class="servicio">
-            <img src="../../assets/imagenesHome/hidroespuma.webp" alt="">
-            <p class="texto-imagen">LAVADO CON<br><span >HIDROESPUMA</span> </p>
-            <p class="texto-invisible">PERSONAL<br>EXPERTO<br>CAPACITADO</p>
+            <router-link to="/pulidoras">
+                <img src="../../assets/imagenesHome/pulidora.webp" alt="">
+                <p class="texto-imagen">PULIDORAS Y<br><span >CERAS</span> </p>
+                <p class="texto-invisible">BRILLO PROFESIONAL<br>PROTECION DURADERA<br>ACADO ESPEJO</p>
+            </router-link>
+            
         </div>
         <div class="servicio">
-            <img src="../../assets/imagenesHome/pulidora.png" alt="">
-            <p class="texto-imagen">PULIDORA SIN<br><span >ABRASIVOS</span></p>
-            <p class="texto-invisible">POLICHADOL<br>RESTAURACIÓN<br>COMPLETA</p>
+            <img src="../../assets/imagenesHome/pintura.webp" alt="">
+            <p class="texto-imagen">PINTURAS PARA<br><span >AUTOS</span></p>
+            <p class="texto-invisible">COLORES ORIGINALES<br>RESISTENCIA GARANTIZADA<br>APLICACION PRECISA</p>
 
         </div>
         <div class="servicio">
-            <img src="../../assets/imagenesHome/detallada.jpg" alt="">
-            <p class="texto-imagen">LIMPIEZA<br><span>DETAILING</span> </p>
-            <p class="texto-invisible">ASPIRADO<br>TAPICERÍA<br>PERFUME</p>
+            <img src="../../assets/imagenesHome/shampu.webp" alt="">
+            <p class="texto-imagen">SHAMPOO PARA<br><span>AUTOS</span> </p>
+            <p class="texto-invisible">ESPUMA ACTIVA<br>LIMPIEZA PROFUNDA<br>CUIDADO DE PINTURA</p>
 
         </div>
         <div class="servicio">
-            <img src="../../assets/imagenesHome/motor.webp" alt="">
-            <p class="texto-imagen">LAVADO DE<br><span>MOTOR/CHASIS</span> </p>
-            <p class="texto-invisible">LIMPIEZA<br>SIN DAÑOS<br>ELÉCTRICOS</p>
+            <img src="../../assets/imagenesHome/hidrobomba.webp" alt="">
+            <p class="texto-imagen">HIDROBOMBAS Y<br><span>MAS</span> </p>
+            <p class="texto-invisible">ALTA PRESION<br>AHORRO DE AGUA<br>MAXIMA EFICIENCIA</p>
 
         </div>
     </div>
@@ -35,17 +38,14 @@
 </template>
 <script>
 export default {
-    name: "MisProductos"
+    name: "MisCatalogos"
     
 }
 
 </script>
 
-<style>
+<style scoped>
 
-*{
-    text-decoration: none;
-}
 .textos{
     text-align: center;
     margin-top: -20px;
@@ -107,7 +107,7 @@ export default {
     flex-direction:column; 
     align-items: flex-end;
     top:-150px;
-    left: -60px;
+    left: -20px;
     opacity: 0;
     font-size: 1rem;
     padding-right: 10px;         
@@ -115,7 +115,11 @@ export default {
     transition: opacity 0.3s ease, transform 0.3s ease;
 }
 
-
+.servicio:hover{
+    transform: scale(1.03);
+    transition: transform 0.5s ease;
+    cursor: pointer;
+}
 .servicio:hover .texto-invisible {
    
     transform: translateY(-10px);

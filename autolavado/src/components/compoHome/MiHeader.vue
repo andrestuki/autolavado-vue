@@ -25,6 +25,7 @@ export default {
 </script>
 
 <style>
+
 header {
   height: 150px;
   background-color: rgb(43, 43, 43);

@@ -1,0 +1,291 @@
+<template>
+    <div class="contenedor">
+        <div v-for="puli in pulidoras" :key="puli.id_pulidoras" class="card">
+            <TagPrime v-if="(puli.cantidad>=10)" class="tag-flotante disponible" severity="success">Disponible</TagPrime>
+            <TagPrime v-else-if="(puli.cantidad==0)" class="tag-flotante agotado" severity="secondary">Agotado</TagPrime>
+            <TagPrime v-else-if="(puli.cantidad>=1 && puli.cantidad<10)" class="tag-flotante casi_agotado" severity="secondary">Casi Agotado</TagPrime>
+            
+            
+            <img class="imagen-pulidoras" :src="puli.imagen" alt="">
+            <h4 class="nombre">{{ puli.nombre }} 
+                <h4 class="calificacion">
+                   <span class="text-surface-900 font-medium text-sm">{{ puli.raiting }}</span>
+                   <i class="pi pi-star-fill text-yellow-500"></i>
+                </h4>
+            </h4>
+           <div class="fila-info">
+                <h4 class="precio">{{ pesoCOL(puli.precio) }}</h4>
+                
+            </div>
+           <div class="botones">
+            <ButtonPrime @Click="comprar(puli)"  v-if="(puli.cantidad>0)"  icon="pi pi-shopping-cart" label="COMPRAR" class="btn-compra "/>
+            <ButtonPrime v-if="(puli.cantidad>=0)" icon="pi pi-heart" variant="outlined" class="btn-favorito edit"/>
+           </div>
+            
+        </div>
+    </div>
+        
+
+   </template>
+
+<script >
+    export default {
+        name: "MisPulidoras",
+          data() {
+        return {
+            pulidoras: []
+        }
+    },
+        created() {
+        // Cargar desde localStorage si existe, si no, usar los valores por defecto
+        const guardadas = localStorage.getItem('pulidoras');
+        if (guardadas) {
+            this.pulidoras = JSON.parse(guardadas);
+        } else {
+            this.pulidoras = [
+                {
+                    id_pulidora:1,
+                    nombre:"Polichadora 7 ",
+                    marca:"Stanley PT",
+                    precio:629900,
+                    imagen:require('@/assets/imagenesPulidoras/Pulidora1.webp'),
+                    raiting:4.8,
+                    cantidad:3,
+                },
+                {
+                    id_pulidora:2,
+                    nombre:"Polichadora Orbital",
+                    marca:"Elite",
+                    precio:319900,
+                    imagen:require('@/assets/imagenesPulidoras/pulidora2.jpeg'),
+                    raiting:4.5,
+                    cantidad:23,
+                },
+               
+                {
+                    id_pulidora:3,
+                    nombre:"XTreme DA21",
+                    marca:"XTreme",
+                    precio:1200000,
+                    imagen:require('@/assets/imagenesPulidoras/pulidora3.jpeg'),
+                    raiting:4.8,
+                    cantidad:30,
+                },
+                {
+                    id_pulidora:4,
+                    nombre:"SpeedPro 7",
+                    marca:"SpeedPro",
+                    precio:850000,
+                    imagen:require('@/assets/imagenesPulidoras/pulidora4.webp'),
+                    raiting:4.5,
+                    cantidad:15,
+                },
+                {
+                    id_pulidora:5,
+                    nombre:"PowerWax 1600",
+                    marca:"PowerWax",
+                    precio:620000,
+                    imagen:require('@/assets/imagenesPulidoras/pulidora5.webp'),
+                    raiting:4.3,
+                    cantidad:10,
+                },
+                {
+                    id_pulidora:6,
+                    nombre:"TurboShine 2200",
+                    marca:"TurboShine",
+                    precio:1300000,
+                    imagen:require('@/assets/imagenesPulidoras/pulidora6.webp'),
+                    raiting:4.7,
+                    cantidad:5,
+                },
+                {
+                    id_pulidora:7,
+                    nombre:"TMaxiGloss 6",
+                    marca:"MaxiGloss",
+                    precio:780000,
+                    imagen:require('@/assets/imagenesPulidoras/pulidora7.webp'),
+                    raiting:4.4,
+                    cantidad:25,
+                },
+                {
+                    id_pulidora:8,
+                    nombre:"UltraOrbital 9",
+                    marca:"Ultra",
+                    precio:950000,
+                    imagen:require('@/assets/imagenesPulidoras/pulidora8.webp'),
+                    raiting:4.6,
+                    cantidad:25,
+                },
+                {
+                    id_pulidora:9,
+                    nombre:"Diamond DA 15",
+                    marca:"Diamond",
+                    precio:1400000,
+                    imagen:require('@/assets/imagenesPulidoras/pulidora9.webp'),
+                    raiting:4.9,
+                    cantidad:28,
+                },
+                {
+                    id_pulidora:10,
+                    nombre:"NanoPolish Mini",
+                    marca:"Nano",
+                    precio:400000,
+                    imagen:require('@/assets/imagenesPulidoras/pulidora10.webp'),
+                    raiting:4.2,
+                    cantidad:3,
+                },
+                
+            ];
+        
+            localStorage.setItem('pulidoras', JSON.stringify(this.pulidoras));
+        }
+    },
+
+        
+
+        methods:{
+            pesoCOL: function (valor) {
+                const formatoMonedaColombia = new Intl.NumberFormat('es-CO', {
+                    style: 'currency',
+                    currency: 'COP',
+                    minimumFractionDigits: 0, // Ensures two decimal places for cents
+                    maximumFractionDigits: 0  // Ensures two decimal places for cents
+                }).format(valor);
+
+                return formatoMonedaColombia;
+            },
+            comprar(puli) {
+            if (puli.cantidad > 0) {
+                puli.cantidad--;
+                // Guardar el array actualizado en localStorage
+                localStorage.setItem('pulidoras', JSON.stringify(this.pulidoras));
+            }
+        }
+
+        }
+    }
+</script>
+
+<style  scoped>
+    .contenedor{
+        display: flex;
+        flex-wrap: wrap;
+        gap:20px;
+        padding: 20px;
+    }
+
+    .card{
+        background-color: white;
+        
+        border: rgb(198, 198, 204) solid 1px;
+        width: 350px;
+        height: 370px; 
+        text-align: center;
+        position: relative;
+        overflow: hidden; 
+    }
+
+    .imagen-pulidoras{
+
+        width: 75%;
+        height: 60%;
+        margin-bottom: 15px;
+    }
+
+    .nombre{
+        display: flex;
+        justify-content: space-between;
+        font-size: 18px;
+        padding: 0 25px;
+        margin-bottom: 10px;
+        color: #333;
+        
+    }
+  
+    .fila-info {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0 25px;
+        margin-bottom: 10px;
+    }
+
+    .precio {
+        font-size: 20px;
+        margin: 0;
+    }
+
+    .calificacion {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        font-size: 15px;
+      
+    }
+    .botones
+    {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0 25px;
+        margin-bottom: 10px;
+    }
+  
+    .btn-compra {
+        width: 270px;
+        height: 30px;
+        gap: 10px;
+        border-radius: 5px;
+        background-color:#0F172A;
+        color: #FFFFFF;
+    }
+     .btn-compra:hover {
+        background-color: #2A3445 !important;
+        color: #FFFFFF !important;
+        transition: background-color 0.3s ease;
+    }
+    .btn-favorito {
+       position: relative;
+        padding: 5px;
+        left: 5px;
+        background-color: white;
+        color: #0F172A;
+        border: rgb(170, 170, 173) solid 1px;
+        border-radius: 5px;
+        
+    }
+    .btn-favorito:hover {
+        background-color: #2A3445 !important;
+        color: #FFFFFF !important;
+        transition: background-color 0.3s ease;
+    }
+  
+
+    .tag-flotante {
+        position: absolute;
+        top: 10px;
+        right: 230px;
+        font-weight: bold;
+        font-size: 14px;
+        width: 100px;
+        height: 27px;
+        border-radius: 5px;
+    }
+    .disponible {
+        background-color: #a2edbd ;
+        color: rgb(0, 121, 18) ;
+    }
+    .agotado {
+        background-color: #1f1f1f ;
+        color: white;
+    }
+    .casi_agotado
+    {
+        background-color: #ff2929 ;
+        color: white;
+    }
+   
+    
+   
+
+</style>

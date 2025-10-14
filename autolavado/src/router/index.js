@@ -9,6 +9,13 @@ const routes = [
     component: LoginView,
     meta: { title: 'Login' }
   },
+  {
+    path: '/pulidoras',
+    name: 'pulidoras',
+    component: () => import('@/views/PulidorasView.vue'),
+    meta: { title: 'Pulidoras' }
+
+  },
   
   {
     path: '/home',

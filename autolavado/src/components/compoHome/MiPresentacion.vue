@@ -97,6 +97,7 @@ export default {
 .inicio-buttons button{
         box-shadow: 2px 2px 8px rgb(19, 19, 19);
         transition: all ease-in-out 100ms;
+        padding: 10px 20px;
 }
 
 .inicio-buttons button:hover{
