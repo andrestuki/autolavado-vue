@@ -1,57 +1,65 @@
 <template>
+    <MiHeader></MiHeader>
     <div class="contenedor">
-        <div v-for="puli in pulidoras" :key="puli.id_pulidoras" class="card">
-            <TagPrime v-if="(puli.cantidad >= 10)" class="tag-flotante disponible" severity="success">En stock
+        <div v-for="hidr in hidrobombas" :key="hidr.id_hidroos" class="card">
+            <TagPrime v-if="(hidr.cantidad >= 10)" class="tag-flotante disponible" severity="success">En stock
             </TagPrime>
-            <TagPrime v-else-if="(puli.cantidad == 0)" class="tag-flotante agotado" severity="secondary">Agotado
+            <TagPrime v-else-if="(hidr.cantidad == 0)" class="tag-flotante agotado" severity="secondary">Agotado
             </TagPrime>
-            <TagPrime v-else-if="(puli.cantidad >= 1 && puli.cantidad < 10)" class="tag-flotante casi_agotado"
+            <TagPrime v-else-if="(hidr.cantidad >= 1 && hidr.cantidad < 10)" class="tag-flotante casi_agotado"
                 severity="secondary">Casi Agotado</TagPrime>
 
 
-            <img class="imagen-pulidoras" :src="puli.imagen" alt="">
-            <h4 class="nombre">{{ puli.nombre }}
+            <img class="imagen-hidrobombas" :src="hidr.imagen" alt="">
+            <h4 class="nombre">{{ hidr.nombre }} 
                 <h4 class="calificacion">
-                    <span class="text-surface-900 font-medium text-sm">{{ puli.raiting }}</span>
+                    <span class="text-surface-900 font-medium text-sm">{{ hidr.raiting }}</span>
                     <i class="pi pi-star-fill text-yellow-500"></i>
                 </h4>
             </h4>
             <div class="fila-info">
-                <h4 class="precio">{{ pesoCOL(puli.precio) }}</h4>
+                <h4 class="precio">{{ pesoCOL(hidr.precio) }}</h4>
 
             </div>
             <div class="botones">
-                <ButtonPrime :class="puli.cantidad > 0 ? 'btn-compra' : 'btn-deshabilitado'" :disabled="puli.cantidad <= 0" @Click="comprar(puli)" icon="pi pi-shopping-cart"
+                <ButtonPrime :class="hidr.cantidad > 0 ? 'btn-compra' : 'btn-deshabilitado'" :disabled="hidr.cantidad <= 0" @Click="comprar(hidr)" icon="pi pi-shopping-cart"
                     label="COMPRAR" />
-                <ButtonPrime v-if="(puli.cantidad >= 0)" icon="pi pi-heart" variant="outlined"
+                <ButtonPrime v-if="(hidr.cantidad >= 0)" icon="pi pi-heart" variant="outlined"
                     class="btn-favorito edit" />
             </div>
 
         </div>
     </div>
-
-
+    <MiFooter></MiFooter>
 </template>
 
 <script>
-import {pulidoras} from '@/data/pulidoras.js';
+import MiFooter from '@/components/compoHome/MiFooter.vue';
+import MiHeader from '@/components/compoHome/MiHeader.vue';
+import {hidrobombas} from '@/data/hidrobombas.js';
+
 export default {
 
-    name: "MisPulidoras",
+    name: "hidrobombasView",
+    components:
+    {
+        MiHeader,
+        MiFooter
+    },
     data() {
         return {
-            pulidoras
+            hidrobombas
         }
     },
     created() {
         // Cargar desde localStorage si existe, si no, usar los valores por defecto
-        const guardadas = localStorage.getItem('pulidoras');
+        const guardadas = localStorage.getItem('hidrobombas');
         if (guardadas) {
-            this.pulidoras = JSON.parse(guardadas);
+            this.hidrobombas = JSON.parse(guardadas);
         } else {
-            this.pulidoras
+            this.hidrobombas
 
-            localStorage.setItem('pulidoras', JSON.stringify(this.pulidoras));
+            localStorage.setItem('hidrobombas', JSON.stringify(this.hidrobombas));
         }
     },
 
@@ -68,11 +76,11 @@ export default {
 
             return formatoMonedaColombia;
         },
-        comprar(puli) {
-            if (puli.cantidad > 0) {
-                puli.cantidad--;
+        comprar(hidr) {
+            if (hidr.cantidad > 0) {
+                hidr.cantidad--;
                 // Guardar el array actualizado en localStorage
-                localStorage.setItem('pulidoras', JSON.stringify(this.pulidoras));
+                localStorage.setItem('hidrobombas', JSON.stringify(this.hidrobombas));
             }
         }
 
@@ -99,7 +107,7 @@ export default {
     overflow: hidden;
 }
 
-.imagen-pulidoras {
+.imagen-hidrobombas {
 
     width: 75%;
     height: 60%;

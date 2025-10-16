@@ -6,12 +6,14 @@
         <a href=""><img src="../../assets/imagenesHome/logo.png" alt="Logo"></a>
       </div>
       <ul>
-        <a href=""><li>Inicio</li></a>
-        <a href=""><li>Lavado de autos</li></a>
-        <a href=""><li>Tienda</li></a>
-        <a href=""><li>Contacto</li></a>
-        <a href=""><li>Registrarse</li></a>
-        <router-link to="/admin">
+        <router-link to="/inicio">
+          <li>Inicio</li>
+        </router-link>
+        <li>Lavado de autos</li>
+        <li>Tienda</li>
+        <li>Contacto</li>
+        <li>Registrarse</li>
+        <router-link to="/global">
           <li>Admin</li>
         </router-link>
         <input type="text" placeholder="Buscar..." class="buscador">

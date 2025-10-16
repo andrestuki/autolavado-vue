@@ -10,18 +10,52 @@ const routes = [
     meta: { title: 'Login' }
   },
   {
+    path: '/hidrobombas',
+    name: 'hidrobombas',
+    component: () => import('@/ProductosView/HidrobombasView.vue'),
+    meta: { title: 'Hidrobombas' }
+
+  },
+  {
+    path: '/shampoos',
+    name: 'shampoos',
+    component: () => import('@/ProductosView/ShampoosView.vue'),
+    meta: { title: 'Shampoos' }
+
+  },
+  {
     path: '/pulidoras',
     name: 'pulidoras',
-    component: () => import('@/views/PulidorasView.vue'),
+    component: () => import('@/ProductosView/PulidorasView.vue'),
     meta: { title: 'Pulidoras' }
 
   },
   {
-    path:'/admin',
-    name:'admin',
-    component: ()=> import('@/views/AdminView.vue'),
-    meta:{title: 'admin'}
-    // Cicharp T_T... no he estudiado... solo es manejo de apis no?... endpoints y esa mkada
+    path:'/pinturas',
+    name:'pinturas',
+    component:()=>import('@/ProductosView/PinturasView.vue'),
+    meta: {title:'pinturas'}
+
+  },
+   {
+    path:'/global',
+    name:'/global',
+    component: ()=> import('@/admin/GlobalView.vue'),
+    meta:{title: 'global'}
+   
+  },
+  {
+    path:'/Pulidorasadmin',
+    name:'/Pulidorasadmin',
+    component: ()=> import('@/admin/PulidorasAdminView.vue'),
+    meta:{title: 'Pulidoras admin'}
+  
+  },
+  {
+    path: '/inicio',
+    name: '/inicio',
+    component: () => import('@/views/HomeView.vue'),
+    meta: { title: 'Principal' }
   },
   
   {

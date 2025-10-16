@@ -1,6 +1,7 @@
 <template>
+    <MiHeader></MiHeader>
     <div class="contenedor">
-        <div v-for="puli in pulidoras" :key="puli.id_pulidoras" class="card">
+        <div v-for="puli in pinturas" :key="puli.id_pinturas" class="card">
             <TagPrime v-if="(puli.cantidad >= 10)" class="tag-flotante disponible" severity="success">En stock
             </TagPrime>
             <TagPrime v-else-if="(puli.cantidad == 0)" class="tag-flotante agotado" severity="secondary">Agotado
@@ -9,7 +10,7 @@
                 severity="secondary">Casi Agotado</TagPrime>
 
 
-            <img class="imagen-pulidoras" :src="puli.imagen" alt="">
+            <img class="imagen-pinturas" :src="puli.imagen" alt="">
             <h4 class="nombre">{{ puli.nombre }}
                 <h4 class="calificacion">
                     <span class="text-surface-900 font-medium text-sm">{{ puli.raiting }}</span>
@@ -29,29 +30,37 @@
 
         </div>
     </div>
+    <MiFooter></MiFooter>
 
 
 </template>
 
 <script>
-import {pulidoras} from '@/data/pulidoras.js';
+import MiFooter from '@/components/compoHome/MiFooter.vue';
+import MiHeader from '@/components/compoHome/MiHeader.vue';
+import {pinturas} from '@/data/pinturas.js';
 export default {
 
-    name: "MisPulidoras",
+    name: "PinturasView",
+    components:
+    {
+        MiHeader,
+        MiFooter
+    },
     data() {
         return {
-            pulidoras
+            pinturas
         }
     },
     created() {
         // Cargar desde localStorage si existe, si no, usar los valores por defecto
-        const guardadas = localStorage.getItem('pulidoras');
+        const guardadas = localStorage.getItem('pinturas');
         if (guardadas) {
-            this.pulidoras = JSON.parse(guardadas);
+            this.pinturas = JSON.parse(guardadas);
         } else {
-            this.pulidoras
+            this.pinturas
 
-            localStorage.setItem('pulidoras', JSON.stringify(this.pulidoras));
+            localStorage.setItem('pinturas', JSON.stringify(this.pinturas));
         }
     },
 
@@ -72,7 +81,7 @@ export default {
             if (puli.cantidad > 0) {
                 puli.cantidad--;
                 // Guardar el array actualizado en localStorage
-                localStorage.setItem('pulidoras', JSON.stringify(this.pulidoras));
+                localStorage.setItem('pinturas', JSON.stringify(this.pinturas));
             }
         }
 
@@ -99,7 +108,7 @@ export default {
     overflow: hidden;
 }
 
-.imagen-pulidoras {
+.imagen-pinturas {
 
     width: 75%;
     height: 60%;

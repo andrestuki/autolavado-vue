@@ -1,15 +1,15 @@
 <template>
-
+    <MiHeader></MiHeader>
     <div class="textos">
-        <h4 class="servicios-titulo">Productos de Lavado</h4>
-        <p class="servicios-descripcion">Vehículos limpios - Buenos Productos <br>
-            Precios asequibles
+        <h4 class="servicios-titulo">Admin</h4>
+        <p class="servicios-descripcion">Edita-agrega-Elimina <br>
+            Los productos
         </p>
     </div>
     <div class="servicios">
         <div class="servicio">
-            <router-link to="/pulidoras">
-                <img src="../../assets/imagenesHome/pulidora.webp" alt="">
+            <router-link to="/PulidorasAdmin">
+                <img src="@/assets/imagenesHome/pulidora.webp" alt="">
                 <p class="texto-imagen">PULIDORAS Y<br><span>CERAS</span> </p>
                 <p class="texto-invisible">BRILLO PROFESIONAL<br>PROTECION DURADERA<br>ACADO ESPEJO</p>
             </router-link>
@@ -17,39 +17,48 @@
         </div>
         <div class="servicio">
             <router-link to="/pinturas">
-                <img src="../../assets/imagenesHome/pintura.webp" alt="">
+                <img src="@/assets/imagenesHome/pintura.webp" alt="">
             <p class="texto-imagen">PINTURAS PARA<br><span>AUTOS</span></p>
             <p class="texto-invisible">COLORES ORIGINALES<br>RESISTENCIA GARANTIZADA<br>APLICACION PRECISA</p>
             </router-link>
             
         </div>
         <div class="servicio">
-            <router-link to="/shampoos">
-                <img src="../../assets/imagenesHome/shampu.webp" alt="">
-                <p class="texto-imagen">SHAMPOO PARA<br><span>AUTOS</span> </p>
-                <p class="texto-invisible">ESPUMA ACTIVA<br>LIMPIEZA PROFUNDA<br>CUIDADO DE PINTURA</p>
-            </router-link>
-            
+            <img src="@/assets/imagenesHome/shampu.webp" alt="">
+            <p class="texto-imagen">SHAMPOO PARA<br><span>AUTOS</span> </p>
+            <p class="texto-invisible">ESPUMA ACTIVA<br>LIMPIEZA PROFUNDA<br>CUIDADO DE PINTURA</p>
+
         </div>
         <div class="servicio">
-            <router-link to="/hidrobombas">
-            <img src="../../assets/imagenesHome/hidrobomba.webp" alt="">
+            <img src="@/assets/imagenesHome/hidrobomba.webp" alt="">
             <p class="texto-imagen">HIDROBOMBAS Y<br><span>MAS</span> </p>
             <p class="texto-invisible">ALTA PRESION<br>AHORRO DE AGUA<br>MAXIMA EFICIENCIA</p>
-            </router-link>
+
         </div>
     </div>
+    <MiFooter></MiFooter>
 
 </template>
 <script>
+import MiFooter from '@/components/compoHome/MiFooter.vue';
+import MiHeader from '@/components/compoHome/MiHeader.vue';
+
 export default {
-    name: "MisCatalogos"
+    name: "GlobalView",
+    components:{
+        MiHeader,
+        MiFooter
+    }
 
 }
 
 </script>
 
 <style scoped>
+a {
+    text-decoration: none !important;
+}
+
 .textos {
     text-align: center;
     margin-top: -20px;
@@ -86,7 +95,6 @@ export default {
     width: 100%;
     height: 440px;
     object-fit: cover;
-    /* dios */
     display: block;
     filter: brightness(0.7);
     border-radius: 10px;

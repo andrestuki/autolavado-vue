@@ -8,6 +8,7 @@ import Button from "primevue/button"
 import DataView from 'primevue/dataview';
 import Rating from 'primevue/rating';
 import Tag from 'primevue/tag';
+import InputNumber from 'primevue/inputnumber';
 import 'primeicons/primeicons.css'
 
 
@@ -17,6 +18,7 @@ app.component('ButtonPrime', Button);
 app.component('DataView', DataView);
 app.component('RatingPrime', Rating);
 app.component('TagPrime', Tag);
+app.component('InputNumber', InputNumber);
 
 app.use(PrimeVue);
 app.mount('#app');
