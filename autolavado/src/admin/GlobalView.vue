@@ -16,7 +16,7 @@
 
         </div>
         <div class="servicio">
-            <router-link to="/pinturasAdmin">
+            <router-link to="/Admin-Pinturas">
                 <img src="@/assets/imagenesHome/pintura.webp" alt="">
             <p class="texto-imagen">PINTURAS PARA<br><span>AUTOS</span></p>
             <p class="texto-invisible">COLORES ORIGINALES<br>RESISTENCIA GARANTIZADA<br>APLICACION PRECISA</p>
@@ -24,15 +24,22 @@
             
         </div>
         <div class="servicio">
-            <img src="@/assets/imagenesHome/shampu.webp" alt="">
-            <p class="texto-imagen">SHAMPOO PARA<br><span>AUTOS</span> </p>
-            <p class="texto-invisible">ESPUMA ACTIVA<br>LIMPIEZA PROFUNDA<br>CUIDADO DE PINTURA</p>
+            <router-link to="/Admin-Shampoos">
+                <img src="@/assets/imagenesHome/shampu.webp" alt="">
+                <p class="texto-imagen">SHAMPOO PARA<br><span>AUTOS</span> </p>
+                <p class="texto-invisible">ESPUMA ACTIVA<br>LIMPIEZA PROFUNDA<br>CUIDADO DE PINTURA</p>
+            </router-link>
+            
 
         </div>
         <div class="servicio">
-            <img src="@/assets/imagenesHome/hidrobomba.webp" alt="">
-            <p class="texto-imagen">HIDROBOMBAS Y<br><span>MAS</span> </p>
-            <p class="texto-invisible">ALTA PRESION<br>AHORRO DE AGUA<br>MAXIMA EFICIENCIA</p>
+            <router-link to="/Admin-Hidrobombas">
+                <img src="@/assets/imagenesHome/hidrobomba.webp" alt="">
+                <p class="texto-imagen">HIDROBOMBAS Y<br><span>MAS</span> </p>
+                <p class="texto-invisible">ALTA PRESION<br>AHORRO DE AGUA<br>MAXIMA EFICIENCIA</p>
+
+            </router-link>
+            
 
         </div>
     </div>
