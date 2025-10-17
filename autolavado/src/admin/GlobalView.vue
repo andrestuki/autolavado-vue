@@ -16,7 +16,7 @@
 
         </div>
         <div class="servicio">
-            <router-link to="/pinturas">
+            <router-link to="/pinturasAdmin">
                 <img src="@/assets/imagenesHome/pintura.webp" alt="">
             <p class="texto-imagen">PINTURAS PARA<br><span>AUTOS</span></p>
             <p class="texto-invisible">COLORES ORIGINALES<br>RESISTENCIA GARANTIZADA<br>APLICACION PRECISA</p>
