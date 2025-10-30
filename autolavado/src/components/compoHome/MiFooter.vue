@@ -32,10 +32,9 @@ export default {
     padding: 20px 0;
     position: relative;
     bottom: 0;
-    height: 130px;
+    height: 200px;
     width: 100%;
 }
-
 footer li {
     list-style: square;
     cursor: pointer;

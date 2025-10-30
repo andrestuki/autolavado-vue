@@ -9,8 +9,8 @@
             </div>
             
             <div class="inicio-buttons">
-                <button class="btn-primary">Reserva tu cita</button>
-                <button class="btn-secondary">Ver servicios</button>
+                <router-link to="/formulario"><button class="btn-primary">Reserva tu cita</button></router-link>
+                <button class="btn-secondary" @click="scrollToServices">Ver servicios</button>
             </div>
         </div>
             
@@ -35,7 +35,17 @@
 
 <script>
 export default {
-    name: 'MiPresentacion'
+    name: 'MiPresentacion',
+    methods: {
+        scrollToServices() {
+            const target = document.querySelector('.servicios');
+            if (target) {
+                target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            } else {
+                window.scrollTo({ top: window.scrollY + window.innerHeight, behavior: 'smooth' });
+            }
+        }
+    }
 }
 </script>
 

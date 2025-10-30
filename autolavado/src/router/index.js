@@ -15,6 +15,12 @@ const routes = [
     meta: { title: "Hidrobombas" },
   },
   {
+    path: "/formulario",
+    name: "formulario",
+    component: () => import("@/views/FormularioView.vue"),
+    meta: { title: "Formulario" },
+  },
+  {
     path: "/shampoos",
     name: "shampoos",
     component: () => import("@/ProductosView/ShampoosView.vue"),

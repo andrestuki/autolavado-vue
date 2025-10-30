@@ -16,18 +16,14 @@
         <router-link to="/global">
           <li>Admin</li>
         </router-link>
-        <input type="text" placeholder="Buscar..." class="buscador">
       </ul>
     </nav>
   </header>
 </template>
 <script>
-
-
 export default {
   name: 'MiHeader',
 }
-
 </script>
 
 <style>
@@ -133,4 +129,5 @@ header {
     margin-bottom: 10px;
   }
 }
+
 </style>

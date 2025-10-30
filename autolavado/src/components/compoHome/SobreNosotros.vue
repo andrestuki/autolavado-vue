@@ -22,7 +22,19 @@
         <li>✔️ Completamente aspirado, incluidas las zonas de difícil acceso.</li>
       </ul>
       <div class="botones">
-        <button>¿Cómo llegar?</button>
+        <button @click="openMapModal">¿Cómo llegar?</button>
+      </div>
+
+      <!-- Modal overlay para el mapa -->
+      <div v-if="showMapModal" class="map-overlay" @click.self="closeMapModal" role="dialog" aria-modal="true"
+        aria-label="Mapa de ubicación">
+        <div class="map-modal">
+          <button class="map-close" @click="closeMapModal" aria-label="Cerrar mapa">✕</button>
+          <!-- Iframe embebido de Google Maps: cambia la query en src para apuntar a la dirección deseada -->
+          <div class="map-container">
+            <iframe :src="mapSrc" frameborder="0" allowfullscreen aria-hidden="false" tabindex="0"></iframe>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -30,7 +42,44 @@
 
 <script>
 export default {
-  name: 'SobreNosotros'
+  name: 'SobreNosotros',
+  data() {
+    return {
+      showMapModal: false,
+      // URL base para el iframe; por defecto busca "autolavado" en Google Maps.
+      // Puedes cambiar la query a una dirección específica, coordenadas o place id.
+      mapQuery: 'autolavado',
+    }
+  },
+  computed: {
+    mapSrc() {
+      // Usa output=embed para mostrar el mapa embebido
+      return `https://www.google.com/maps?q=${encodeURIComponent(this.mapQuery)}&output=embed`;
+    }
+  },
+  methods: {
+    openMapModal() {
+      this.showMapModal = true;
+      // bloquear scroll de fondo opcional
+      document.body.style.overflow = 'hidden';
+    },
+    closeMapModal() {
+      this.showMapModal = false;
+      document.body.style.overflow = '';
+    },
+    handleKeydown(e) {
+      if (e.key === 'Escape' && this.showMapModal) {
+        this.closeMapModal();
+      }
+    }
+  },
+  mounted() {
+    window.addEventListener('keydown', this.handleKeydown);
+  },
+  unmounted() {
+    window.removeEventListener('keydown', this.handleKeydown);
+    document.body.style.overflow = '';
+  }
 }
 </script>
 
@@ -121,5 +170,55 @@ export default {
   position: relative;
   top: -90px;
   left: -180px;
+}
+
+/* Estilos del modal de mapa */
+.map-overlay {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  z-index: 9999;
+}
+
+.map-modal {
+  position: relative;
+  width: 90%;
+  max-width: 900px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+  padding: 1rem;
+}
+
+.map-close {
+  position: absolute;
+  right: 8px;
+  top: 8px;
+  background: transparent;
+  border: none;
+  font-size: 1.2rem;
+  cursor: pointer;
+}
+
+.map-container iframe {
+  width: 100%;
+  height: 450px;
+  border-radius: 6px;
+  border: none;
+}
+
+@media (max-width: 600px) {
+  .map-container iframe {
+    height: 60vh;
+  }
+
+  .map-modal {
+    padding: 0.5rem;
+  }
 }
 </style>

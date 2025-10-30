@@ -38,7 +38,6 @@ export default {
     name: "MisProductos"
 
 }
-
 </script>
 
 <style>
