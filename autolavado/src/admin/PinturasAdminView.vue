@@ -103,7 +103,7 @@
 <script>
 import MiFooter from '@/components/compoHome/MiFooter.vue';
 import MiHeader from '@/components/compoHome/MiHeader.vue';
-import {pinturas} from '@/data/pinturas.js';
+
 
 
 
@@ -113,7 +113,7 @@ export default {
   data() {
     return {
         
-        pinturas,
+ 
         idBuscado: '',
         pinturaseleccionado: null,
         busquedaRealizada: false,
@@ -140,7 +140,7 @@ export default {
   created() {
     
     const guardadas = localStorage.getItem('pinturas')
-    this.pinturas = guardadas ? JSON.parse(guardadas) : pinturas
+    this.pinturas = guardadas ? JSON.parse(guardadas) : []
   },
   methods: {
     buscarpintura() {

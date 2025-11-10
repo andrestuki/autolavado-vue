@@ -1,92 +1,99 @@
 <template>
     <MiHeader></MiHeader>
     <div class="contenedor">
-        <div v-for="shamp in shampoos" :key="shamp.id_shampoos" class="card">
-            <TagPrime v-if="(shamp.cantidad >= 10)" class="tag-flotante disponible" severity="success">En stock
-            </TagPrime>
-            <TagPrime v-else-if="(shamp.cantidad == 0)" class="tag-flotante agotado" severity="secondary">Agotado
-            </TagPrime>
-            <TagPrime v-else-if="(shamp.cantidad >= 1 && shamp.cantidad < 10)" class="tag-flotante casi_agotado"
-                severity="secondary">Casi Agotado</TagPrime>
+        <div v-for="shamp in shampoos" :key="shamp.id_producto || shamp.id_shampoos || shamp.id_shampoo" class="card">
+            <TagPrime v-if="(shamp.cantidad >= 10)" class="tag-flotante disponible" severity="success">En stock</TagPrime>
+            <TagPrime v-else-if="(shamp.cantidad == 0)" class="tag-flotante agotado" severity="secondary">Agotado</TagPrime>
+            <TagPrime v-else-if="(shamp.cantidad >= 1 && shamp.cantidad < 10)" class="tag-flotante casi_agotado" severity="secondary">Casi Agotado</TagPrime>
 
-
-            <img class="imagen-shampoos" :src="shamp.imagen" alt="">
+            <img class="imagen-shampoos" :src="`/imagenesShampoos/${shamp.imagen}`" alt="">
             <h4 class="nombre">{{ shamp.nombre }} 
                 <h4 class="calificacion">
                     <span class="text-surface-900 font-medium text-sm">{{ shamp.raiting }}</span>
                     <i class="pi pi-star-fill text-yellow-500"></i>
                 </h4>
             </h4>
+
             <div class="fila-info">
                 <h4 class="precio">{{ pesoCOL(shamp.precio) }}</h4>
-
             </div>
+
             <div class="botones">
-                <ButtonPrime :class="shamp.cantidad > 0 ? 'btn-compra' : 'btn-deshabilitado'" :disabled="shamp.cantidad <= 0" @Click="comprar(shamp)" icon="pi pi-shopping-cart"
-                    label="COMPRAR" />
-                <ButtonPrime v-if="(shamp.cantidad >= 0)" icon="pi pi-heart" variant="outlined"
-                    class="btn-favorito edit" />
-            </div>
-
+    <ButtonPrime 
+      :class="shamp.cantidad > 0 ? 'btn-compra' : 'btn-deshabilitado'"
+      :disabled="shamp.cantidad <= 0"
+      @click="addToCart(shamp)"
+      icon="pi pi-shopping-cart"
+      label="AGREGAR AL CARRITO" />
+    <ButtonPrime 
+      v-if="(shamp.cantidad >= 0)" 
+      icon="pi pi-heart" 
+      variant="outlined" 
+      class="btn-favorito edit" />
+  </div>
         </div>
     </div>
     <MiFooter></MiFooter>
 </template>
 
 <script>
-import MiFooter from '@/components/compoHome/MiFooter.vue';
-import MiHeader from '@/components/compoHome/MiHeader.vue';
-import {shampoos} from '@/data/shampoos.js';
+import { defineStore } from 'pinia';
+import axios from 'axios';
 
-export default {
+export const useCartStore = defineStore('cart', {
+  state: () => ({
+    cartItems: [],
+    loading: false,
+    error: null
+  }),
 
-    name: "shampoosView",
-    components:
-    {
-        MiHeader,
-        MiFooter
-    },
-    data() {
-        return {
-            shampoos
-        }
-    },
-    created() {
-        // Cargar desde localStorage si existe, si no, usar los valores por defecto
-        const guardadas = localStorage.getItem('shampoos');
-        if (guardadas) {
-            this.shampoos = JSON.parse(guardadas);
-        } else {
-            this.shampoos
-
-            localStorage.setItem('shampoos', JSON.stringify(this.shampoos));
-        }
+  actions: {
+    async addToCart(productId, quantity = 1) {
+      try {
+        const userId = localStorage.getItem('userId'); // Get logged user ID
+        await axios.post('http://127.0.0.1:8000/api/cart/add', {
+          idUsuario: userId,
+          id_producto: productId,
+          cantidad: quantity
+        });
+        await this.loadCart();
+      } catch (error) {
+        console.error('Error adding to cart:', error);
+        throw error;
+      }
     },
 
+    async loadCart() {
+      try {
+        const userId = localStorage.getItem('userId');
+        const response = await axios.get(`http://127.0.0.1:8000/api/cart/${userId}`);
+        this.cartItems = response.data;
+      } catch (error) {
+        console.error('Error loading cart:', error);
+        this.error = error.message;
+      }
+    },
 
-
-    methods: {
-        pesoCOL: function (valor) {
-            const formatoMonedaColombia = new Intl.NumberFormat('es-CO', {
-                style: 'currency',
-                currency: 'COP',
-                minimumFractionDigits: 0, // Ensures two decimal places for cents
-                maximumFractionDigits: 0  // Ensures two decimal places for cents
-            }).format(valor);
-
-            return formatoMonedaColombia;
-        },
-        comprar(shamp) {
-            if (shamp.cantidad > 0) {
-                shamp.cantidad--;
-                // Guardar el array actualizado en localStorage
-                localStorage.setItem('shampoos', JSON.stringify(this.shampoos));
-            }
-        }
-
+    async checkout() {
+      try {
+        const userId = localStorage.getItem('userId');
+        await axios.post(`http://127.0.0.1:8000/api/cart/checkout/${userId}`);
+        this.cartItems = [];
+      } catch (error) {
+        console.error('Error during checkout:', error);
+        throw error;
+      }
     }
-}
+  },
+
+  getters: {
+    cartTotal: (state) => {
+      return state.cartItems.reduce((total, item) => total + item.subtotal, 0);
+    }
+  }
+});
 </script>
+
 
 <style scoped>
 .contenedor {

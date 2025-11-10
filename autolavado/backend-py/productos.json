@@ -1,0 +1,405 @@
+[
+  {
+    "id_hidrobomba": 1,
+    "nombre": "PowerJet 2000",
+    "marca": "Kärcher",
+    "precio": 450000,
+    "cantidad": 6,
+    "raiting": 4.8,
+    "imagen": "/imagenesHidrobombas/hidrobomba1.webp",
+    "id_categoria": 1
+  },
+  {
+    "id_hidrobomba": 2,
+    "nombre": "HydroMax Pro",
+    "marca": "Bosch",
+    "precio": 520000,
+    "cantidad": 5,
+    "raiting": 4.7,
+    "imagen": "/imagenesHidrobombas/hidrobomba2.webp",
+    "id_categoria": 1
+  },
+  {
+    "id_hidrobomba": 3,
+    "nombre": "JetClean 1800",
+    "marca": "Black+Decker",
+    "precio": 400000,
+    "cantidad": 8,
+    "raiting": 4.5,
+    "imagen": "/imagenesHidrobombas/hidrobomba3.webp",
+    "id_categoria": 1
+  },
+  {
+    "id_hidrobomba": 4,
+    "nombre": "AquaForce XT",
+    "marca": "Stanley",
+    "precio": 480000,
+    "cantidad": 7,
+    "raiting": 4.6,
+    "imagen": "/imagenesHidrobombas/hidrobomba4.webp",
+    "id_categoria": 1
+  },
+  {
+    "id_hidrobomba": 5,
+    "nombre": "WaterBlaster 2200",
+    "marca": "Makita",
+    "precio": 550000,
+    "cantidad": 4,
+    "raiting": 4.9,
+    "imagen": "/imagenesHidrobombas/hidrobomba5.avif",
+    "id_categoria": 1
+  },
+  {
+    "id_hidrobomba": 6,
+    "nombre": "TurboWash Eco",
+    "marca": "Einhell",
+    "precio": 420000,
+    "cantidad": 9,
+    "raiting": 4.4,
+    "imagen": "/imagenesHidrobombas/hidrobomba6.webp",
+    "id_categoria": 1
+  },
+  {
+    "id_hidrobomba": 7,
+    "nombre": "PressureOne",
+    "marca": "Truper",
+    "precio": 460000,
+    "cantidad": 10,
+    "raiting": 4.3,
+    "imagen": "/imagenesHidrobombas/hidrobomba7.jpg",
+    "id_categoria": 1
+  },
+  {
+    "id_hidrobomba": 8,
+    "nombre": "JetPro Compact",
+    "marca": "Hyundai Tools",
+    "precio": 390000,
+    "cantidad": 12,
+    "raiting": 4.5,
+    "imagen": "/imagenesHidrobombas/hidrobomba8.jpg",
+    "id_categoria": 1
+  },
+  {
+    "id_hidrobomba": 9,
+    "nombre": "MaxWash Ultra",
+    "marca": "Goodyear",
+    "precio": 510000,
+    "cantidad": 6,
+    "raiting": 4.7,
+    "imagen": "/imagenesHidrobombas/hidrobomba9.avif",
+    "id_categoria": 1
+  },
+  {
+    "id_hidrobomba": 10,
+    "nombre": "CleanForce 2500",
+    "marca": "Interpump",
+    "precio": 580000,
+    "cantidad": 3,
+    "raiting": 4.9,
+    "imagen": "/imagenesHidrobombas/hidrobomba10.webp",
+    "id_categoria": 1
+  },
+    {
+    "id_pintura": 1,
+    "nombre": "Rojo Fuego",
+    "marca": "AutoColor",
+    "precio": 280000,
+    "cantidad": 12,
+    "raiting": 4.8,
+    "imagen": "/imagenesPinturas/pintura1.webp",
+    "id_categoria": 2
+  },
+  {
+    "id_pintura": 2,
+    "nombre": "Silver Shine",
+    "marca": "DupliCar",
+    "precio": 350000,
+    "cantidad": 8,
+    "raiting": 4.6,
+    "imagen": "/imagenesPinturas/pintura2.webp",
+    "id_categoria": 2
+  },
+  {
+    "id_pintura": 3,
+    "nombre": "Negro Profundo",
+    "marca": "ProPaint",
+    "precio": 310000,
+    "cantidad": 5,
+    "raiting": 4.7,
+    "imagen": "/imagenesPinturas/pintura3.webp",
+    "id_categoria": 2
+  },
+  {
+    "id_pintura": 4,
+    "nombre": "Azul Marino",
+    "marca": "SpeedPaint",
+    "precio": 290000,
+    "cantidad": 9,
+    "raiting": 4.5,
+    "imagen": "/imagenesPinturas/pintura4.webp",
+    "id_categoria": 2
+  },
+  {
+    "id_pintura": 5,
+    "nombre": "Blanco Perlado",
+    "marca": "CarGloss",
+    "precio": 340000,
+    "cantidad": 10,
+    "raiting": 4.9,
+    "imagen": "/imagenesPinturas/pintura5.webp",
+    "id_categoria": 2
+  },
+  {
+    "id_pintura": 6,
+    "nombre": "Verde Racing",
+    "marca": "TurboColor",
+    "precio": 270000,
+    "cantidad": 6,
+    "raiting": 4.4,
+    "imagen": "/imagenesPinturas/pintura6.webp",
+    "id_categoria": 2
+  },
+  {
+    "id_pintura": 7,
+    "nombre": "Gris Titanio",
+    "marca": "Automax",
+    "precio": 320000,
+    "cantidad": 15,
+    "raiting": 4.3,
+    "imagen": "/imagenesPinturas/pintura7.webp",
+    "id_categoria": 2
+  },
+  {
+    "id_pintura": 8,
+    "nombre": "Amarillo",
+    "marca": "SpeedPro",
+    "precio": 300000,
+    "cantidad": 7,
+    "raiting": 4.5,
+    "imagen": "/imagenesPinturas/pintura8.webp",
+    "id_categoria": 2
+  },
+  {
+    "id_pintura": 9,
+    "nombre": "Naranja Pearl",
+    "marca": "Xtreme Paints",
+    "precio": 355000,
+    "cantidad": 4,
+    "raiting": 4.6,
+    "imagen": "/imagenesPinturas/pintura9.webp",
+    "id_categoria": 2
+  },
+  {
+    "id_pintura": 10,
+    "nombre": "Gris Cemento",
+    "marca": "CarFinish",
+    "precio": 310000,
+    "cantidad": 11,
+    "raiting": 4.2,
+    "imagen": "/imagenesPinturas/pintura10.webp",
+    "id_categoria": 2
+  },
+    {
+    "id_pulidora": 1,
+    "nombre": "Polichadora 7",
+    "marca": "Stanley PT",
+    "precio": 629900,
+    "imagen": "/imagenesPulidoras/pulidora1.webp",
+    "raiting": 4.8,
+    "cantidad": 3,
+    "id_categoria": 3
+  },
+  {
+    "id_pulidora": 2,
+    "nombre": "Polichadora Orbital",
+    "marca": "Elite",
+    "precio": 319900,
+    "imagen": "/imagenesPulidoras/pulidora2.jpeg",
+    "raiting": 4.5,
+    "cantidad": 23,
+    "id_categoria": 3
+  },
+  {
+    "id_pulidora": 3,
+    "nombre": "XTreme DA21",
+    "marca": "XTreme",
+    "precio": 1200000,
+    "imagen": "/imagenesPulidoras/pulidora3.jpeg",
+    "raiting": 4.8,
+    "cantidad": 30,
+    "id_categoria": 3
+  },
+  {
+    "id_pulidora": 4,
+    "nombre": "SpeedPro 7",
+    "marca": "SpeedPro",
+    "precio": 850000,
+    "imagen": "/imagenesPulidoras/pulidora4.webp",
+    "raiting": 4.5,
+    "cantidad": 15,
+    "id_categoria": 3
+  },
+  {
+    "id_pulidora": 5,
+    "nombre": "PowerWax 1600",
+    "marca": "PowerWax",
+    "precio": 620000,
+    "imagen": "/imagenesPulidoras/pulidora5.webp",
+    "raiting": 4.3,
+    "cantidad": 10,
+    "id_categoria": 3
+  },
+  {
+    "id_pulidora": 6,
+    "nombre": "TurboShine 2200",
+    "marca": "TurboShine",
+    "precio": 1300000,
+    "imagen": "/imagenesPulidoras/pulidora6.webp",
+    "raiting": 4.7,
+    "cantidad": 5,
+    "id_categoria": 3
+  },
+  {
+    "id_pulidora": 7,
+    "nombre": "TMaxiGloss 6",
+    "marca": "MaxiGloss",
+    "precio": 780000,
+    "imagen": "/imagenesPulidoras/pulidora7.webp",
+    "raiting": 4.4,
+    "cantidad": 25,
+    "id_categoria": 3
+  },
+  {
+    "id_pulidora": 8,
+    "nombre": "UltraOrbital 9",
+    "marca": "Ultra",
+    "precio": 950000,
+    "imagen": "/imagenesPulidoras/pulidora8.webp",
+    "raiting": 4.6,
+    "cantidad": 25,
+    "id_categoria": 3
+  },
+  {
+    "id_pulidora": 9,
+    "nombre": "Diamond DA 15",
+    "marca": "Diamond",
+    "precio": 1400000,
+    "imagen": "/imagenesPulidoras/pulidora9.webp",
+    "raiting": 4.9,
+    "cantidad": 28,
+    "id_categoria": 3
+  },
+  {
+    "id_pulidora": 10,
+    "nombre": "NanoPolish Mini",
+    "marca": "Nano",
+    "precio": 400000,
+    "imagen": "/imagenesPulidoras/pulidora10.webp",
+    "raiting": 4.2,
+    "cantidad": 3,
+    "id_categoria": 3
+  },
+    {
+    "id_shampoo": 1,
+    "nombre": "Brillo Extremo",
+    "marca": "AutoWash",
+    "precio": 18000,
+    "cantidad": 20,
+    "raiting": 4.8,
+    "imagen": "/imagenesShampoos/shampoo1.webp",
+    "id_categoria": 4
+  },
+  {
+    "id_shampoo": 2,
+    "nombre": "Ultra Shine",
+    "marca": "CarPro",
+    "precio": 22000,
+    "cantidad": 15,
+    "raiting": 4.6,
+    "imagen": "/imagenesShampoos/shampoo2.webp",
+    "id_categoria": 4
+  },
+  {
+    "id_shampoo": 3,
+    "nombre": "Lava & Encera",
+    "marca": "Meguiar’s",
+    "precio": 25000,
+    "cantidad": 10,
+    "raiting": 4.9,
+    "imagen": "/imagenesShampoos/shampoo3.avif",
+    "id_categoria": 4
+  },
+  {
+    "id_shampoo": 4,
+    "nombre": "Ph Neutro Premium",
+    "marca": "ArmorAll",
+    "precio": 23000,
+    "cantidad": 12,
+    "raiting": 4.7,
+    "imagen": "/imagenesShampoos/shampoo4.webp",
+    "id_categoria": 4
+  },
+  {
+    "id_shampoo": 5,
+    "nombre": "Espuma Activa",
+    "marca": "3M AutoCare",
+    "precio": 21000,
+    "cantidad": 18,
+    "raiting": 4.5,
+    "imagen": "/imagenesShampoos/shampoo5.webp",
+    "id_categoria": 4
+  },
+  {
+    "id_shampoo": 6,
+    "nombre": "Gloss Finish",
+    "marca": "Sonax",
+    "precio": 24000,
+    "cantidad": 14,
+    "raiting": 4.6,
+    "imagen": "/imagenesShampoos/shampoo6.webp",
+    "id_categoria": 4
+  },
+  {
+    "id_shampoo": 7,
+    "nombre": "Deep Clean Pro",
+    "marca": "Turtle Wax",
+    "precio": 19500,
+    "cantidad": 16,
+    "raiting": 4.4,
+    "imagen": "/imagenesShampoos/shampoo7.jpeg",
+    "id_categoria": 4
+  },
+  {
+    "id_shampoo": 8,
+    "nombre": "Crystal Wash",
+    "marca": "Chemical Guys",
+    "precio": 26000,
+    "cantidad": 9,
+    "raiting": 4.8,
+    "imagen": "/imagenesShampoos/shampoo8.webp",
+    "id_categoria": 4
+  },
+  {
+    "id_shampoo": 9,
+    "nombre": "EcoClean",
+    "marca": "GreenAuto",
+    "precio": 20000,
+    "cantidad": 11,
+    "raiting": 4.3,
+    "imagen": "/imagenesShampoos/shampoo9.jpeg",
+    "id_categoria": 4
+  },
+  {
+    "id_shampoo": 10,
+    "nombre": "Luxury Foam",
+    "marca": "ShineMaster",
+    "precio": 27000,
+    "cantidad": 8,
+    "raiting": 4.9,
+    "imagen": "/imagenesShampoos/shampoo10.jpg",
+    "id_categoria": 4
+  }
+
+
+
+]

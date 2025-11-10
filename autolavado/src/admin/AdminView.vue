@@ -31,8 +31,7 @@
 <script>
 import MiFooter from '@/components/compoHome/MiFooter.vue';
 import MiHeader from '@/components/compoHome/MiHeader.vue';
-import {pulidoras} from '@/data/pulidoras.js';
-import {pinturas} from '@/data/pinturas.js';
+
 
 // Ejemplo de lista de pulidoras
 
@@ -49,8 +48,7 @@ export default {
 
     data() {
         return {
-            pulidoras,
-            pinturas,
+            pulidoras: [],
             idBuscado: '',
             pulidoraSeleccionado: null,
             busquedaRealizada: false

@@ -103,7 +103,7 @@
 <script>
 import MiFooter from '@/components/compoHome/MiFooter.vue';
 import MiHeader from '@/components/compoHome/MiHeader.vue';
-import {shampoos} from '@/data/shampoos.js';
+
 
 
 
@@ -113,7 +113,7 @@ export default {
   data() {
     return {
         
-        shampoos,
+        shampoos: [],
         idBuscado: '',
         shampooseleccionado: null,
         busquedaRealizada: false,
@@ -140,7 +140,7 @@ export default {
   created() {
     
     const guardadas = localStorage.getItem('shampoos')
-    this.shampoos = guardadas ? JSON.parse(guardadas) : shampoos
+    this.shampoos = guardadas ? JSON.parse(guardadas) : []  
   },
   methods: {
     buscarshampoo() {

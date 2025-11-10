@@ -1,90 +1,90 @@
 <template>
-    <MiHeader></MiHeader>
-    <div class="contenedor">
-        <div v-for="hidr in hidrobombas" :key="hidr.id_hidroos" class="card">
-            <TagPrime v-if="(hidr.cantidad >= 10)" class="tag-flotante disponible" severity="success">En stock
-            </TagPrime>
-            <TagPrime v-else-if="(hidr.cantidad == 0)" class="tag-flotante agotado" severity="secondary">Agotado
-            </TagPrime>
-            <TagPrime v-else-if="(hidr.cantidad >= 1 && hidr.cantidad < 10)" class="tag-flotante casi_agotado"
-                severity="secondary">Casi Agotado</TagPrime>
+  <MiHeader></MiHeader>
+  <div class="contenedor">
+    <div v-for="hidr in hidrobombas" :key="hidr.id_producto" class="card">
+      <TagPrime v-if="(hidr.cantidad >= 10)" class="tag-flotante disponible" severity="success">En stock</TagPrime>
+      <TagPrime v-else-if="(hidr.cantidad == 0)" class="tag-flotante agotado" severity="secondary">Agotado</TagPrime>
+      <TagPrime v-else-if="(hidr.cantidad >= 1 && hidr.cantidad < 10)" class="tag-flotante casi_agotado" severity="secondary">Casi Agotado</TagPrime>
 
+      <img class="imagen-hidrobombas" :src="`/imagenesHidrobombas/${hidr.imagen}`" alt="">
+      <h4 class="nombre">{{ hidr.nombre }}
+        <h4 class="calificacion">
+          <span class="text-surface-900 font-medium text-sm">{{ hidr.raiting }}</span>
+          <i class="pi pi-star-fill text-yellow-500"></i>
+        </h4>
+      </h4>
 
-            <img class="imagen-hidrobombas" :src="hidr.imagen" alt="">
-            <h4 class="nombre">{{ hidr.nombre }} 
-                <h4 class="calificacion">
-                    <span class="text-surface-900 font-medium text-sm">{{ hidr.raiting }}</span>
-                    <i class="pi pi-star-fill text-yellow-500"></i>
-                </h4>
-            </h4>
-            <div class="fila-info">
-                <h4 class="precio">{{ pesoCOL(hidr.precio) }}</h4>
+      <div class="fila-info">
+        <h4 class="precio">{{ pesoCOL(hidr.precio) }}</h4>
+      </div>
 
-            </div>
-            <div class="botones">
-                <ButtonPrime :class="hidr.cantidad > 0 ? 'btn-compra' : 'btn-deshabilitado'" :disabled="hidr.cantidad <= 0" @Click="comprar(hidr)" icon="pi pi-shopping-cart"
-                    label="COMPRAR" />
-                <ButtonPrime v-if="(hidr.cantidad >= 0)" icon="pi pi-heart" variant="outlined"
-                    class="btn-favorito edit" />
-            </div>
-
-        </div>
+      <div class="botones">
+        <ButtonPrime :class="hidr.cantidad > 0 ? 'btn-compra' : 'btn-deshabilitado'"
+                     :disabled="hidr.cantidad <= 0"
+                     @click="comprar(hidr)"
+                     icon="pi pi-shopping-cart"
+                     label="COMPRAR" />
+        <ButtonPrime v-if="(hidr.cantidad >= 0)" icon="pi pi-heart" variant="outlined" class="btn-favorito edit" />
+      </div>
     </div>
-    <MiFooter></MiFooter>
+  </div>
+  <MiFooter></MiFooter>
 </template>
 
 <script>
 import MiFooter from '@/components/compoHome/MiFooter.vue';
 import MiHeader from '@/components/compoHome/MiHeader.vue';
-import {hidrobombas} from '@/data/hidrobombas.js';
+import axios from 'axios'; // <-- IMPORTANTE
 
 export default {
-
-    name: "hidrobombasView",
-    components:
-    {
-        MiHeader,
-        MiFooter
-    },
-    data() {
-        return {
-            hidrobombas
-        }
-    },
-    created() {
-        // Cargar desde localStorage si existe, si no, usar los valores por defecto
-        const guardadas = localStorage.getItem('hidrobombas');
-        if (guardadas) {
-            this.hidrobombas = JSON.parse(guardadas);
-        } else {
-            this.hidrobombas
-
-            localStorage.setItem('hidrobombas', JSON.stringify(this.hidrobombas));
-        }
-    },
-
-
-
-    methods: {
-        pesoCOL: function (valor) {
-            const formatoMonedaColombia = new Intl.NumberFormat('es-CO', {
-                style: 'currency',
-                currency: 'COP',
-                minimumFractionDigits: 0, // Ensures two decimal places for cents
-                maximumFractionDigits: 0  // Ensures two decimal places for cents
-            }).format(valor);
-
-            return formatoMonedaColombia;
-        },
-        comprar(hidr) {
-            if (hidr.cantidad > 0) {
-                hidr.cantidad--;
-                // Guardar el array actualizado en localStorage
-                localStorage.setItem('hidrobombas', JSON.stringify(this.hidrobombas));
-            }
-        }
-
+  name: "hidrobombasView",
+  components: { MiHeader, MiFooter },
+  data() {
+    return {
+      hidrobombas: []
     }
+  },
+  async created() {
+    try {
+      const res = await axios.get('http://127.0.0.1:8000/api/productos/hidrobombas');
+      this.hidrobombas = res.data;
+    } catch (err) {
+      console.error('Error cargando hidrobombas desde API:', err);
+    }
+  },
+  methods: {
+    pesoCOL(valor) {
+      return new Intl.NumberFormat('es-CO', {
+        style: 'currency',
+        currency: 'COP',
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0
+      }).format(valor);
+    },
+    async comprar(hidr) {
+      if (hidr.cantidad > 0) {
+        try {
+          // Reducir la cantidad localmente (para actualizar visualmente)
+          hidr.cantidad--;
+          
+          // Enviar la actualización al backend
+          const id = hidr.id_producto || hidr.id_hidrobomba;
+          await axios.put(`http://127.0.0.1:8000/api/productos/hidrobombas/${id}`, {
+            cantidad: hidr.cantidad
+          });
+          
+          console.log(`Cantidad actualizada para hidrobomba ${hidr.nombre}`);
+        } catch (error) {
+          console.error("Error al actualizar la cantidad:", error);
+          // Si hay error, restauramos la cantidad anterior
+          hidr.cantidad++;
+          alert("No se pudo actualizar la compra. Intenta de nuevo.");
+        }
+      } else {
+        alert("Este producto está agotado 😔");
+      }
+    }
+  }
 }
 </script>
 

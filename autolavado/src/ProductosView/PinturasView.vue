@@ -1,93 +1,133 @@
 <template>
-    <MiHeader></MiHeader>
-    <div class="contenedor">
-        <div v-for="puli in pinturas" :key="puli.id_pinturas" class="card">
-            <TagPrime v-if="(puli.cantidad >= 10)" class="tag-flotante disponible" severity="success">En stock
-            </TagPrime>
-            <TagPrime v-else-if="(puli.cantidad == 0)" class="tag-flotante agotado" severity="secondary">Agotado
-            </TagPrime>
-            <TagPrime v-else-if="(puli.cantidad >= 1 && puli.cantidad < 10)" class="tag-flotante casi_agotado"
-                severity="secondary">Casi Agotado</TagPrime>
+  <MiHeader></MiHeader>
+  <div class="contenedor">
+    <div v-for="puli in pinturas" :key="puli.id_producto || puli.id_pintura" class="card">
+      <TagPrime
+        v-if="puli.cantidad >= 10"
+        class="tag-flotante disponible"
+        severity="success"
+      >
+        En stock
+      </TagPrime>
+      <TagPrime
+        v-else-if="puli.cantidad == 0"
+        class="tag-flotante agotado"
+        severity="secondary"
+      >
+        Agotado
+      </TagPrime>
+      <TagPrime
+        v-else-if="puli.cantidad >= 1 && puli.cantidad < 10"
+        class="tag-flotante casi_agotado"
+        severity="secondary"
+      >
+        Casi Agotado
+      </TagPrime>
 
+      <!-- 👇 Imagen cargada desde /public -->
+      <img
+        class="imagen-pinturas"
+        :src="`/imagenesPinturas/${puli.imagen}`"
+        alt=""
+      />
 
-            <img class="imagen-pinturas" :src="puli.imagen" alt="">
-            <h4 class="nombre">{{ puli.nombre }}
-                <h4 class="calificacion">
-                    <span class="text-surface-900 font-medium text-sm">{{ puli.raiting }}</span>
-                    <i class="pi pi-star-fill text-yellow-500"></i>
-                </h4>
-            </h4>
-            <div class="fila-info">
-                <h4 class="precio">{{ pesoCOL(puli.precio) }}</h4>
+      <h4 class="nombre">
+        {{ puli.nombre }}
+        <h4 class="calificacion">
+          <span class="text-surface-900 font-medium text-sm">
+            {{ puli.raiting }}
+          </span>
+          <i class="pi pi-star-fill text-yellow-500"></i>
+        </h4>
+      </h4>
 
-            </div>
-            <div class="botones">
-                <ButtonPrime :class="puli.cantidad > 0 ? 'btn-compra' : 'btn-deshabilitado'" :disabled="puli.cantidad <= 0" @Click="comprar(puli)" icon="pi pi-shopping-cart"
-                    label="COMPRAR" />
-                <ButtonPrime v-if="(puli.cantidad >= 0)" icon="pi pi-heart" variant="outlined"
-                    class="btn-favorito edit" />
-            </div>
+      <div class="fila-info">
+        <h4 class="precio">{{ pesoCOL(puli.precio) }}</h4>
+      </div>
 
-        </div>
+      <div class="botones">
+        <ButtonPrime
+          :class="puli.cantidad > 0 ? 'btn-compra' : 'btn-deshabilitado'"
+          :disabled="puli.cantidad <= 0"
+          @click="comprar(puli)"
+          icon="pi pi-shopping-cart"
+          label="COMPRAR"
+        />
+        <ButtonPrime
+          v-if="puli.cantidad >= 0"
+          icon="pi pi-heart"
+          variant="outlined"
+          class="btn-favorito edit"
+        />
+      </div>
     </div>
-    <MiFooter></MiFooter>
-
-
+  </div>
+  <MiFooter></MiFooter>
 </template>
 
 <script>
-import MiFooter from '@/components/compoHome/MiFooter.vue';
-import MiHeader from '@/components/compoHome/MiHeader.vue';
-import {pinturas} from '@/data/pinturas.js';
+import MiFooter from "@/components/compoHome/MiFooter.vue";
+import MiHeader from "@/components/compoHome/MiHeader.vue";
+import axios from "axios";
+
 export default {
+  name: "PinturasView",
+  components: { MiHeader, MiFooter },
 
-    name: "PinturasView",
-    components:
-    {
-        MiHeader,
-        MiFooter
-    },
-    data() {
-        return {
-            pinturas
-        }
-    },
-    created() {
-        // Cargar desde localStorage si existe, si no, usar los valores por defecto
-        const guardadas = localStorage.getItem('pinturas');
-        if (guardadas) {
-            this.pinturas = JSON.parse(guardadas);
-        } else {
-            this.pinturas
+  data() {
+    return {
+      pinturas: [],
+    };
+  },
 
-            localStorage.setItem('pinturas', JSON.stringify(this.pinturas));
-        }
-    },
-
-
-
-    methods: {
-        pesoCOL: function (valor) {
-            const formatoMonedaColombia = new Intl.NumberFormat('es-CO', {
-                style: 'currency',
-                currency: 'COP',
-                minimumFractionDigits: 0, // Ensures two decimal places for cents
-                maximumFractionDigits: 0  // Ensures two decimal places for cents
-            }).format(valor);
-
-            return formatoMonedaColombia;
-        },
-        comprar(puli) {
-            if (puli.cantidad > 0) {
-                puli.cantidad--;
-                // Guardar el array actualizado en localStorage
-                localStorage.setItem('pinturas', JSON.stringify(this.pinturas));
-            }
-        }
-
+  async created() {
+    try {
+      const response = await axios.get("http://127.0.0.1:8000/api/productos/pinturas");
+      this.pinturas = response.data;
+    } catch (error) {
+      console.error("Error al cargar pinturas:", error);
     }
+  },
+
+  methods: {
+    pesoCOL(valor) {
+      return new Intl.NumberFormat("es-CO", {
+        style: "currency",
+        currency: "COP",
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0,
+      }).format(valor);
+    },
+
+   async comprar(puli) {
+  if (puli.cantidad > 0) {
+    try {
+      // Reducir la cantidad localmente (para actualizar visualmente)
+      puli.cantidad--;
+
+      // Enviar la actualización al backend
+      // Usar id_producto si existe, sino usar id_pintura
+      const id = puli.id_producto || puli.id_pintura;
+      await axios.put(`http://127.0.0.1:8000/api/productos/pinturas/${id}`, {
+        cantidad: puli.cantidad,
+      });
+
+      console.log(`Cantidad actualizada para pintura ${puli.nombre}`);
+    } catch (error) {
+      console.error("Error al actualizar la cantidad:", error);
+
+      // Si hay error, restauramos la cantidad anterior para no desincronizar la vista
+      puli.cantidad++;
+      alert("No se pudo actualizar la compra. Intenta de nuevo.");
+    }
+  } else {
+    alert("Este producto está agotado 😔");
+  }
 }
+  },
+};
 </script>
+
 
 <style scoped>
 .contenedor {

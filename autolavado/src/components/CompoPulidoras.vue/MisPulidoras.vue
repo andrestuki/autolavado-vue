@@ -1,84 +1,88 @@
 <template>
     <div class="contenedor">
-        <div v-for="puli in pulidoras" :key="puli.id_pulidoras" class="card">
-            <TagPrime v-if="(puli.cantidad >= 10)" class="tag-flotante disponible" severity="success">En stock
-            </TagPrime>
-            <TagPrime v-else-if="(puli.cantidad == 0)" class="tag-flotante agotado" severity="secondary">Agotado
-            </TagPrime>
-            <TagPrime v-else-if="(puli.cantidad >= 1 && puli.cantidad < 10)" class="tag-flotante casi_agotado"
-                severity="secondary">Casi Agotado</TagPrime>
+        <div v-for="puli in pulidoras" :key="puli.id_producto || puli.id_pulidora" class="card">
+            <TagPrime v-if="(puli.cantidad >= 10)" class="tag-flotante disponible" severity="success">En stock</TagPrime>
+            <TagPrime v-else-if="(puli.cantidad == 0)" class="tag-flotante agotado" severity="secondary">Agotado</TagPrime>
+            <TagPrime v-else-if="(puli.cantidad >= 1 && puli.cantidad < 10)" class="tag-flotante casi_agotado" severity="secondary">Casi Agotado</TagPrime>
 
-
-            <img class="imagen-pulidoras" :src="puli.imagen" alt="">
-            <h4 class="nombre">{{ puli.nombre }}
+            <img class="imagen-pulidoras" :src="`/imagenesPulidoras/${puli.imagen}`" alt="">
+            <h4 class="nombre">{{ puli.nombre }} 
                 <h4 class="calificacion">
                     <span class="text-surface-900 font-medium text-sm">{{ puli.raiting }}</span>
                     <i class="pi pi-star-fill text-yellow-500"></i>
                 </h4>
             </h4>
+
             <div class="fila-info">
                 <h4 class="precio">{{ pesoCOL(puli.precio) }}</h4>
-
             </div>
+
             <div class="botones">
-                <ButtonPrime :class="puli.cantidad > 0 ? 'btn-compra' : 'btn-deshabilitado'" :disabled="puli.cantidad <= 0" @Click="comprar(puli)" icon="pi pi-shopping-cart"
+                <ButtonPrime :class="puli.cantidad > 0 ? 'btn-compra' : 'btn-deshabilitado'"
+                    :disabled="puli.cantidad <= 0"
+                    @click="comprar(puli)"
+                    icon="pi pi-shopping-cart"
                     label="COMPRAR" />
-                <ButtonPrime v-if="(puli.cantidad >= 0)" icon="pi pi-heart" variant="outlined"
-                    class="btn-favorito edit" />
+                <ButtonPrime v-if="(puli.cantidad >= 0)" icon="pi pi-heart" variant="outlined" class="btn-favorito edit" />
             </div>
-
         </div>
     </div>
-
-
 </template>
 
 <script>
-import {pulidoras} from '@/data/pulidoras.js';
-export default {
+import axios from 'axios';
 
+export default {
     name: "MisPulidoras",
     data() {
         return {
-            pulidoras
+            pulidoras: []
+        };
+    },
+    async created() {
+        try {
+            const response = await axios.get('http://127.0.0.1:8000/api/productos/pulidoras');
+            this.pulidoras = response.data;
+        } catch (error) {
+            console.error("Error al cargar pulidoras:", error);
         }
     },
-    created() {
-        // Cargar desde localStorage si existe, si no, usar los valores por defecto
-        const guardadas = localStorage.getItem('pulidoras');
-        if (guardadas) {
-            this.pulidoras = JSON.parse(guardadas);
-        } else {
-            this.pulidoras
-
-            localStorage.setItem('pulidoras', JSON.stringify(this.pulidoras));
-        }
-    },
-
-
-
     methods: {
-        pesoCOL: function (valor) {
-            const formatoMonedaColombia = new Intl.NumberFormat('es-CO', {
+        pesoCOL(valor) {
+            return new Intl.NumberFormat('es-CO', {
                 style: 'currency',
                 currency: 'COP',
-                minimumFractionDigits: 0, // Ensures two decimal places for cents
-                maximumFractionDigits: 0  // Ensures two decimal places for cents
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0
             }).format(valor);
-
-            return formatoMonedaColombia;
         },
-        comprar(puli) {
+        async comprar(puli) {
             if (puli.cantidad > 0) {
-                puli.cantidad--;
-                // Guardar el array actualizado en localStorage
-                localStorage.setItem('pulidoras', JSON.stringify(this.pulidoras));
+                try {
+                    // Reducir la cantidad localmente (para actualizar visualmente)
+                    puli.cantidad--;
+                    
+                    // Enviar la actualización al backend
+                    const id = puli.id_producto || puli.id_pulidora;
+                    await axios.put(`http://127.0.0.1:8000/api/productos/pulidoras/${id}`, {
+                        cantidad: puli.cantidad
+                    });
+                    
+                    console.log(`Cantidad actualizada para pulidora ${puli.nombre}`);
+                } catch (error) {
+                    console.error("Error al actualizar la cantidad:", error);
+                    // Si hay error, restauramos la cantidad anterior
+                    puli.cantidad++;
+                    alert("No se pudo actualizar la compra. Intenta de nuevo.");
+                }
+            } else {
+                alert("Este producto está agotado 😔");
             }
         }
-
     }
 }
 </script>
+
 
 <style scoped>
 .contenedor {
@@ -100,7 +104,6 @@ export default {
 }
 
 .imagen-pulidoras {
-
     width: 75%;
     height: 60%;
     margin-bottom: 15px;

@@ -103,7 +103,7 @@
 <script>
 import MiFooter from '@/components/compoHome/MiFooter.vue';
 import MiHeader from '@/components/compoHome/MiHeader.vue';
-import {pulidoras} from '@/data/pulidoras.js';
+
 
 
 
@@ -113,7 +113,7 @@ export default {
   data() {
     return {
         
-        pulidoras,
+        pulidoras: [],
         idBuscado: '',
         pulidoraSeleccionado: null,
         busquedaRealizada: false,
@@ -140,7 +140,7 @@ export default {
   created() {
     
     const guardadas = localStorage.getItem('pulidoras')
-    this.pulidoras = guardadas ? JSON.parse(guardadas) : pulidoras
+    this.pulidoras = guardadas ? JSON.parse(guardadas) : []
   },
   methods: {
     buscarpulidora() {

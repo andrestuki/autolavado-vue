@@ -97,7 +97,7 @@
 <script>
 import MiFooter from '@/components/compoHome/MiFooter.vue';
 import MiHeader from '@/components/compoHome/MiHeader.vue';
-import { hidrobombas } from '@/data/hidrobombas.js';
+
 
 
 
@@ -107,7 +107,7 @@ export default {
     data() {
         return {
 
-            hidrobombas,
+            hidrobombas: [],
             idBuscado: '',
             hidrobombaseleccionado: null,
             busquedaRealizada: false,
@@ -134,7 +134,7 @@ export default {
     created() {
 
         const guardadas = localStorage.getItem('hidrobombas')
-        this.hidrobombas = guardadas ? JSON.parse(guardadas) : hidrobombas
+        this.hidrobombas = guardadas ? JSON.parse(guardadas) : []
     },
     methods: {
         buscarpulidora() {
