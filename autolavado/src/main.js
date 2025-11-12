@@ -13,6 +13,7 @@ import OverlayBadge from 'primevue/overlaybadge';
 import Avatar from 'primevue/avatar';
 import AvatarGroup from 'primevue/avatargroup';
 import { createPinia } from 'pinia'
+import { inicializarDatos } from '@/utilities/initializeApp'
 
 const app = createApp(App)
 const pinia = createPinia()
@@ -31,6 +32,9 @@ app.component('InputNumber', InputNumber)
 app.component('OverlayBadge', OverlayBadge)
 app.component('AvatarPrime', Avatar)
 app.component('AvatarGroup', AvatarGroup)
+
+// Inicializar datos
+inicializarDatos()
 
 app.mount('#app')
 

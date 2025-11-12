@@ -1,10 +1,17 @@
 import { createRouter, createWebHistory } from "vue-router";
 import LoginView from "../views/LoginView.vue";
+import SignupView from "../views/SignupView.vue";
 import CarritoView from "@/views/CarritoView.vue";
+import OrdenesView from "@/views/OrdenesView.vue";
+import HidrobombasView from "@/views/HidrobombasView.vue";
+import ShampoosView from "@/views/ShampoosView.vue";
+import PulidorasView from "@/views/PulidorasView.vue";
+import PinturasView from "@/views/PinturasView.vue";
 
 const routes = [
-  { path: "/cart", },
   { path: "/cart", component: CarritoView },
+  { path: "/carrito", component: CarritoView, meta: { title: "Carrito" } },
+  { path: "/ordenes", component: OrdenesView, meta: { title: "Mis Órdenes" } },
 
   {
     path: "/login",
@@ -13,9 +20,15 @@ const routes = [
     meta: { title: "Login" },
   },
   {
+    path: "/signup",
+    name: "signup",
+    component: SignupView,
+    meta: { title: "Registro" },
+  },
+  {
     path: "/hidrobombas",
     name: "hidrobombas",
-    component: () => import("@/ProductosView/HidrobombasView.vue"),
+    component: HidrobombasView,
     meta: { title: "Hidrobombas" },
   },
   {
@@ -27,20 +40,20 @@ const routes = [
   {
     path: "/shampoos",
     name: "shampoos",
-    component: () => import("@/ProductosView/ShampoosView.vue"),
+    component: ShampoosView,
     meta: { title: "Shampoos" },
   },
   {
     path: "/pulidoras",
     name: "pulidoras",
-    component: () => import("@/ProductosView/PulidorasView.vue"),
+    component: PulidorasView,
     meta: { title: "Pulidoras" },
   },
   {
     path: "/pinturas",
     name: "pinturas",
-    component: () => import("@/ProductosView/PinturasView.vue"),
-    meta: { title: "pinturas" },
+    component: PinturasView,
+    meta: { title: "Pinturas" },
   },
   {
     path: "/global",

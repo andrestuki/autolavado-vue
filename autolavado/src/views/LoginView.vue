@@ -1,5 +1,16 @@
 <template>
   <div class="login-page-bg">
+    <!-- Notificación de éxito -->
+    <div v-if="mostrarNotificacion" class="toast toast-success">
+      <div class="toast-content">
+        <span class="toast-icon">✅</span>
+        <div class="toast-texto">
+          <p class="toast-titulo">¡Login Exitoso!</p>
+          <p class="toast-mensaje">Bienvenido, {{ username }}</p>
+        </div>
+      </div>
+    </div>
+
     <div class="login">
       <h2>Iniciar Sesión</h2>
       <form @submit.prevent="login">
@@ -20,15 +31,14 @@
 
       <p class="registro-texto">
         ¿Eres nuevo usuario? Click acá.
-        <a href="#" class="registro-link">Registrar</a>
+        <router-link to="/signup" class="registro-link">Registrar</router-link>
       </p>
     </div>
   </div>
 </template>
 
 <script>
-import axios from "axios";
-import { useAuthStore } from "@/stores/auth"; // importa tu store de Pinia
+import { useAuthStore } from "@/stores/auth";
 
 export default {
   name: "MiLogin",
@@ -38,54 +48,59 @@ export default {
       password: "",
       error: "",
       loading: false,
+      mostrarNotificacion: false,
     };
   },
   methods: {
-    async login() {
-      const authStore = useAuthStore(); // inicializamos el store
+    login() {
+      const authStore = useAuthStore();
       this.error = "";
       this.loading = true;
 
-      try {
-        // Petición al backend (ajusta la URL según tu API)
-        const response = await axios.post("http://127.0.0.1:8000/api/login/login", {
-            usuario: this.username,   // 👈 nota: backend espera "usuario", no "username"
-            password: this.password,
-        });
+      // Simulamos un pequeño delay para que se vea más realista
+      setTimeout(() => {
+        try {
+          // Obtener todos los usuarios registrados del localStorage
+          const usuariosJSON = localStorage.getItem("usuarios");
+          const usuarios = usuariosJSON ? JSON.parse(usuariosJSON) : [];
 
-const data = response.data;
+          // Buscar si existe un usuario con esas credenciales
+          const usuarioEncontrado = usuarios.find(
+            (u) => u.usuario === this.username && u.password === this.password
+          );
 
-if (data.success) {
-  // Guarda el usuario en Pinia o localStorage
-  authStore.login({
-    idUsuario: data.idUsuario,
-    idPerfil: data.idPerfil,
-  });
+          if (usuarioEncontrado) {
+            // Login exitoso: guardar el usuario actual
+            authStore.login({
+              idUsuario: usuarioEncontrado.idUsuario,
+              idPerfil: usuarioEncontrado.idPerfil,
+              usuario: usuarioEncontrado.usuario,
+              email: usuarioEncontrado.email,
+            });
 
-  this.$router.push("/inicio");
-} else {
-  this.error = data.mensaje || "Usuario o contraseña incorrectos";
-}
-      } catch (err) {
-  console.error("Error al iniciar sesión:", err);
-  if (err.response) {
-    if (err.response.status === 401) {
-      this.error = "Usuario o contraseña incorrectos";
-    } else {
-      this.error = `Error ${err.response.status}: ${err.response.data?.detail || 'Error desconocido'}`;
-    }
-  } else if (err.request) {
-    this.error = "No se pudo conectar al servidor";
-  } else {
-    this.error = "Error inesperado: " + err.message;
-  }
-} finally {
-        this.loading = false;
-      }
+            // Mostrar notificación
+            this.mostrarNotificacion = true;
+            console.log("✅ Login exitoso para usuario:", this.username);
+
+            // Redirigir después de 2 segundos
+            setTimeout(() => {
+              this.$router.push("/inicio");
+            }, 2000);
+          } else {
+            this.error = "Usuario o contraseña incorrectos";
+            console.warn("❌ Credenciales inválidas");
+          }
+        } catch (err) {
+          console.error("❌ Error al iniciar sesión:", err);
+          this.error = "Error inesperado: " + err.message;
+        } finally {
+          this.loading = false;
+        }
+      }, 800);
     },
   },
   mounted() {
-    // Si ya hay sesión activa (guardada en Pinia o localStorage)
+    // Si ya hay sesión activa (guardada en localStorage)
     const authStore = useAuthStore();
     if (authStore.isLoggedIn) {
       this.$router.push("/home");
@@ -98,6 +113,15 @@ if (data.success) {
 body {
   overflow: hidden;
   margin: 0;
+}
+
+.login-page-bg {
+  min-height: 100vh;
+  background: url('@/assets/imagenesHome/fondooojpeg.jpeg') no-repeat center;
+  background-size: cover;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .login {
@@ -173,19 +197,84 @@ body {
   color: blue;
   font-weight: bold;
   text-decoration: none;
-  cursor: pointer;
 }
 
 .registro-link:hover {
   text-decoration: underline;
 }
-.login-page-bg {
-    min-height: 100vh;
-    background: url('@/assets/imagenesHome/fondooojpeg.jpeg') no-repeat center;
-    background-size: cover;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+
+/* Estilos para Toast */
+.toast {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  min-width: 300px;
+  padding: 16px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  z-index: 9999;
+  animation: slideInRight 0.5s ease-out;
+}
+
+.toast-success {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white;
+}
+
+.toast-content {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+}
+
+.toast-icon {
+  font-size: 24px;
+  font-weight: bold;
+  flex-shrink: 0;
+}
+
+.toast-texto {
+  flex: 1;
+}
+
+.toast-titulo {
+  margin: 0;
+  font-weight: 600;
+  font-size: 14px;
+  margin-bottom: 2px;
+}
+
+.toast-mensaje {
+  margin: 0;
+  font-size: 13px;
+  opacity: 0.95;
+}
+
+/* Animación de entrada */
+@keyframes slideInRight {
+  from {
+    transform: translateX(400px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+/* Animación de salida */
+@keyframes slideOutRight {
+  from {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateX(400px);
+    opacity: 0;
+  }
 }
 </style>
-

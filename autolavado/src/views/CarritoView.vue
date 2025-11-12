@@ -1,219 +1,728 @@
 <template>
-  <MiHeader />
-
-  <div class="carrito">
-    <h2>🛒 Tu carrito</h2>
-
-    <div v-if="carrito.length === 0" class="vacio">
-      <p>No tienes productos en el carrito.</p>
+  <div class="carrito-container">
+    <div class="carrito-header">
+      <h1>🛒 Mi Carrito</h1>
+      <router-link to="/" class="btn-volver">← Volver a compras</router-link>
     </div>
 
-    <div v-else>
-      <table class="tabla-carrito">
-        <thead>
-          <tr>
-            <th>Producto</th>
-            <th>Cantidad</th>
-            <th>Precio</th>
-            <th>Subtotal</th>
-            <th>Acción</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="item in carrito" :key="item.id_detalle">
-            <td>{{ item.producto }}</td>
-            <td>{{ item.cantidad }}</td>
-            <td>${{ Number(item.precio).toLocaleString('es-CO') }}</td>
-            <td>${{ Number(item.subtotal).toLocaleString('es-CO') }}</td>
-            <td>
-              <button @click="eliminar(item.id_producto)" class="btn-eliminar">❌ Eliminar</button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+    <!-- Carrito Vacío -->
+    <div v-if="cartStore.itemCount === 0" class="carrito-vacio">
+      <div class="icono-vacio">🛒</div>
+      <h2>Tu carrito está vacío</h2>
+      <p>¡Agrega productos para empezar a comprar!</p>
+      <router-link to="/" class="btn-comprar">Ir a Comprar</router-link>
+    </div>
 
-      <div class="resumen">
-        <h3>Total: ${{ Number(total).toLocaleString('es-CO') }}</h3>
-        <button @click="finalizarCompra" class="btn-finalizar">Finalizar compra</button>
+    <!-- Carrito con Productos -->
+    <div v-else class="carrito-contenido">
+      <!-- Tabla de productos -->
+      <div class="tabla-wrapper">
+        <table class="tabla-carrito">
+          <thead>
+            <tr>
+              <th>Producto</th>
+              <th>Precio</th>
+              <th>Cantidad</th>
+              <th>Subtotal</th>
+              <th>Acción</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="item in cartStore.cartItems" :key="item.id_producto">
+              <td class="producto-info">
+                <img v-if="item.imagen" :src="item.imagen" :alt="item.nombre" class="producto-img" />
+                <div class="producto-detalles">
+                  <strong>{{ item.nombre }}</strong>
+                  <p v-if="item.marca" class="marca">{{ item.marca }}</p>
+                </div>
+              </td>
+              <td class="precio">${{ Number(item.precio).toLocaleString('es-CO') }}</td>
+              <td class="cantidad">
+                <div class="cantidad-control">
+                  <button @click="decrementarCantidad(item.id_producto)" class="btn-cantidad">−</button>
+                  <input 
+                    type="number" 
+                    :value="item.cantidad" 
+                    @change="actualizarCantidad(item.id_producto, $event)"
+                    min="1"
+                    class="input-cantidad"
+                  />
+                  <button @click="incrementarCantidad(item.id_producto)" class="btn-cantidad">+</button>
+                </div>
+              </td>
+              <td class="subtotal">${{ (Number(item.precio) * item.cantidad).toLocaleString('es-CO') }}</td>
+              <td class="accion">
+                <button @click="eliminarProducto(item.id_producto)" class="btn-eliminar" title="Eliminar">
+                  🗑️ Eliminar
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Resumen -->
+      <div class="carrito-resumen">
+        <div class="resumen-detalles">
+          <div class="linea-resumen">
+            <span>Subtotal:</span>
+            <span>${{ cartStore.cartTotal.toLocaleString('es-CO') }}</span>
+          </div>
+          <div class="linea-resumen">
+            <span>Impuesto (19%):</span>
+            <span>${{ (cartStore.cartTotal * 0.19).toLocaleString('es-CO') }}</span>
+          </div>
+          <div class="linea-resumen envio">
+            <span>Envío:</span>
+            <span>${{ montoEnvio.toLocaleString('es-CO') }}</span>
+          </div>
+          <div class="linea-resumen total">
+            <span>TOTAL:</span>
+            <span>${{ montoTotal.toLocaleString('es-CO') }}</span>
+          </div>
+        </div>
+
+        <!-- Opciones de envío -->
+        <div class="opciones-envio">
+          <h4>Tipo de Envío</h4>
+          <label class="radio-opcion">
+            <input v-model="tipoEnvio" value="gratis" type="radio" />
+            <span>Envío a Sucursal (Gratis) - 5-7 días</span>
+          </label>
+          <label class="radio-opcion">
+            <input v-model="tipoEnvio" value="domicilio" type="radio" />
+            <span>Envío a Domicilio ($20.000) - 2-3 días</span>
+          </label>
+          <label class="radio-opcion">
+            <input v-model="tipoEnvio" value="express" type="radio" />
+            <span>Envío Express ($50.000) - 1 día</span>
+          </label>
+        </div>
+
+        <!-- Botones de acción -->
+        <div class="acciones">
+          <button @click="limpiarCarrito" class="btn-limpiar">Limpiar Carrito</button>
+          <button @click="finalizarCompra" class="btn-comprar" :disabled="procesando">
+            {{ procesando ? 'Procesando...' : 'Finalizar Compra' }}
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal de confirmación -->
+    <div v-if="mostrarModal" class="modal-overlay" @click="cerrarModal">
+      <div class="modal" @click.stop>
+        <div class="modal-header">
+          <h2>✅ Compra Realizada</h2>
+          <button @click="cerrarModal" class="btn-cerrar">✕</button>
+        </div>
+        <div class="modal-body">
+          <p><strong>Número de Orden:</strong> #{{ ultimaOrden?.idOrden }}</p>
+          <p><strong>Total:</strong> ${{ Number(ultimaOrden?.total).toLocaleString('es-CO') }}</p>
+          <p><strong>Fecha:</strong> {{ formatearFecha(ultimaOrden?.fecha) }}</p>
+          <p><strong>Estado:</strong> <span class="badge-pendiente">{{ ultimaOrden?.estado }}</span></p>
+          <div class="productos-resumen">
+            <h4>Productos:</h4>
+            <ul>
+              <li v-for="prod in ultimaOrden?.productos" :key="prod.id_producto">
+                {{ prod.nombre }} x{{ prod.cantidad }} - ${{ (Number(prod.precio) * prod.cantidad).toLocaleString('es-CO') }}
+              </li>
+            </ul>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <router-link to="/" class="btn-modal">Continuar Comprando</router-link>
+          <router-link to="/ordenes" class="btn-modal btn-secundario">Ver Mis Órdenes</router-link>
+        </div>
       </div>
     </div>
   </div>
-
-  <MiFooter />
 </template>
 
-<script setup>
-import MiHeader from '@/components/compoHome/MiHeader.vue'
-import MiFooter from '@/components/compoHome/MiFooter.vue'
-import { ref, onMounted, computed } from "vue";
-import axios from "axios";
+<script>
+import { useCartStore } from '@/stores/cart'
 import { useAuthStore } from '@/stores/auth'
 
-const API_URL = "http://127.0.0.1:8000/api";
-
-const auth = useAuthStore();
-
-console.log('Auth user completo:', auth.user);
-console.log('Propiedades del user:', Object.keys(auth.user || {}));
-console.log('auth.user.idUsuario:', auth.user?.idUsuario);
-
-const idUsuario = computed(() => {
-  return auth.user?.idUsuario || null;
-});
-
-console.log('ID usuario computed:', idUsuario.value);
-
-const carrito = ref([]);
-
-const cargarCarrito = async () => {
-  if (!idUsuario.value) {
-    console.error('⚠️ No hay idUsuario disponible');
-    return;
-  }
-  try {
-    const res = await axios.get(`${API_URL}/carrito/ver/${idUsuario.value}`);
-    console.log('Respuesta carrito:', res.data);
-    let datos = res.data;
-    if (!Array.isArray(datos)) {
-      datos = datos?.items || datos?.carrito || [];
+export default {
+  name: 'CarritoView',
+  data() {
+    return {
+      cartStore: useCartStore(),
+      authStore: useAuthStore(),
+      tipoEnvio: 'gratis',
+      mostrarModal: false,
+      ultimaOrden: null,
+      procesando: false,
     }
-    carrito.value = datos;
-  } catch (error) {
-    console.error("Error al cargar carrito:", error);
-    carrito.value = [];
-  }
-};
+  },
+  computed: {
+    montoEnvio() {
+      const costos = {
+        gratis: 0,
+        domicilio: 20000,
+        express: 50000,
+      }
+      return costos[this.tipoEnvio] || 0
+    },
+    montoTotal() {
+      const impuesto = this.cartStore.cartTotal * 0.19
+      return this.cartStore.cartTotal + impuesto + this.montoEnvio
+    },
+  },
+  methods: {
+    incrementarCantidad(idProducto) {
+      const item = this.cartStore.cartItems.find(i => i.id_producto === idProducto)
+      if (item) {
+        this.cartStore.updateQuantity(idProducto, item.cantidad + 1)
+      }
+    },
+    decrementarCantidad(idProducto) {
+      const item = this.cartStore.cartItems.find(i => i.id_producto === idProducto)
+      if (item && item.cantidad > 1) {
+        this.cartStore.updateQuantity(idProducto, item.cantidad - 1)
+      }
+    },
+    actualizarCantidad(idProducto, event) {
+      const nuevaCantidad = Number(event.target.value)
+      if (nuevaCantidad > 0) {
+        this.cartStore.updateQuantity(idProducto, nuevaCantidad)
+      }
+    },
+    eliminarProducto(idProducto) {
+      if (confirm('¿Estás seguro de que quieres eliminar este producto?')) {
+        this.cartStore.removeFromCart(idProducto)
+      }
+    },
+    limpiarCarrito() {
+      if (confirm('¿Estás seguro de que quieres vaciar el carrito?')) {
+        this.cartStore.clearCart()
+      }
+    },
+    finalizarCompra() {
+      if (!this.authStore.isLoggedIn) {
+        alert('⚠️ Debes iniciar sesión para comprar')
+        this.$router.push('/login')
+        return
+      }
 
-const eliminar = async (idProducto) => {
-  if (!idUsuario.value) {
-    alert('Error: Usuario no identificado');
-    return;
-  }
+      this.procesando = true
 
-  const payload = { 
-    idUsuario: idUsuario.value, 
-    id_producto: idProducto 
-  };
+      setTimeout(() => {
+        const resultado = this.cartStore.finalizarCompra({
+          datosEnvio: {
+            tipo: this.tipoEnvio,
+            costo: this.montoEnvio,
+          },
+          metodoPago: 'tarjeta',
+        })
 
-  console.log('Payload DELETE:', JSON.stringify(payload));
+        if (resultado.success) {
+          this.ultimaOrden = resultado.orden
+          this.mostrarModal = true
+          console.log('✅ Compra finalizada:', resultado.orden)
+        } else {
+          alert('❌ ' + resultado.mensaje)
+        }
 
-  try {
-    await axios.delete(`${API_URL}/carrito/eliminar`, {
-      data: payload
-    });
-    
-    await cargarCarrito();
-    alert('Producto eliminado ✅');
-  } catch (error) {
-    console.error("Error completo:", error);
-    console.error("Response data:", error.response?.data);
-    alert('No se pudo eliminar: ' + (error.response?.data?.detail || error.message));
-  }
-};
-
-const finalizarCompra = async () => {
-  if (!idUsuario.value) {
-    alert('Error: Usuario no identificado');
-    return;
-  }
-
-  try {
-    await axios.post(`${API_URL}/carrito/finalizar`, { 
-      idUsuario: idUsuario.value 
-    });
-    carrito.value = [];
-    alert("Compra finalizada correctamente ✅");
-  } catch (error) {
-    console.error("Error al finalizar:", error);
-    alert('Error: ' + (error.response?.data?.detail || error.message));
-  }
-};
-
-const total = computed(() => {
-  const arr = Array.isArray(carrito.value) ? carrito.value : [];
-  return arr.reduce((acc, item) => {
-    const subtotal = Number(item.subtotal ?? 0) || (Number(item.precio ?? 0) * Number(item.cantidad ?? 0));
-    return acc + subtotal;
-  }, 0);
-});
-
-onMounted(() => {
-  cargarCarrito();
-});
+        this.procesando = false
+      }, 1000)
+    },
+    cerrarModal() {
+      this.mostrarModal = false
+      this.$router.push('/')
+    },
+    formatearFecha(fecha) {
+      if (!fecha) return ''
+      return new Date(fecha).toLocaleDateString('es-CO', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+      })
+    },
+  },
+  mounted() {
+    this.cartStore.cargarCarrito()
+    if (!this.authStore.isLoggedIn) {
+      // Podrías redirigir a login o mostrar un mensaje
+      // this.$router.push('/login')
+    }
+  },
+}
 </script>
 
 <style scoped>
-.carrito {
-  max-width: 900px;
-  margin: 0 auto;
-  padding: 20px;
+.carrito-container {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f5f7fa 0%, #e2c3c3 100%);
+  padding: 40px 20px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-.vacio {
+.carrito-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 1200px;
+  margin: 0 auto 40px;
+  padding: 20px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.carrito-header h1 {
+  margin: 0;
+  color: #333;
+  font-size: 32px;
+}
+
+.btn-volver {
+  padding: 10px 20px;
+  background: #95a5a6;
+  color: white;
+  text-decoration: none;
+  border-radius: 6px;
+  transition: all 0.3s ease;
+}
+
+.btn-volver:hover {
+  background: #7f8c8d;
+  transform: translateX(-5px);
+}
+
+/* Carrito Vacío */
+.carrito-vacio {
+  max-width: 500px;
+  margin: 60px auto;
   text-align: center;
-  padding: 40px;
-  color: #666;
+  background: white;
+  padding: 60px 40px;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.icono-vacio {
+  font-size: 80px;
+  margin-bottom: 20px;
+}
+
+.carrito-vacio h2 {
+  color: #333;
+  margin: 20px 0;
+}
+
+.carrito-vacio p {
+  color: #777;
+  font-size: 16px;
+  margin-bottom: 30px;
+}
+
+/* Carrito con Contenido */
+.carrito-contenido {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 380px;
+  gap: 30px;
+}
+
+/* Tabla */
+.tabla-wrapper {
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
 }
 
 .tabla-carrito {
   width: 100%;
   border-collapse: collapse;
-  margin-bottom: 20px;
-}
-
-.tabla-carrito th,
-.tabla-carrito td {
-  border: 1px solid #ddd;
-  padding: 12px;
-  text-align: left;
 }
 
 .tabla-carrito th {
-  background-color: #f5f5f5;
-  font-weight: bold;
+  background: linear-gradient(135deg, #ac1616 0%, #c51b1b 100%);
+  color: white;
+  padding: 16px;
+  text-align: left;
+  font-weight: 600;
 }
 
-.tabla-carrito tr:hover {
-  background-color: #f9f9f9;
+.tabla-carrito td {
+  padding: 16px;
+  border-bottom: 1px solid #eee;
+  vertical-align: middle;
+}
+
+.tabla-carrito tbody tr:hover {
+  background: #f9f9f9;
+}
+
+.producto-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.producto-img {
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: 6px;
+}
+
+.producto-detalles {
+  flex: 1;
+}
+
+.producto-detalles strong {
+  display: block;
+  color: #333;
+  margin-bottom: 4px;
+}
+
+.marca {
+  color: #999;
+  font-size: 12px;
+  margin: 0;
+}
+
+.precio {
+  font-weight: 600;
+  color: #ea6666;
+  white-space: nowrap;
+}
+
+.cantidad {
+  width: 140px;
+}
+
+.cantidad-control {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: #f5f5f5;
+  border-radius: 6px;
+  padding: 4px;
+}
+
+.btn-cantidad {
+  width: 30px;
+  height: 30px;
+  border: none;
+  background: white;
+  color: #f15757;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: all 0.2s ease;
+}
+
+.btn-cantidad:hover {
+  background: #667eea;
+  color: white;
+}
+
+.input-cantidad {
+  width: 40px;
+  border: none;
+  background: transparent;
+  text-align: center;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.subtotal {
+  font-weight: 600;
+  color: #27ae60;
+}
+
+.accion {
+  text-align: center;
 }
 
 .btn-eliminar {
+  padding: 8px 12px;
   background: #e74c3c;
   color: white;
   border: none;
-  padding: 6px 12px;
-  border-radius: 4px;
+  border-radius: 6px;
   cursor: pointer;
-  font-size: 12px;
+  font-size: 13px;
+  transition: all 0.3s ease;
 }
 
 .btn-eliminar:hover {
   background: #c0392b;
+  transform: scale(1.05);
 }
 
-.resumen {
-  text-align: right;
-  border-top: 2px solid #ddd;
-  padding-top: 20px;
+/* Resumen Lateral */
+.carrito-resumen {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
 }
 
-.resumen h3 {
-  font-size: 24px;
-  color: #e74c3c;
-  margin-bottom: 15px;
+.resumen-detalles {
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
 }
 
-.btn-finalizar {
-  padding: 12px 30px;
-  font-size: 16px;
-  background: #27ae60;
-  color: white;
+.linea-resumen {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #eee;
+  font-size: 14px;
+  color: #666;
+}
+
+.linea-resumen span:last-child {
+  font-weight: 600;
+  color: #333;
+}
+
+.linea-resumen.total {
   border: none;
-  border-radius: 4px;
+  padding-top: 12px;
+  margin-top: 12px;
+  margin-bottom: 0;
+  border-top: 2px solid #e70a0a;
+  font-size: 18px;
+  color: #b90000;
+}
+
+.opciones-envio {
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.opciones-envio h4 {
+  margin-top: 0;
+  color: #333;
+}
+
+.radio-opcion {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 0;
+  cursor: pointer;
+  font-size: 13px;
+  color: #666;
+}
+
+.radio-opcion input {
   cursor: pointer;
 }
 
-.btn-finalizar:hover {
-  background: #229954;
+.acciones {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.btn-limpiar {
+  padding: 12px;
+  background: #95a5a6;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.btn-limpiar:hover {
+  background: #7f8c8d;
+}
+
+.btn-comprar {
+  padding: 14px;
+  background: linear-gradient(135deg, #e62006 0%, #a50808 100%);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 16px;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  text-align: center;
+}
+
+.btn-comprar:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(102, 0, 0, 0.4);
+}
+
+.btn-comprar:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+/* Modal */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal {
+  background: white;
+  border-radius: 12px;
+  max-width: 500px;
+  width: 90%;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+  animation: modalSlideIn 0.3s ease;
+}
+
+@keyframes modalSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  border-bottom: 2px solid #eee;
+}
+
+.modal-header h2 {
+  margin: 0;
+  color: #27ae60;
+}
+
+.btn-cerrar {
+  background: none;
+  border: none;
+  font-size: 24px;
+  color: #999;
+  cursor: pointer;
+}
+
+.modal-body {
+  padding: 20px;
+  max-height: 60vh;
+  overflow-y: auto;
+}
+
+.modal-body p {
+  margin: 10px 0;
+  color: #666;
+}
+
+.badge-pendiente {
+  background: #f39c12;
+  color: white;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+}
+
+.productos-resumen {
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid #eee;
+}
+
+.productos-resumen h4 {
+  margin-top: 0;
+  color: #333;
+}
+
+.productos-resumen ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.productos-resumen li {
+  padding: 8px 0;
+  color: #666;
+  font-size: 14px;
+}
+
+.modal-footer {
+  display: flex;
+  gap: 10px;
+  padding: 20px;
+  border-top: 1px solid #eee;
+}
+
+.btn-modal {
+  flex: 1;
+  padding: 12px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  text-decoration: none;
+  text-align: center;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.btn-modal:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+}
+
+.btn-modal.btn-secundario {
+  background: #95a5a6;
+}
+
+.btn-modal.btn-secundario:hover {
+  background: #7f8c8d;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .carrito-header {
+    flex-direction: column;
+    gap: 15px;
+    text-align: center;
+  }
+
+  .carrito-contenido {
+    grid-template-columns: 1fr;
+  }
+
+  .tabla-carrito {
+    font-size: 13px;
+  }
+
+  .tabla-carrito th,
+  .tabla-carrito td {
+    padding: 10px;
+  }
+
+  .producto-img {
+    width: 50px;
+    height: 50px;
+  }
 }
 </style>
