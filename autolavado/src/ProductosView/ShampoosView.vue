@@ -81,6 +81,19 @@ export default {
                 shamp.cantidad--;
                 // Guardar el array actualizado en localStorage
                 localStorage.setItem('shampoos', JSON.stringify(this.shampoos));
+                // añadir al carrito
+                try {
+                    const cartJson = localStorage.getItem('cart');
+                    const cart = cartJson ? JSON.parse(cartJson) : [];
+                    const existing = cart.find(i => i.id === shamp.id_shampoos);
+                    if (existing) {
+                        existing.quantity = (existing.quantity || 1) + 1;
+                    } else {
+                        cart.push({ id: shamp.id_shampoos, name: shamp.nombre, price: shamp.precio, quantity: 1, image: shamp.imagen });
+                    }
+                    localStorage.setItem('cart', JSON.stringify(cart));
+                    try { window.dispatchEvent(new Event('storage')); } catch (e) { console.warn(e); }
+                } catch (e) { console.warn('add to cart failed', e); }
             }
         }
 

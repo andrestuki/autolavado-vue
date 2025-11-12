@@ -3,27 +3,93 @@
     <div class="red-figure"></div>
     <nav class="menu">
       <div class="logo">
-        <a href=""><img src="../../assets/imagenesHome/logo.png" alt="Logo"></a>
+        <router-link to="/inicio"><img src="../../assets/imagenesHome/logo.png" alt="Logo"></router-link>
       </div>
       <ul>
-        <router-link to="/inicio">
-          <li>Inicio</li>
-        </router-link>
+        <li><router-link to="/inicio">Inicio</router-link></li>
         <li>Lavado de autos</li>
         <li>Tienda</li>
         <li>Contacto</li>
-        <li>Registrarse</li>
-        <router-link to="/global">
-          <li>Admin</li>
-        </router-link>
+
+        <!-- Mostrar registrar solo si no hay usuario logueado -->
+        <li v-if="!isLoggedIn"><router-link :to="{ path: '/login', query: { register: '1' } }">Registrarse</router-link></li>
+
+        <!-- Mostrar Admin solo si el usuario actual es admin -->
+        <li v-if="isAdmin"><router-link to="/global">Admin</router-link></li>
+
+        <!-- Si hay usuario logueado mostrar saludo y logout -->
+        <li v-if="isLoggedIn" class="saludo">Hola, {{ currentUser?.username || '' }}</li>
+        <li v-if="isLoggedIn" @click="logout" class="logout">Cerrar sesión</li>
+
+        <!-- Carrito -->
+        <li class="carrito"><router-link to="/cart">🛒 <span class="count">{{ cartCount }}</span></router-link></li>
       </ul>
     </nav>
   </header>
 </template>
+
 <script>
 export default {
   name: 'MiHeader',
-}
+  data() {
+    return {
+      currentUser: null,
+    };
+  },
+  computed: {
+    isLoggedIn() {
+      return !!this.currentUser && !!this.currentUser.username;
+    },
+    isAdmin() {
+      return !!this.currentUser && this.currentUser.username === 'admin';
+    },
+    cartCount() {
+      try {
+        const c = JSON.parse(localStorage.getItem('cart')) || [];
+        return c.reduce((s, it) => s + (it.quantity || it.qty || 1), 0);
+      } catch (e) {
+        return 0;
+      }
+    }
+  },
+  mounted() {
+    // escucha cambios en localStorage (si otro tab hace login/logout)
+    window.addEventListener('storage', this.onStorageChange);
+    // inicializar currentUser desde localStorage
+    try {
+      this.currentUser = JSON.parse(localStorage.getItem('currentUser'));
+    } catch (e) {
+      this.currentUser = null;
+    }
+  },
+  beforeUnmount() {
+    window.removeEventListener('storage', this.onStorageChange);
+  },
+  methods: {
+    onStorageChange() {
+      // fuerza re-evaluación leyendo el valor actual
+      try {
+        this.currentUser = JSON.parse(localStorage.getItem('currentUser'));
+      } catch (e) {
+        this.currentUser = null;
+      }
+      // forzar reactivity del contador de carrito
+      this.$forceUpdate && this.$forceUpdate();
+    },
+    logout() {
+      localStorage.removeItem('currentUser');
+      this.currentUser = null;
+      // notificar otros componentes
+      try {
+        window.dispatchEvent(new Event('storage'));
+      } catch (e) {
+        console.warn('dispatch storage event failed', e);
+      }
+      // redirigir a inicio o login
+      this.$router.push('/login');
+    },
+  },
+};
 </script>
 
 <style>
@@ -75,8 +141,16 @@ header {
   color: white;
 }
 
-.menu ul a:hover{
+/* Unificar hover para enlaces y elementos de lista */
+.menu ul a:hover,
+.menu ul li:hover {
   background-color: rgb(224, 25, 25);
+}
+
+.menu ul li {
+  padding: 13px;
+  border-radius: 20px;
+  transition: ease-in-out 200ms;
 }
 
 .menu ul {

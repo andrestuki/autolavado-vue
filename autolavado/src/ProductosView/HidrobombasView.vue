@@ -1,224 +1,291 @@
 <template>
-    <MiHeader></MiHeader>
-    <div class="contenedor">
-        <div v-for="hidr in hidrobombas" :key="hidr.id_hidroos" class="card">
-            <TagPrime v-if="(hidr.cantidad >= 10)" class="tag-flotante disponible" severity="success">En stock
-            </TagPrime>
-            <TagPrime v-else-if="(hidr.cantidad == 0)" class="tag-flotante agotado" severity="secondary">Agotado
-            </TagPrime>
-            <TagPrime v-else-if="(hidr.cantidad >= 1 && hidr.cantidad < 10)" class="tag-flotante casi_agotado"
-                severity="secondary">Casi Agotado</TagPrime>
+  <MiHeader />
 
+  <div class="contenedor">
+    <div
+      v-for="hidr in hidrobombas"
+      :key="hidr.id_hidroos"
+      class="card"
+    >
+      <!-- Estado de stock -->
+      <TagPrime
+        v-if="hidr.cantidad >= 10"
+        class="tag-flotante disponible"
+        severity="success"
+      >
+        En stock
+      </TagPrime>
+      <TagPrime
+        v-else-if="hidr.cantidad === 0"
+        class="tag-flotante agotado"
+        severity="secondary"
+      >
+        Agotado
+      </TagPrime>
+      <TagPrime
+        v-else
+        class="tag-flotante casi_agotado"
+        severity="warn"
+      >
+        Casi Agotado
+      </TagPrime>
 
-            <img class="imagen-hidrobombas" :src="hidr.imagen" alt="">
-            <h4 class="nombre">{{ hidr.nombre }} 
-                <h4 class="calificacion">
-                    <span class="text-surface-900 font-medium text-sm">{{ hidr.raiting }}</span>
-                    <i class="pi pi-star-fill text-yellow-500"></i>
-                </h4>
-            </h4>
-            <div class="fila-info">
-                <h4 class="precio">{{ pesoCOL(hidr.precio) }}</h4>
+      <!-- Imagen -->
+      <img class="imagen-hidrobombas" :src="hidr.imagen" :alt="hidr.nombre" />
 
-            </div>
-            <div class="botones">
-                <ButtonPrime :class="hidr.cantidad > 0 ? 'btn-compra' : 'btn-deshabilitado'" :disabled="hidr.cantidad <= 0" @Click="comprar(hidr)" icon="pi pi-shopping-cart"
-                    label="COMPRAR" />
-                <ButtonPrime v-if="(hidr.cantidad >= 0)" icon="pi pi-heart" variant="outlined"
-                    class="btn-favorito edit" />
-            </div>
-
+      <!-- Nombre y calificación -->
+      <div class="info">
+        <h4 class="nombre">
+          {{ hidr.nombre }}
+        </h4>
+        <div class="calificacion">
+          <span>{{ hidr.raiting }}</span>
+          <i class="pi pi-star-fill text-yellow-500"></i>
         </div>
+      </div>
+
+      <!-- Precio -->
+      <div class="fila-info">
+        <h4 class="precio">{{ pesoCOL(hidr.precio) }}</h4>
+      </div>
+
+      <!-- Botones -->
+      <div class="botones">
+        <ButtonPrime
+          v-if="hidr.cantidad > 0"
+          class="btn-compra"
+          @click="comprar(hidr)"
+          icon="pi pi-shopping-cart"
+          label="COMPRAR"
+        />
+        <ButtonPrime
+          v-else
+          class="btn-deshabilitado"
+          :disabled="true"
+          icon="pi pi-times"
+          label="AGOTADO"
+        />
+        <ButtonPrime
+          icon="pi pi-heart"
+          variant="outlined"
+          class="btn-favorito"
+        />
+      </div>
     </div>
-    <MiFooter></MiFooter>
+  </div>
+
+  <MiFooter />
 </template>
 
 <script>
 import MiFooter from '@/components/compoHome/MiFooter.vue';
 import MiHeader from '@/components/compoHome/MiHeader.vue';
-import {hidrobombas} from '@/data/hidrobombas.js';
+import { hidrobombas } from '@/data/hidrobombas.js';
 
 export default {
-
-    name: "hidrobombasView",
-    components:
-    {
-        MiHeader,
-        MiFooter
-    },
-    data() {
-        return {
-            hidrobombas
-        }
-    },
-    created() {
-        // Cargar desde localStorage si existe, si no, usar los valores por defecto
-        const guardadas = localStorage.getItem('hidrobombas');
-        if (guardadas) {
-            this.hidrobombas = JSON.parse(guardadas);
-        } else {
-            this.hidrobombas
-
-            localStorage.setItem('hidrobombas', JSON.stringify(this.hidrobombas));
-        }
-    },
-
-
-
-    methods: {
-        pesoCOL: function (valor) {
-            const formatoMonedaColombia = new Intl.NumberFormat('es-CO', {
-                style: 'currency',
-                currency: 'COP',
-                minimumFractionDigits: 0, // Ensures two decimal places for cents
-                maximumFractionDigits: 0  // Ensures two decimal places for cents
-            }).format(valor);
-
-            return formatoMonedaColombia;
-        },
-        comprar(hidr) {
-            if (hidr.cantidad > 0) {
-                hidr.cantidad--;
-                // Guardar el array actualizado en localStorage
-                localStorage.setItem('hidrobombas', JSON.stringify(this.hidrobombas));
-            }
-        }
-
+  name: "hidrobombasView",
+  components: {
+    MiHeader,
+    MiFooter
+  },
+  data() {
+    return {
+      hidrobombas
+    };
+  },
+  created() {
+    const guardadas = localStorage.getItem('hidrobombas');
+    if (guardadas) {
+      this.hidrobombas = JSON.parse(guardadas);
+    } else {
+      localStorage.setItem('hidrobombas', JSON.stringify(this.hidrobombas));
     }
-}
+  },
+  methods: {
+    pesoCOL(valor) {
+      return new Intl.NumberFormat('es-CO', {
+        style: 'currency',
+        currency: 'COP',
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0
+      }).format(valor);
+    },
+    comprar(hidr) {
+      if (hidr.cantidad > 0) {
+        hidr.cantidad--;
+        localStorage.setItem('hidrobombas', JSON.stringify(this.hidrobombas));
+
+        try {
+          // 🔄 Obtener carrito actual
+          const cart = JSON.parse(localStorage.getItem('cart')) || [];
+
+          // Buscar si el producto ya está
+          const existing = cart.find(p => p.id === hidr.id_hidroos);
+
+          if (existing) {
+            existing.quantity = (existing.quantity || 1) + 1;
+          } else {
+            cart.push({
+              id: hidr.id_hidroos,
+              name: hidr.nombre,
+              price: hidr.precio,
+              quantity: 1,
+              image: hidr.imagen
+            });
+          }
+
+          // Guardar el carrito actualizado
+          localStorage.setItem('cart', JSON.stringify(cart));
+
+          // 🔔 Notificar al carrito (esto fuerza la actualización en vivo)
+          window.dispatchEvent(new Event('storage'));
+
+          // ✅ Alerta simple
+          this.$toast?.add({
+            severity: 'success',
+            summary: 'Agregado al carrito',
+            detail: `${hidr.nombre} añadido correctamente.`,
+            life: 2000
+          }) || alert(`${hidr.nombre} agregado al carrito 🛒`);
+
+        } catch (e) {
+          console.warn('Error al agregar al carrito', e);
+        }
+      }
+    }
+  }
+};
 </script>
 
 <style scoped>
 .contenedor {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 20px;
-    padding: 20px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  padding: 20px;
+  justify-content: center;
 }
 
 .card {
-    background-color: white;
+  background-color: white;
+  border: 1px solid #dcdcdc;
+  width: 340px;
+  height: 380px;
+  text-align: center;
+  position: relative;
+  border-radius: 10px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  transition: transform 0.2s;
+}
 
-    border: rgb(198, 198, 204) solid 1px;
-    width: 350px;
-    height: 370px;
-    text-align: center;
-    position: relative;
-    overflow: hidden;
+.card:hover {
+  transform: scale(1.02);
 }
 
 .imagen-hidrobombas {
+  width: 75%;
+  height: 60%;
+  margin: 10px auto;
+  border-radius: 8px;
+  object-fit: cover;
+}
 
-    width: 75%;
-    height: 60%;
-    margin-bottom: 15px;
+.info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 20px;
 }
 
 .nombre {
-    display: flex;
-    justify-content: space-between;
-    font-size: 18px;
-    padding: 0 25px;
-    margin-bottom: 10px;
-    color: #333;
-
-}
-
-.fila-info {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0 25px;
-    margin-bottom: 10px;
-}
-
-.precio {
-    font-size: 20px;
-    margin: 0;
+  font-size: 18px;
+  color: #222;
 }
 
 .calificacion {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    font-size: 15px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: #fbbf24;
+}
 
+.fila-info {
+  margin-top: 5px;
+  padding: 0 20px;
+  text-align: left;
+}
+
+.precio {
+  font-size: 20px;
+  color: #0F172A;
+  font-weight: bold;
 }
 
 .botones {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0 25px;
-    margin-bottom: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 20px;
+}
+
+.btn-compra,
+.btn-deshabilitado {
+  width: 230px;
+  height: 36px;
+  border-radius: 6px;
 }
 
 .btn-compra {
-    width: 270px;
-    height: 30px;
-    gap: 10px;
-    border-radius: 5px;
-    background-color: #0F172A;
-    color: #FFFFFF;
-}
-
-.btn-deshabilitado {
-    width: 270px;
-    height: 30px;
-    gap: 10px;
-    border-radius: 5px;
-    background-color: #5f5f5f;
-    pointer-events: none;
-    color: #FFFFFF;
+  background-color: #0F172A;
+  color: #fff;
+  border: none;
 }
 
 .btn-compra:hover {
-    background-color: #2A3445 !important;
-    color: #FFFFFF !important;
-    transition: background-color 0.3s ease;
+  background-color: #1E293B !important;
+}
+
+.btn-deshabilitado {
+  background-color: #999;
+  color: #fff;
+  border: none;
 }
 
 .btn-favorito {
-    position: relative;
-    padding: 5px;
-    left: 5px;
-    background-color: white;
-    color: #0F172A;
-    border: rgb(170, 170, 173) solid 1px;
-    border-radius: 5px;
-
+  border: 1px solid #ccc;
+  color: #0F172A;
 }
 
 .btn-favorito:hover {
-    background-color: #2A3445 !important;
-    color: #FFFFFF !important;
-    transition: background-color 0.3s ease;
+  background-color: #0F172A !important;
+  color: #fff !important;
 }
 
-
 .tag-flotante {
-    position: absolute;
-    top: 10px;
-    right: 230px;
-    font-weight: bold;
-    font-size: 14px;
-    width: 100px;
-    height: 27px;
-    border-radius: 5px;
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  font-weight: bold;
+  font-size: 14px;
+  width: 100px;
+  height: 25px;
+  text-align: center;
+  line-height: 25px;
+  border-radius: 5px;
 }
 
 .disponible {
-    background-color: #a2edbd;
-    color: rgb(0, 121, 18);
+  background-color: #a2edbd;
+  color: rgb(0, 121, 18);
 }
 
 .agotado {
-    background-color: #ff6b6b;
-    color: white;
+  background-color: #ff6b6b;
+  color: white;
 }
 
 .casi_agotado {
-    background-color: #f7d794;
-    color: white;
+  background-color: #f7d794;
+  color: #000;
 }
 </style>

@@ -82,6 +82,19 @@ export default {
                 puli.cantidad--;
                 // Guardar el array actualizado en localStorage
                 localStorage.setItem('pinturas', JSON.stringify(this.pinturas));
+                // añadir al carrito
+                try {
+                    const cartJson = localStorage.getItem('cart');
+                    const cart = cartJson ? JSON.parse(cartJson) : [];
+                    const existing = cart.find(i => i.id === puli.id_pinturas);
+                    if (existing) {
+                        existing.quantity = (existing.quantity || 1) + 1;
+                    } else {
+                        cart.push({ id: puli.id_pinturas, name: puli.nombre, price: puli.precio, quantity: 1, image: puli.imagen });
+                    }
+                    localStorage.setItem('cart', JSON.stringify(cart));
+                    try { window.dispatchEvent(new Event('storage')); } catch (e) { console.warn(e); }
+                } catch (e) { console.warn('add to cart failed', e); }
             }
         }
 
