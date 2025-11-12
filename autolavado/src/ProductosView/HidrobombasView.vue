@@ -34,7 +34,8 @@
 <script>
 import MiFooter from '@/components/compoHome/MiFooter.vue';
 import MiHeader from '@/components/compoHome/MiHeader.vue';
-import axios from 'axios'; // <-- IMPORTANTE
+import axios from 'axios';
+import { useAuthStore } from '@/stores/auth'
 
 export default {
   name: "hidrobombasView",
@@ -47,9 +48,10 @@ export default {
   async created() {
     try {
       const res = await axios.get('http://127.0.0.1:8000/api/productos/hidrobombas');
+      console.log('Hidrobombas cargadas:', res.data);
       this.hidrobombas = res.data;
     } catch (err) {
-      console.error('Error cargando hidrobombas desde API:', err);
+      console.error('Error cargando hidrobombas:', err);
     }
   },
   methods: {
@@ -61,27 +63,41 @@ export default {
         maximumFractionDigits: 0
       }).format(valor);
     },
+
     async comprar(hidr) {
-      if (hidr.cantidad > 0) {
-        try {
-          // Reducir la cantidad localmente (para actualizar visualmente)
-          hidr.cantidad--;
-          
-          // Enviar la actualización al backend
-          const id = hidr.id_producto || hidr.id_hidrobomba;
-          await axios.put(`http://127.0.0.1:8000/api/productos/hidrobombas/${id}`, {
-            cantidad: hidr.cantidad
-          });
-          
-          console.log(`Cantidad actualizada para hidrobomba ${hidr.nombre}`);
-        } catch (error) {
-          console.error("Error al actualizar la cantidad:", error);
-          // Si hay error, restauramos la cantidad anterior
-          hidr.cantidad++;
-          alert("No se pudo actualizar la compra. Intenta de nuevo.");
-        }
-      } else {
+      const auth = useAuthStore();
+      if (!auth.user) {
+        alert('Debes iniciar sesión para agregar al carrito');
+        this.$router.push('/login');
+        return;
+      }
+
+      if (hidr.cantidad <= 0) {
         alert("Este producto está agotado 😔");
+        return;
+      }
+
+      const id = hidr.id_producto;
+      const idUsuario = auth.user.idUsuario;
+
+      if (!idUsuario) {
+        alert('Error: Usuario no identificado');
+        return;
+      }
+
+      try {
+        await axios.post('http://127.0.0.1:8000/api/carrito/agregar', {
+          idUsuario: idUsuario,
+          id_producto: id,
+          cantidad: 1
+        });
+
+        hidr.cantidad = Math.max(0, hidr.cantidad - 1);
+        console.log(`Producto ${hidr.nombre} agregado al carrito`);
+        alert('Producto agregado al carrito ✅');
+      } catch (error) {
+        console.error('Error al agregar al carrito:', error);
+        alert('No se pudo agregar al carrito. Intenta de nuevo.');
       }
     }
   }
@@ -97,128 +113,73 @@ export default {
 }
 
 .card {
-    background-color: white;
-
-    border: rgb(198, 198, 204) solid 1px;
-    width: 350px;
-    height: 370px;
-    text-align: center;
-    position: relative;
-    overflow: hidden;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 15px;
+  text-align: center;
+  width: 200px;
+  position: relative;
 }
 
 .imagen-hidrobombas {
-
-    width: 75%;
-    height: 60%;
-    margin-bottom: 15px;
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  border-radius: 6px;
 }
 
 .nombre {
-    display: flex;
-    justify-content: space-between;
-    font-size: 18px;
-    padding: 0 25px;
-    margin-bottom: 10px;
-    color: #333;
-
-}
-
-.fila-info {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0 25px;
-    margin-bottom: 10px;
+  margin: 10px 0;
+  font-size: 16px;
+  font-weight: bold;
 }
 
 .precio {
-    font-size: 20px;
-    margin: 0;
+  color: #e74c3c;
+  font-size: 18px;
+  margin: 10px 0;
 }
 
 .calificacion {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    font-size: 15px;
-
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 14px;
 }
 
 .botones {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0 25px;
-    margin-bottom: 10px;
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
 }
 
 .btn-compra {
-    width: 270px;
-    height: 30px;
-    gap: 10px;
-    border-radius: 5px;
-    background-color: #0F172A;
-    color: #FFFFFF;
+  flex: 1;
 }
 
 .btn-deshabilitado {
-    width: 270px;
-    height: 30px;
-    gap: 10px;
-    border-radius: 5px;
-    background-color: #5f5f5f;
-    pointer-events: none;
-    color: #FFFFFF;
+  flex: 1;
+  opacity: 0.5;
 }
-
-.btn-compra:hover {
-    background-color: #2A3445 !important;
-    color: #FFFFFF !important;
-    transition: background-color 0.3s ease;
-}
-
-.btn-favorito {
-    position: relative;
-    padding: 5px;
-    left: 5px;
-    background-color: white;
-    color: #0F172A;
-    border: rgb(170, 170, 173) solid 1px;
-    border-radius: 5px;
-
-}
-
-.btn-favorito:hover {
-    background-color: #2A3445 !important;
-    color: #FFFFFF !important;
-    transition: background-color 0.3s ease;
-}
-
 
 .tag-flotante {
-    position: absolute;
-    top: 10px;
-    right: 230px;
-    font-weight: bold;
-    font-size: 14px;
-    width: 100px;
-    height: 27px;
-    border-radius: 5px;
+  position: absolute;
+  top: 10px;
+  right: 10px;
 }
 
 .disponible {
-    background-color: #a2edbd;
-    color: rgb(0, 121, 18);
+  background-color: #d4edda;
+  color: #155724;
 }
 
 .agotado {
-    background-color: #ff6b6b;
-    color: white;
+  background-color: #f8d7da;
+  color: #721c24;
 }
 
 .casi_agotado {
-    background-color: #f7d794;
-    color: white;
+  background-color: #fff3cd;
+  color: #856404;
 }
 </style>

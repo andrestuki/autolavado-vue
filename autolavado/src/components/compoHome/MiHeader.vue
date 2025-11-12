@@ -9,25 +9,68 @@
         <router-link to="/inicio">
           <li>Inicio</li>
         </router-link>
-        <li>Lavado de autos</li>
         <li>Tienda</li>
-        <li>Contacto</li>
-        <li>Registrarse</li>
-        <router-link to="/global">
+        <!-- Enlace al carrito de compras -->
+        <router-link to="/cart">
+          <li>
+            <i class="pi pi-shopping-cart" style="margin-right:8px"></i>
+            Carrito
+          </li>
+        </router-link>
+        <router-link v-if="!isLogged" to="/registro">
+          <li>Registrarse</li>
+        </router-link>
+        <router-link v-if="isAdmin" to="/global">
           <li>Admin</li>
         </router-link>
+        
+        <!-- Mostrar avatar y nombre solo si está logueado -->
+        <div v-if="isLogged" class="user-area">
+          <OverlayBadge value="4" severity="danger" class="inline-flex">
+            <AvatarPrime icon="pi pi-user" size="xlarge" />
+          </OverlayBadge>
+          <div class="username">{{ displayName }}</div>
+
+          <ButtonPrime class="logout-btn" label="Cerrar sesión" @click="logout" />
+        </div>
       </ul>
     </nav>
   </header>
 </template>
+
 <script>
+import { useAuthStore } from "@/stores/auth";
+import { computed } from "vue";
+import { useRouter } from 'vue-router';
+
 export default {
-  name: 'MiHeader',
-}
+  name: "MiHeader",
+  setup() {
+    const authStore = useAuthStore();
+    const router = useRouter();
+
+    const isAdmin = computed(() => authStore.user?.idPerfil === 1);
+    const isLogged = computed(() => !!authStore.user);
+    const user = computed(() => authStore.user);
+
+    // Nombre a mostrar: prueba varias propiedades posibles
+    const displayName = computed(() => {
+      const u = authStore.user;
+      if (!u) return '';
+      return u.nombre || u.nombreCompleto || u.fullName || u.usr || u.usuario || u.email || u.gmail || 'Usuario';
+    });
+
+    function logout() {
+      authStore.logout();
+      router.push('/inicio');
+    }
+
+    return { isAdmin, isLogged, user, displayName, logout };
+  },
+};
 </script>
 
 <style>
-
 header {
   height: 150px;
   background-color: rgb(43, 43, 43);
@@ -94,15 +137,38 @@ header {
   font-weight: bold;
 }
 
-.buscador {
-  height: 35px;
-  margin: 1rem;
-  padding-left: 5px;
-  border-radius: 20px;
-  border: none;
+/* Nuevo estilo para área de usuario */
+.user-area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  margin-left: 8px;
+  color: white;
+}
+
+.username {
   font-size: 14px;
-  background-color: rgb(224, 25, 25);
-  color: rgb(255, 255, 255);
+  font-weight: 600;
+  margin-top: 4px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  max-width: 110px;
+  text-align: center;
+}
+
+/* estilo para el boton cerrar sesion */
+.logout-btn {
+  margin-top: 6px;
+  padding: 6px 10px;
+  font-size: 13px;
+  background-color: transparent;
+  border: 1px solid rgba(255,255,255,0.2);
+  color: white;
+}
+.logout-btn:hover {
+  background-color: rgba(255,255,255,0.08);
 }
 
 @media (max-width: 1024px) {
