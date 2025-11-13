@@ -33,7 +33,7 @@
 
 <script>
 import MiFooter from '@/components/compoHome/MiFooter.vue';
-import MiHeader from '@/components/compoHome/MiHeader.vue';
+import MiHeader from '@/components/compoHome/MiHeaderNew.vue';
 import axios from 'axios';
 import { useAuthStore } from '@/stores/auth'
 

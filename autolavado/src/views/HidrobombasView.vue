@@ -60,7 +60,7 @@
 <script>
 import { useCartStore } from '@/stores/cart'
 import { cargarProductos } from '@/utilities/productosManager'
-import MiHeader from '@/components/compoHome/MiHeader.vue'
+import MiHeader from '@/components/compoHome/MiHeaderNew.vue'
 import MiFooter from '@/components/compoHome/MiFooter.vue'
 
 export default {
@@ -92,8 +92,9 @@ export default {
         },
         agregarAlCarrito(producto) {
             const item = {
-                id_producto: producto.id_hidrobomba,
+                id_producto: `${producto.id_categoria}-${producto.id_hidrobomba}`,
                 id_hidrobomba: producto.id_hidrobomba,
+                id_categoria: producto.id_categoria,
                 nombre: producto.nombre,
                 marca: producto.marca,
                 precio: producto.precio,
@@ -312,22 +313,110 @@ export default {
     font-size: 1.2rem;
 }
 
-@media (max-width: 768px) {
+/* Responsive Design */
+@media (max-width: 1200px) {
     .productos-grid {
-        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-        gap: 20px;
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        gap: 25px;
+    }
+}
+
+@media (max-width: 768px) {
+    .productos-section {
+        padding: 30px 15px;
+    }
+
+    .productos-header {
+        margin-bottom: 40px;
     }
 
     .productos-header h1 {
         font-size: 1.8rem;
     }
 
+    .subtitle {
+        font-size: 1rem;
+    }
+
+    .productos-grid {
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        gap: 15px;
+    }
+
     .producto-imagen {
-        height: 150px;
+        height: 120px;
+    }
+
+    .producto-info {
+        padding: 12px;
     }
 
     .producto-info h3 {
-        font-size: 0.95rem;
+        font-size: 0.9rem;
+    }
+
+    .marca {
+        font-size: 0.8rem;
+    }
+
+    .stock {
+        font-size: 0.75rem;
+        padding: 3px 8px;
+    }
+
+    .valor {
+        font-size: 1.2rem;
+    }
+
+    .btn-agregar {
+        padding: 8px 10px;
+        font-size: 0.85rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .productos-header h1 {
+        font-size: 1.4rem;
+    }
+
+    .productos-grid {
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+        gap: 10px;
+    }
+
+    .producto-imagen {
+        height: 100px;
+    }
+
+    .rating {
+        top: 5px;
+        right: 5px;
+        font-size: 0.8rem;
+        padding: 3px 6px;
+    }
+
+    .producto-info {
+        padding: 10px;
+    }
+
+    .producto-info h3 {
+        font-size: 0.8rem;
+        height: auto;
+    }
+
+    .producto-footer {
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .precio {
+        margin-bottom: 5px;
+    }
+
+    .btn-agregar {
+        width: 100%;
+        padding: 6px;
+        font-size: 0.75rem;
     }
 }
 </style>

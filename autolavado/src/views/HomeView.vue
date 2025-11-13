@@ -13,7 +13,7 @@
 // @ is an alias to /src
 
 import MiFooter from '@/components/compoHome/MiFooter.vue';
-import MiHeader from '@/components/compoHome/MiHeader.vue';
+import MiHeader from '@/components/compoHome/MiHeaderNew.vue';
 import MiPresentacion from '@/components/compoHome/MiPresentacion.vue'
 import MisCatalogos from '@/components/compoHome/MisCatalogos.vue';
 import MisPaquetes from '@/components/compoHome/MisPaquetes.vue';

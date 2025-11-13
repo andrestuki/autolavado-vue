@@ -15,7 +15,10 @@ export async function cargarProductos() {
     // Intentar cargar desde public/datos/productos.json
     const response = await fetch('/datos/productos.json')
     if (response.ok) {
-      productosCache = await response.json()
+      let productos = await response.json()
+      // Normalizar los productos
+      productos = productos.map(normalizarProducto)
+      productosCache = productos
       return productosCache
     }
   } catch (error) {
@@ -25,6 +28,25 @@ export async function cargarProductos() {
   // Si falla, retornar productos de ejemplo (fallback)
   productosCache = getProductosDefault()
   return productosCache
+}
+
+/**
+ * Normaliza un producto para tener un ID único y consistente
+ */
+function normalizarProducto(producto) {
+  // Crear un ID único combinando el tipo y el id original
+  const id = producto.id_hidrobomba || producto.id_pulidora || producto.id_shampoo || producto.id_pintura
+  
+  return {
+    ...producto,
+    // Asegurar que siempre tiene un id_producto único
+    id_producto: `${producto.id_categoria}-${id}`,
+    // Mantener los IDs originales también
+    id_hidrobomba: producto.id_hidrobomba,
+    id_pulidora: producto.id_pulidora,
+    id_shampoo: producto.id_shampoo,
+    id_pintura: producto.id_pintura,
+  }
 }
 
 export function getProductosDefault() {

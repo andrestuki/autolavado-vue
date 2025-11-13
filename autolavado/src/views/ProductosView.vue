@@ -8,7 +8,7 @@
 
 <script>
 import MiFooter from '@/components/compoHome/MiFooter.vue'
-import MiHeader from '@/components/compoHome/MiHeader.vue';
+import MiHeader from '@/components/compoHome/MiHeaderNew.vue';
 
 
 export default {

@@ -136,4 +136,118 @@ export default {
     opacity: 1;
     cursor: pointer;
 }
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+    .servicios {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 15px;
+        padding: 60px;
+        margin-top: -100px;
+    }
+
+    .servicio img {
+        height: 350px;
+    }
+
+    .texto-imagen {
+        top: -310px;
+        left: 30px;
+        font-size: 1rem;
+    }
+
+    .texto-imagen span {
+        font-size: 24px;
+    }
+
+    .servicios-descripcion {
+        font-size: 2.5rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .textos {
+        margin: 40px 20px;
+    }
+
+    .servicios-titulo {
+        font-size: 20px;
+    }
+
+    .servicios-descripcion {
+        font-size: 1.8rem;
+    }
+
+    .servicios {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+        padding: 40px 20px;
+        margin-top: -80px;
+    }
+
+    .servicio img {
+        height: 250px;
+    }
+
+    .texto-imagen {
+        top: -220px;
+        left: 20px;
+        font-size: 0.9rem;
+    }
+
+    .texto-imagen span {
+        font-size: 18px;
+    }
+
+    .texto-invisible {
+        top: -110px;
+        left: -15px;
+        font-size: 0.8rem;
+        padding-right: 8px;
+        border-right: 4px solid white;
+    }
+}
+
+@media (max-width: 480px) {
+    .textos {
+        margin: 30px 15px;
+    }
+
+    .servicios-titulo {
+        font-size: 16px;
+    }
+
+    .servicios-descripcion {
+        font-size: 1.3rem;
+    }
+
+    .servicios {
+        grid-template-columns: 1fr;
+        gap: 10px;
+        padding: 20px 15px;
+        margin-top: -60px;
+    }
+
+    .servicio img {
+        height: 200px;
+    }
+
+    .texto-imagen {
+        top: -170px;
+        left: 15px;
+        font-size: 0.8rem;
+    }
+
+    .texto-imagen span {
+        font-size: 14px;
+    }
+
+    .texto-invisible {
+        top: -85px;
+        left: -10px;
+        font-size: 0.7rem;
+        padding-right: 6px;
+        border-right: 3px solid white;
+    }
+}
 </style>

@@ -221,4 +221,180 @@ export default {
     padding: 0.5rem;
   }
 }
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+  .sobre-nosotros {
+    gap: 1.5rem;
+    padding: 10rem 0 3rem 0;
+  }
+
+  .imagen img {
+    max-width: 350px;
+  }
+
+  .imagen2 {
+    height: 180px;
+    width: 230px;
+    top: -180px;
+    left: 180px;
+  }
+
+  .texto {
+    width: 500px;
+    top: 50%;
+  }
+
+  .texto h1 {
+    font-size: 2.2rem;
+    margin: 1.5rem 0;
+  }
+
+  .texto p {
+    font-size: 24px;
+    margin: 1.5rem 0;
+  }
+
+  .botones {
+    margin: 2rem 0 1rem 0;
+  }
+}
+
+@media (max-width: 768px) {
+  .sobre-nosotros {
+    flex-direction: column;
+    gap: 1rem;
+    padding: 5rem 20px 3rem 20px;
+  }
+
+  .imagen {
+    width: 100%;
+  }
+
+  .imagen img {
+    width: 100%;
+    max-width: 300px;
+  }
+
+  .imagen2 {
+    height: 150px;
+    width: 200px;
+    top: -150px;
+    left: 150px;
+    display: none;
+  }
+
+  .texto {
+    width: 100%;
+    top: 0;
+    padding: 0.5rem;
+  }
+
+  .texto h4 {
+    font-size: 18px;
+    margin: 0.5rem;
+  }
+
+  .texto h1 {
+    font-size: 1.8rem;
+    margin: 1rem 0;
+  }
+
+  .texto p {
+    font-size: 16px;
+    margin: 1rem 0;
+  }
+
+  .texto ul li {
+    font-size: 14px;
+    margin-bottom: 0.5rem;
+  }
+
+  .botones {
+    margin: 1.5rem 0 1rem 0;
+  }
+
+  .botones button {
+    padding: 0.5rem 1rem;
+    font-size: 14px;
+  }
+
+  .map-container iframe {
+    height: 400px;
+  }
+}
+
+@media (max-width: 480px) {
+  .sobre-nosotros {
+    flex-direction: column;
+    gap: 0.8rem;
+    padding: 3rem 15px 2rem 15px;
+  }
+
+  .imagen {
+    width: 100%;
+  }
+
+  .imagen img {
+    width: 100%;
+    max-width: 250px;
+  }
+
+  .imagen2 {
+    display: none;
+  }
+
+  .texto {
+    width: 100%;
+    top: 0;
+    padding: 0;
+  }
+
+  .texto h4 {
+    font-size: 14px;
+    margin: 0;
+    margin-bottom: 0.5rem;
+  }
+
+  .texto h1 {
+    font-size: 1.4rem;
+    margin: 0.8rem 0;
+  }
+
+  .texto p {
+    font-size: 13px;
+    margin: 0.8rem 0;
+  }
+
+  .texto ul {
+    margin: 0.8rem 0;
+    padding-left: 0.5rem;
+  }
+
+  .texto ul li {
+    font-size: 12px;
+    margin-bottom: 0.4rem;
+  }
+
+  .botones {
+    flex-direction: column;
+    gap: 0.8rem;
+    margin: 1rem 0 0 0;
+  }
+
+  .botones button {
+    width: 100%;
+    padding: 0.6rem;
+    font-size: 12px;
+  }
+
+  .map-modal {
+    width: 95%;
+    padding: 0.3rem;
+  }
+
+  .map-container iframe {
+    height: 300px;
+  }
+}
 </style>

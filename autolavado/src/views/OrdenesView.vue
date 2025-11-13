@@ -434,11 +434,46 @@ Gracias por tu compra!
     background: #229954;
 }
 
+@media (max-width: 1200px) {
+    .ordenes-lista {
+        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+        gap: 20px;
+    }
+
+    .orden-card {
+        padding: 20px;
+    }
+}
+
 @media (max-width: 768px) {
+    .ordenes-container {
+        padding: 20px 15px;
+    }
+
     .ordenes-header {
         flex-direction: column;
         gap: 15px;
         text-align: center;
+        margin-bottom: 25px;
+    }
+
+    .ordenes-header h1 {
+        font-size: 1.6rem;
+    }
+
+    .btn-volver {
+        width: 100%;
+        padding: 10px;
+        font-size: 0.9rem;
+    }
+
+    .ordenes-lista {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+
+    .orden-card {
+        padding: 15px;
     }
 
     .orden-header {
@@ -447,12 +482,228 @@ Gracias por tu compra!
         gap: 10px;
     }
 
+    .orden-header h3 {
+        font-size: 1.2rem;
+    }
+
     .orden-detalles {
         grid-template-columns: 1fr;
+        gap: 8px;
+    }
+
+    .detalle-item {
+        padding: 8px 0;
+        font-size: 0.9rem;
+    }
+
+    .productos-lista {
+        padding: 12px 0;
+    }
+
+    .productos-lista h4 {
+        font-size: 1rem;
+        margin-bottom: 10px;
+    }
+
+    .producto-item {
+        padding: 10px 0;
+        gap: 10px;
+    }
+
+    .prod-img {
+        width: 50px;
+        height: 50px;
+    }
+
+    .prod-info {
+        gap: 8px;
+    }
+
+    .prod-info strong {
+        font-size: 0.9rem;
+    }
+
+    .prod-precio {
+        font-size: 0.95rem;
     }
 
     .orden-acciones {
         flex-direction: column;
+        padding: 12px 0;
+        gap: 8px;
+    }
+
+    .btn-recibo,
+    .btn-repetir {
+        width: 100%;
+        padding: 10px;
+        font-size: 0.9rem;
+    }
+
+    .sin-ordenes {
+        text-align: center;
+        padding: 40px 20px;
+    }
+
+    .icono {
+        font-size: 4rem;
+        margin-bottom: 15px;
+    }
+
+    .sin-ordenes h2 {
+        font-size: 1.4rem;
+        margin-bottom: 10px;
+    }
+
+    .sin-ordenes p {
+        font-size: 0.95rem;
+        margin-bottom: 20px;
+    }
+
+    .btn-comprar {
+        display: inline-block;
+        padding: 10px 20px;
+        font-size: 0.9rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .ordenes-container {
+        padding: 15px 10px;
+    }
+
+    .ordenes-header {
+        margin-bottom: 20px;
+    }
+
+    .ordenes-header h1 {
+        font-size: 1.3rem;
+    }
+
+    .btn-volver {
+        font-size: 0.8rem;
+    }
+
+    .ordenes-lista {
+        gap: 10px;
+    }
+
+    .orden-card {
+        padding: 12px;
+        border-radius: 6px;
+    }
+
+    .orden-info h3 {
+        font-size: 1rem;
+    }
+
+    .fecha {
+        font-size: 0.75rem;
+    }
+
+    .badge {
+        font-size: 0.75rem;
+        padding: 4px 8px;
+    }
+
+    .orden-detalles {
+        gap: 6px;
+    }
+
+    .detalle-item {
+        padding: 4px 0;
+        font-size: 0.8rem;
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .detalle-item .label {
+        font-weight: 600;
+        color: #667eea;
+    }
+
+    .productos-lista {
+        padding: 10px 0;
+        margin-top: 8px;
+        border-top: 1px solid #ecf0f1;
+        padding-top: 10px;
+    }
+
+    .productos-lista h4 {
+        font-size: 0.9rem;
+        margin-bottom: 8px;
+    }
+
+    .producto-item {
+        padding: 8px 0;
+        gap: 8px;
+    }
+
+    .prod-info {
+        flex: 1;
+        gap: 6px;
+    }
+
+    .prod-img {
+        width: 45px;
+        height: 45px;
+    }
+
+    .prod-info strong {
+        font-size: 0.8rem;
+    }
+
+    .cantidad {
+        font-size: 0.7rem;
+    }
+
+    .prod-precio {
+        font-size: 0.85rem;
+        min-width: 70px;
+        text-align: right;
+    }
+
+    .orden-acciones {
+        flex-direction: column;
+        padding: 10px 0;
+        gap: 6px;
+        margin-top: 8px;
+        border-top: 1px solid #ecf0f1;
+        padding-top: 10px;
+    }
+
+    .btn-recibo,
+    .btn-repetir {
+        width: 100%;
+        padding: 8px 10px;
+        font-size: 0.75rem;
+    }
+
+    .sin-ordenes {
+        padding: 30px 15px;
+        text-align: center;
+    }
+
+    .icono {
+        font-size: 3rem;
+        margin-bottom: 12px;
+    }
+
+    .sin-ordenes h2 {
+        font-size: 1.1rem;
+        margin-bottom: 8px;
+    }
+
+    .sin-ordenes p {
+        font-size: 0.85rem;
+        margin-bottom: 15px;
+    }
+
+    .btn-comprar {
+        display: block;
+        width: 100%;
+        padding: 10px;
+        font-size: 0.85rem;
     }
 }
 </style>

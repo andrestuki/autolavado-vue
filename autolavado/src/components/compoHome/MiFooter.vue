@@ -56,52 +56,86 @@ footer div img {
     border-radius: 50%;
 }
 
-@media (max-width: 1024px)
-{
+@media (max-width: 1200px) {
     .footer {
-        display: grid;
-        grid-template-columns: 1fr;
-        gap: 30px;
         height: auto;
+        padding: 25px 15px;
     }
+
+    footer li {
+        font-size: 18px;
+    }
+
     footer div {
-        display: grid;
-        grid-template-columns: 1fr;
-        gap: 20px;
-        justify-items: center;
+        gap: 50px;
     }
+
+    footer div img {
+        height: 120px;
+        margin-right: 50px;
+    }
+}
+
+@media (max-width: 768px) {
+    .footer {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        height: auto;
+        padding: 20px 10px;
+    }
+
+    footer div {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+        justify-items: center;
+        align-items: center;
+    }
+
     footer div img {
         margin-right: 0;
         height: 100px;
     }
+
     footer li {
-        font-size: 15px;
+        font-size: 14px;
+    }
+
+    footer p {
+        font-size: 14px;
     }
 }
 
-@media (max-width: 600px)
-{
-
+@media (max-width: 480px) {
     .footer {
-        display: grid;
-        grid-template-columns: 1fr;
-        gap: 20px;
-        height: auto;
-    }
-    footer div {
-        display: grid;
-        grid-template-columns: 1fr;
+        display: flex;
+        flex-direction: column;
         gap: 15px;
-        justify-items: center;
+        height: auto;
+        padding: 15px 8px;
     }
+
+    footer div {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        justify-items: center;
+        align-items: center;
+    }
+
     footer div img {
         margin-right: 0;
         height: 80px;
     }
+
     footer li {
         font-size: 12px;
     }
 
+    footer p {
+        font-size: 12px;
+    }
 }
 
 </style>

@@ -238,4 +238,204 @@ export default {
     object-fit: cover;
     border: 2px solid white;
 }
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+    .presentacion {
+        height: 500px;
+    }
+
+    .inicio-titulo p {
+        font-size: 50px;
+    }
+
+    .inicio-descripcion p {
+        font-size: 15px;
+    }
+
+    .img-presentacion {
+        width: 45%;
+    }
+
+    .burbuja1 {
+        width: 140px;
+        height: 140px;
+    }
+
+    .burbuja2 {
+        width: 100px;
+        height: 100px;
+    }
+
+    .burbuja5 {
+        width: 120px;
+        height: 120px;
+    }
+}
+
+@media (max-width: 768px) {
+    .presentacion {
+        height: 400px;
+        justify-content: center;
+    }
+
+    .inicio-presentacion {
+        padding: 20px 15px;
+        margin-left: 0;
+    }
+
+    .inicio-titulo p {
+        font-size: 36px;
+        text-align: center;
+    }
+
+    .inicio-descripcion p {
+        font-size: 13px;
+        text-align: center;
+    }
+
+    .inicio-buttons {
+        gap: 10px;
+        margin-top: 15px;
+    }
+
+    .inicio-buttons button {
+        padding: 8px 15px;
+        font-size: 14px;
+    }
+
+    .img-presentacion {
+        width: 50%;
+    }
+
+    .burbuja1 {
+        width: 110px;
+        height: 110px;
+    }
+
+    .burbuja2 {
+        width: 80px;
+        height: 80px;
+    }
+
+    .burbuja3 {
+        width: 35px;
+        height: 35px;
+    }
+
+    .burbuja4 {
+        width: 45px;
+        height: 45px;
+    }
+
+    .burbuja5 {
+        width: 100px;
+        height: 100px;
+    }
+
+    .burbuja6 {
+        width: 30px;
+        height: 30px;
+    }
+
+    .burbuja7 {
+        width: 60px;
+        height: 60px;
+    }
+
+    .burbuja8 {
+        width: 45px;
+        height: 45px;
+    }
+}
+
+@media (max-width: 480px) {
+    .presentacion {
+        height: 350px;
+        flex-direction: column;
+        padding: 20px 10px;
+    }
+
+    .inicio-presentacion {
+        padding: 15px 10px;
+        height: auto;
+        margin-left: 0;
+        justify-content: flex-start;
+    }
+
+    .inicio-titulo p {
+        font-size: 24px;
+        text-align: center;
+        line-height: 1.3;
+    }
+
+    .inicio-descripcion p {
+        font-size: 11px;
+        text-align: center;
+        margin: 0.8rem 0;
+    }
+
+    .inicio-buttons {
+        gap: 8px;
+        margin-top: 10px;
+        flex-wrap: wrap;
+    }
+
+    .inicio-buttons button {
+        padding: 6px 12px;
+        font-size: 12px;
+        flex: 1;
+        min-width: 120px;
+    }
+
+    .img-presentacion {
+        width: 60%;
+        height: 80%;
+    }
+
+    .burbujas {
+        gap: 15px;
+    }
+
+    .burbuja1 {
+        width: 80px;
+        height: 80px;
+        margin-left: 10px;
+    }
+
+    .burbuja2 {
+        width: 60px;
+        height: 60px;
+    }
+
+    .burbuja3 {
+        width: 25px;
+        height: 25px;
+    }
+
+    .burbuja4 {
+        width: 30px;
+        height: 30px;
+    }
+
+    .burbuja5 {
+        width: 70px;
+        height: 70px;
+    }
+
+    .burbuja6 {
+        width: 20px;
+        height: 20px;
+    }
+
+    .burbuja7 {
+        width: 40px;
+        height: 40px;
+    }
+
+    .burbuja8 {
+        width: 30px;
+        height: 30px;
+    }
+}
 </style>

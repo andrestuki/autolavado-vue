@@ -28,31 +28,31 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="item in cartStore.cartItems" :key="item.id_producto">
-              <td class="producto-info">
+            <tr v-for="item in cartStore.cartItems" :key="obtenerIdProducto(item)">
+              <td class="producto-info" data-label="Producto">
                 <img v-if="item.imagen" :src="item.imagen" :alt="item.nombre" class="producto-img" />
                 <div class="producto-detalles">
                   <strong>{{ item.nombre }}</strong>
                   <p v-if="item.marca" class="marca">{{ item.marca }}</p>
                 </div>
               </td>
-              <td class="precio">${{ Number(item.precio).toLocaleString('es-CO') }}</td>
-              <td class="cantidad">
+              <td class="precio" data-label="Precio">${{ Number(item.precio).toLocaleString('es-CO') }}</td>
+              <td class="cantidad" data-label="Cantidad">
                 <div class="cantidad-control">
-                  <button @click="decrementarCantidad(item.id_producto)" class="btn-cantidad">−</button>
+                  <button @click="decrementarCantidad(obtenerIdProducto(item))" class="btn-cantidad">−</button>
                   <input 
                     type="number" 
                     :value="item.cantidad" 
-                    @change="actualizarCantidad(item.id_producto, $event)"
+                    @change="actualizarCantidad(obtenerIdProducto(item), $event)"
                     min="1"
                     class="input-cantidad"
                   />
-                  <button @click="incrementarCantidad(item.id_producto)" class="btn-cantidad">+</button>
+                  <button @click="incrementarCantidad(obtenerIdProducto(item))" class="btn-cantidad">+</button>
                 </div>
               </td>
-              <td class="subtotal">${{ (Number(item.precio) * item.cantidad).toLocaleString('es-CO') }}</td>
-              <td class="accion">
-                <button @click="eliminarProducto(item.id_producto)" class="btn-eliminar" title="Eliminar">
+              <td class="subtotal" data-label="Subtotal">${{ (Number(item.precio) * item.cantidad).toLocaleString('es-CO') }}</td>
+              <td class="accion" data-label="Acción">
+                <button @click="eliminarProducto(obtenerIdProducto(item))" class="btn-eliminar" title="Eliminar">
                   🗑️ Eliminar
                 </button>
               </td>
@@ -171,13 +171,13 @@ export default {
   },
   methods: {
     incrementarCantidad(idProducto) {
-      const item = this.cartStore.cartItems.find(i => i.id_producto === idProducto)
+      const item = this.cartStore.cartItems.find(i => this.obtenerIdProducto(i) === idProducto)
       if (item) {
         this.cartStore.updateQuantity(idProducto, item.cantidad + 1)
       }
     },
     decrementarCantidad(idProducto) {
-      const item = this.cartStore.cartItems.find(i => i.id_producto === idProducto)
+      const item = this.cartStore.cartItems.find(i => this.obtenerIdProducto(i) === idProducto)
       if (item && item.cantidad > 1) {
         this.cartStore.updateQuantity(idProducto, item.cantidad - 1)
       }
@@ -189,9 +189,20 @@ export default {
       }
     },
     eliminarProducto(idProducto) {
-      if (confirm('¿Estás seguro de que quieres eliminar este producto?')) {
+      const item = this.cartStore.cartItems.find(i => this.obtenerIdProducto(i) === idProducto)
+      if (item && confirm(`¿Eliminar ${item.nombre} del carrito?`)) {
         this.cartStore.removeFromCart(idProducto)
       }
+    },
+    obtenerIdProducto(producto) {
+      // Si ya tiene id_producto normalizado (contiene guion), usarlo
+      if (producto.id_producto && producto.id_producto.includes('-')) {
+        return producto.id_producto
+      }
+      
+      // Sino, crear uno basado en categoría e ID
+      const id = producto.id_hidrobomba || producto.id_pulidora || producto.id_shampoo || producto.id_pintura
+      return `${producto.id_categoria}-${id}`
     },
     limpiarCarrito() {
       if (confirm('¿Estás seguro de que quieres vaciar el carrito?')) {
@@ -700,19 +711,50 @@ export default {
 }
 
 /* Responsive */
+@media (max-width: 1200px) {
+  .tabla-carrito th,
+  .tabla-carrito td {
+    padding: 12px;
+  }
+
+  .tabla-carrito {
+    font-size: 14px;
+  }
+}
+
 @media (max-width: 768px) {
+  .carrito-container {
+    padding: 20px 15px;
+  }
+
   .carrito-header {
     flex-direction: column;
     gap: 15px;
     text-align: center;
+    margin-bottom: 25px;
+  }
+
+  .carrito-header h1 {
+    font-size: 1.6rem;
+  }
+
+  .btn-volver {
+    padding: 8px 15px;
+    font-size: 0.9rem;
   }
 
   .carrito-contenido {
     grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .tabla-wrapper {
+    overflow-x: auto;
   }
 
   .tabla-carrito {
     font-size: 13px;
+    min-width: 100%;
   }
 
   .tabla-carrito th,
@@ -723,6 +765,203 @@ export default {
   .producto-img {
     width: 50px;
     height: 50px;
+  }
+
+  .producto-detalles {
+    font-size: 0.9rem;
+  }
+
+  .cantidad-control {
+    gap: 3px;
+  }
+
+  .btn-cantidad {
+    width: 28px;
+    height: 28px;
+    font-size: 0.9rem;
+  }
+
+  .input-cantidad {
+    width: 40px;
+    font-size: 0.85rem;
+    padding: 4px;
+  }
+
+  .resumen-section {
+    padding: 15px;
+  }
+
+  .resumen-section h2 {
+    font-size: 1.3rem;
+  }
+
+  .resumen-item {
+    font-size: 0.9rem;
+    padding: 6px 0;
+  }
+
+  .total-final {
+    font-size: 1.3rem;
+    padding: 8px 0;
+  }
+
+  .btn-finalizar {
+    padding: 10px;
+    font-size: 0.95rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .carrito-container {
+    padding: 15px 10px;
+  }
+
+  .carrito-header {
+    margin-bottom: 20px;
+  }
+
+  .carrito-header h1 {
+    font-size: 1.3rem;
+  }
+
+  .btn-volver {
+    width: 100%;
+    padding: 10px;
+    font-size: 0.85rem;
+  }
+
+  .tabla-wrapper {
+    margin: 0 -10px;
+  }
+
+  .tabla-carrito {
+    font-size: 11px;
+  }
+
+  .tabla-carrito th,
+  .tabla-carrito td {
+    padding: 8px 4px;
+  }
+
+  .tabla-carrito thead {
+    display: none;
+  }
+
+  .tabla-carrito tbody tr {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid #ecf0f1;
+    margin-bottom: 15px;
+    padding: 12px;
+    border-radius: 8px;
+    gap: 8px;
+  }
+
+  .tabla-carrito td {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 6px 0;
+    border: none;
+  }
+
+  .tabla-carrito td::before {
+    content: attr(data-label);
+    font-weight: bold;
+    color: #667eea;
+    min-width: 80px;
+  }
+
+  .tabla-carrito td.producto-info {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .producto-img {
+    width: 80px;
+    height: 80px;
+    margin-bottom: 8px;
+  }
+
+  .producto-detalles {
+    font-size: 0.8rem;
+    width: 100%;
+  }
+
+  .producto-detalles strong {
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  .cantidad-control {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .btn-cantidad {
+    width: 32px;
+    height: 32px;
+    font-size: 1rem;
+    padding: 0;
+  }
+
+  .input-cantidad {
+    width: 50px;
+    text-align: center;
+  }
+
+  .resumen-section {
+    padding: 15px 12px;
+    margin-top: 10px;
+  }
+
+  .resumen-section h2 {
+    font-size: 1.1rem;
+    margin-bottom: 12px;
+  }
+
+  .resumen-item {
+    font-size: 0.85rem;
+    padding: 5px 0;
+  }
+
+  .total-final {
+    font-size: 1.2rem;
+    padding: 10px 0;
+    margin-top: 8px;
+  }
+
+  .btn-finalizar {
+    width: 100%;
+    padding: 12px;
+    font-size: 0.9rem;
+  }
+
+  .carrito-vacio {
+    text-align: center;
+    padding: 40px 20px;
+  }
+
+  .icono-vacio {
+    font-size: 4rem;
+    margin-bottom: 15px;
+  }
+
+  .carrito-vacio h2 {
+    font-size: 1.2rem;
+    margin-bottom: 8px;
+  }
+
+  .carrito-vacio p {
+    font-size: 0.9rem;
+    margin-bottom: 15px;
+  }
+
+  .btn-comprar {
+    display: inline-block;
+    width: 100%;
+    padding: 10px;
+    font-size: 0.9rem;
   }
 }
 </style>

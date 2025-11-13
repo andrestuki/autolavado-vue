@@ -172,4 +172,118 @@ ul li::before{
     content:"✓ ";
 }
 
+/* Responsive Design */
+@media (max-width: 1200px) {
+    .cards {
+        gap: 15px;
+    }
+
+    .card {
+        width: 200px;
+        padding: 15px;
+    }
+
+    .card h2 {
+        font-size: 18px;
+    }
+
+    .price {
+        font-size: 24px;
+    }
+
+    ul li {
+        font-size: 13px;
+        margin: 6px 0;
+    }
+}
+
+@media (max-width: 768px) {
+    .container {
+        margin: 30px auto;
+        padding: 15px;
+    }
+
+    h1 {
+        font-size: 24px;
+        margin-bottom: 15px;
+    }
+
+    p {
+        font-size: 14px;
+        margin-bottom: 25px;
+    }
+
+    .cards {
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .card {
+        width: 100%;
+        padding: 15px;
+    }
+
+    .card h2 {
+        font-size: 18px;
+    }
+
+    .price {
+        font-size: 22px;
+        margin: 8px 0;
+    }
+
+    ul li {
+        font-size: 12px;
+        margin: 5px 0;
+    }
+}
+
+@media (max-width: 480px) {
+    .container {
+        margin: 20px auto;
+        padding: 10px;
+    }
+
+    h1 {
+        font-size: 18px;
+        margin-bottom: 10px;
+    }
+
+    p {
+        font-size: 12px;
+        margin-bottom: 15px;
+    }
+
+    .cards {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .card {
+        width: 100%;
+        padding: 12px;
+        border-radius: 8px;
+    }
+
+    .card h2 {
+        font-size: 16px;
+        margin-bottom: 8px;
+    }
+
+    .price {
+        font-size: 18px;
+        margin: 6px 0;
+    }
+
+    ul {
+        margin-top: 12px;
+    }
+
+    ul li {
+        font-size: 11px;
+        margin: 4px 0;
+        text-align: left;
+    }
+}
+
 </style>
