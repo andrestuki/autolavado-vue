@@ -5,17 +5,17 @@
         <h1 class="titulo-principal"> Gestión de hidrobombas</h1>
 
         <div class="contenedor-busqueda">
-            <h2 class="subtitulo">Buscar pulidora por ID</h2>
+            <h2 class="subtitulo">Buscar hidrobomba por ID</h2>
             <div class="input-grupo">
-                <input v-model="idBuscado" type="number" placeholder="Ingrese el ID de la pulidora"
+                <input v-model="idBuscado" type="number" placeholder="Ingrese el ID de la hidrobomba"
                     class="input-texto" />
-                <ButtonPrime @click="buscarpulidora" label="Buscar" icon="pi pi-search" class="btn-buscar" />
+                <ButtonPrime @click="buscarHidrobomba" label="Buscar" icon="pi pi-search" class="btn-buscar" />
             </div>
         </div>
 
 
         <div v-if="hidrobombaseleccionado" class="formulario-editar">
-            <h3 class="subtitulo">Editar Pulidora</h3>
+            <h3 class="subtitulo">Editar Hidrobomba</h3>
 
             <div class="form-grid">
                 <input v-model="hidrobombaseleccionado.nombre" class="input-texto" placeholder="Nombre" />
@@ -26,14 +26,14 @@
             </div>
             <div class="btn">
                 <ButtonPrime @click="guardarCambios" label="Guardar Cambios" icon="pi pi-save" class="btn-guardar" />
-                <ButtonPrime @click="eliminarProducto(index)" label="Eliminar productos" class="btn-eliminar">
+                <ButtonPrime @click="eliminarProductoSeleccionado" label="Eliminar Producto" class="btn-eliminar">
                 </ButtonPrime>
             </div>
 
         </div>
 
         <div v-else-if="busquedaRealizada" class="mensaje-error">
-            <p>Pulidora no encontrada.</p>
+            <p>Hidrobomba no encontrada.</p>
         </div>
 
         <div class="tabla-contenedor">
@@ -48,8 +48,8 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr v-for="p in hidrobombas" :key="p.id_pulidora">
-                        <td>{{ p.id_pulidora }}</td>
+                    <tr v-for="p in hidrobombas" :key="p.id_hidrobomba">
+                        <td>{{ p.id_hidrobomba }}</td>
                         <td>{{ p.nombre }}</td>
                         <td>{{ pesoCOL(p.precio) }}</td>
                         <td :class="{
@@ -66,10 +66,10 @@
 
 
         <div class="admin-agregar">
-            <h2>Agregar nueva pulidora</h2>
+            <h2>Agregar nueva hidrobomba</h2>
 
             <form @submit.prevent="agregarProducto">
-                <input v-model="nuevo.id_pulidora" type="number" placeholder="ID" required />
+                <input v-model="nuevo.id_hidrobomba" type="number" placeholder="ID" required />
                 <input v-model="nuevo.nombre" placeholder="Nombre" required />
                 <input v-model="nuevo.marca" placeholder="Marca" required />
                 <input v-model="nuevo.precio" type="number" placeholder="Precio (COP)" required />
@@ -102,7 +102,7 @@ import MiHeader from '@/components/compoHome/MiHeaderNew.vue';
 
 
 export default {
-    name: 'Admin-Hidrobombas',
+    name: 'AdminHidrobombas',
     components: { MiHeader, MiFooter },
     data() {
         return {
@@ -111,7 +111,7 @@ export default {
             idBuscado: '',
             hidrobombaseleccionado: null,
             busquedaRealizada: false,
-            id_pulidora: '',
+            id_hidrobomba: '',
             nombre: '',
             marca: '',
             precio: '',
@@ -120,7 +120,7 @@ export default {
             imagen: '',
             imagenPreview: null,
             nuevo: {
-                id_pulidora: '',
+                id_hidrobomba: '',
                 nombre: '',
                 marca: '',
                 precio: '',
@@ -132,26 +132,122 @@ export default {
         };
     },
     created() {
-
-        const guardadas = localStorage.getItem('hidrobombas')
-        this.hidrobombas = guardadas ? JSON.parse(guardadas) : []
+        // Cargar desde el sistema unificado de productos
+        const productosJSON = localStorage.getItem('productos')
+        const todosLosProductos = productosJSON ? JSON.parse(productosJSON) : []
+        
+        // Filtrar solo hidrobombas (categoría 1)
+        this.hidrobombas = todosLosProductos.filter(p => p.id_categoria === 1)
+        
+        // Si no hay productos en el sistema unificado, intentar cargar desde la lista específica
+        if (this.hidrobombas.length === 0) {
+            const guardadas = localStorage.getItem('hidrobombas')
+            this.hidrobombas = guardadas ? JSON.parse(guardadas) : []
+        }
     },
     methods: {
-        buscarpulidora() {
+        buscarHidrobomba() {
             this.hidrobombaseleccionado = this.hidrobombas.find(
-                (p) => p.id_pulidora === Number(this.idBuscado)
+                (p) => p.id_hidrobomba === Number(this.idBuscado)
             );
             this.busquedaRealizada = true;
         },
         guardarCambios() {
+            try {
+                // Encontrar el índice del producto seleccionado
+                const indice = this.hidrobombas.findIndex(
+                    (p) => p.id_hidrobomba === this.hidrobombaseleccionado.id_hidrobomba
+                );
 
-            localStorage.setItem('hidrobombas', JSON.stringify(this.hidrobombas));
-            alert('Cambios guardados correctamente.');
+                if (indice !== -1) {
+                    // Actualizar el producto en el array local
+                    this.hidrobombas[indice] = { ...this.hidrobombaseleccionado };
+                    
+                    // Actualizar en el sistema unificado de productos
+                    const productosJSON = localStorage.getItem('productos')
+                    let todosLosProductos = productosJSON ? JSON.parse(productosJSON) : []
+                    
+                    const indiceGlobal = todosLosProductos.findIndex(p => 
+                        p.id_categoria === 1 && p.id_hidrobomba === this.hidrobombaseleccionado.id_hidrobomba
+                    )
+                    
+                    if (indiceGlobal !== -1) {
+                        todosLosProductos[indiceGlobal] = { ...this.hidrobombaseleccionado }
+                        localStorage.setItem('productos', JSON.stringify(todosLosProductos))
+                    }
+                    
+                    // También guardar en la lista específica
+                    localStorage.setItem('hidrobombas', JSON.stringify(this.hidrobombas));
+                    
+                    // Emitir evento para actualizar vistas
+                    window.dispatchEvent(new CustomEvent('productosActualizados'))
+                    
+                    alert(' Hidrobomba actualizada correctamente');
+                } else {
+                    alert(' No se encontró la hidrobomba');
+                }
+            } catch (error) {
+                console.error('Error guardando cambios:', error)
+                alert(' Error al guardar: ' + error.message)
+            }
         },
         eliminarProducto(index) {
             if (confirm("¿Seguro que quieres eliminar este producto?")) {
+                const productoEliminado = this.hidrobombas[index]
+                
+                // Eliminar del array local
                 this.hidrobombas.splice(index, 1);
+                
+                // Eliminar del sistema unificado de productos
+                const productosJSON = localStorage.getItem('productos')
+                let todosLosProductos = productosJSON ? JSON.parse(productosJSON) : []
+                
+                todosLosProductos = todosLosProductos.filter(p => 
+                    !(p.id_categoria === 1 && p.id_hidrobomba === productoEliminado.id_hidrobomba)
+                )
+                
+                localStorage.setItem("productos", JSON.stringify(todosLosProductos));
                 localStorage.setItem("hidrobombas", JSON.stringify(this.hidrobombas));
+                
+                // Emitir evento para actualizar vistas
+                window.dispatchEvent(new CustomEvent('productosActualizados'))
+                
+                alert(' Producto eliminado correctamente');
+            }
+        },
+        eliminarProductoSeleccionado() {
+            if (!this.hidrobombaseleccionado) {
+                alert(' No hay producto seleccionado');
+                return;
+            }
+            
+            if (confirm(`¿Seguro que quieres eliminar "${this.hidrobombaseleccionado.nombre}"?`)) {
+                const indice = this.hidrobombas.findIndex(
+                    (p) => p.id_hidrobomba === this.hidrobombaseleccionado.id_hidrobomba
+                );
+                
+                if (indice !== -1) {
+                    // Eliminar del array local
+                    this.hidrobombas.splice(indice, 1);
+                    
+                    // Eliminar del sistema unificado de productos
+                    const productosJSON = localStorage.getItem('productos')
+                    let todosLosProductos = productosJSON ? JSON.parse(productosJSON) : []
+                    
+                    todosLosProductos = todosLosProductos.filter(p => 
+                        !(p.id_categoria === 1 && p.id_hidrobomba === this.hidrobombaseleccionado.id_hidrobomba)
+                    )
+                    
+                    localStorage.setItem("productos", JSON.stringify(todosLosProductos));
+                    localStorage.setItem("hidrobombas", JSON.stringify(this.hidrobombas));
+                    
+                    // Emitir evento para actualizar vistas
+                    window.dispatchEvent(new CustomEvent('productosActualizados'))
+                    
+                    this.hidrobombaseleccionado = null;
+                    this.busquedaRealizada = false;
+                    alert(' Producto eliminado correctamente');
+                }
             }
         },
         pesoCOL(valor) {
@@ -164,34 +260,103 @@ export default {
         cargarImagen(e) {
             const file = e.target.files[0]
             if (file) {
+                // Solo guardar el nombre del archivo, no el contenido base64
+                const nombreArchivo = file.name
+                // Para preview, usar FileReader pero no guardar en el producto
                 const reader = new FileReader()
                 reader.onload = () => {
-                    this.nuevo.imagen = reader.result
                     this.nuevo.imagenPreview = reader.result
+                    // Guardar solo la ruta/nombre del archivo
+                    this.nuevo.imagen = `/imagenesHidrobombas/${nombreArchivo}`
                 }
                 reader.readAsDataURL(file)
             }
         },
-        agregarProducto() {
-            // Crear copia del producto
-            const producto = { ...this.nuevo }
-            this.hidrobombas.push(producto)
+        async agregarProducto() {
+            try {
+                // Validar que todos los campos requeridos estén llenos
+                if (!this.nuevo.id_hidrobomba || !this.nuevo.nombre || !this.nuevo.marca || 
+                    !this.nuevo.precio || !this.nuevo.cantidad) {
+                    alert(' Por favor completa todos los campos requeridos')
+                    return
+                }
 
-            // Guardar en localStorage
-            localStorage.setItem('hidrobombas', JSON.stringify(this.hidrobombas))
+                // Crear producto normalizado
+                const producto = {
+                    id_hidrobomba: Number(this.nuevo.id_hidrobomba),
+                    id_categoria: 1, // Hidrobombas
+                    nombre: this.nuevo.nombre.trim(),
+                    marca: this.nuevo.marca.trim(),
+                    precio: Number(this.nuevo.precio),
+                    raiting: Number(this.nuevo.raiting) || 4.5,
+                    cantidad: Number(this.nuevo.cantidad),
+                    imagen: this.nuevo.imagen || '/imagenesHidrobombas/default.jpg',
+                    // Normalizar ID de producto
+                    id_producto: `1-${this.nuevo.id_hidrobomba}`
+                }
 
-            alert('✅ Producto agregado correctamente')
+                // Agregar a la lista local
+                this.hidrobombas.push(producto)
 
-            // Limpiar formulario
-            this.nuevo = {
-                id_pulidora: '',
-                nombre: '',
-                marca: '',
-                precio: '',
-                raiting: '',
-                cantidad: '',
-                imagen: '',
-                imagenPreview: null
+                // Cargar productos existentes desde localStorage
+                const productosJSON = localStorage.getItem('productos')
+                let todosLosProductos = productosJSON ? JSON.parse(productosJSON) : []
+
+                // Verificar si el producto ya existe
+                const existe = todosLosProductos.find(p => 
+                    p.id_categoria === 1 && p.id_hidrobomba === producto.id_hidrobomba
+                )
+
+                if (existe) {
+                    // Actualizar producto existente
+                    const indice = todosLosProductos.findIndex(p => 
+                        p.id_categoria === 1 && p.id_hidrobomba === producto.id_hidrobomba
+                    )
+                    todosLosProductos[indice] = { ...todosLosProductos[indice], ...producto }
+                } else {
+                    // Agregar nuevo producto
+                    todosLosProductos.push(producto)
+                }
+
+                // Guardar en el sistema unificado de productos
+                try {
+                    localStorage.setItem('productos', JSON.stringify(todosLosProductos))
+                } catch (error) {
+                    if (error.name === 'QuotaExceededError') {
+                        alert(' Error: No hay suficiente espacio en el almacenamiento. Por favor, elimina algunos productos o limpia el localStorage.')
+                        // Revertir cambios locales
+                        this.hidrobombas.pop()
+                        return
+                    }
+                    throw error
+                }
+
+                // También guardar en la lista específica de hidrobombas (para compatibilidad)
+                try {
+                    localStorage.setItem('hidrobombas', JSON.stringify(this.hidrobombas))
+                } catch (error) {
+                    console.warn('No se pudo guardar en hidrobombas específico:', error)
+                }
+
+                // Emitir evento para actualizar vistas
+                window.dispatchEvent(new CustomEvent('productosActualizados'))
+
+                alert(' Producto agregado correctamente')
+
+                // Limpiar formulario
+                this.nuevo = {
+                    id_hidrobomba: '',
+                    nombre: '',
+                    marca: '',
+                    precio: '',
+                    raiting: '',
+                    cantidad: '',
+                    imagen: '',
+                    imagenPreview: null
+                }
+            } catch (error) {
+                console.error('Error agregando producto:', error)
+                alert(' Error al agregar producto: ' + error.message)
             }
         }
     },
@@ -235,8 +400,8 @@ export default {
     gap: 10px;
     border-radius: 5px;
     background-color: #b62323 !important;
-    pointer-events: none;
     color: #FFFFFF !important;
+    cursor: pointer;
 }
 
 

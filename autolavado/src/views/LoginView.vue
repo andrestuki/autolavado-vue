@@ -3,7 +3,7 @@
     <!-- Notificación de éxito -->
     <div v-if="mostrarNotificacion" class="toast toast-success">
       <div class="toast-content">
-        <span class="toast-icon">✅</span>
+        <span class="toast-icon"></span>
         <div class="toast-texto">
           <p class="toast-titulo">¡Login Exitoso!</p>
           <p class="toast-mensaje">Bienvenido, {{ username }}</p>
@@ -16,22 +16,22 @@
       <form @submit.prevent="login">
         <div>
           <label>Usuario:</label>
-          <input v-model="username" type="text" required />
+          <input v-model="username" type="text" required placeholder="Ingresa tu usuario" />
         </div>
         <div>
           <label>Contraseña:</label>
-          <input v-model="password" type="password" required />
+          <input v-model="password" type="password" required placeholder="Ingresa tu contraseña" />
         </div>
         <button type="submit" :disabled="loading">
           {{ loading ? "Cargando..." : "Entrar" }}
         </button>
       </form>
 
-      <p v-if="error" class="error-text">{{ error }}</p>
+      <p v-if="error" class="error-text error-alert">{{ error }}</p>
 
       <p class="registro-texto">
-        ¿Eres nuevo usuario? Click acá.
-        <router-link to="/signup" class="registro-link">Registrar</router-link>
+        ¿Eres nuevo usuario?
+        <router-link to="/signup" class="registro-link">Registrarse</router-link>
       </p>
     </div>
   </div>
@@ -60,14 +60,31 @@ export default {
       // Simulamos un pequeño delay para que se vea más realista
       setTimeout(() => {
         try {
+          // Limpiar espacios en blanco de las credenciales ingresadas
+          const usernameLimpio = this.username.trim();
+          const passwordLimpio = this.password.trim();
+
           // Obtener todos los usuarios registrados del localStorage
           const usuariosJSON = localStorage.getItem("usuarios");
           const usuarios = usuariosJSON ? JSON.parse(usuariosJSON) : [];
 
+          console.log(" Buscando usuario:", usernameLimpio);
+          console.log(" Usuarios disponibles:", usuarios.map(u => ({ usuario: u.usuario, idPerfil: u.idPerfil })));
+
           // Buscar si existe un usuario con esas credenciales
-          const usuarioEncontrado = usuarios.find(
-            (u) => u.usuario === this.username && u.password === this.password
-          );
+          // Comparar sin espacios y de forma case-sensitive para usuario pero flexible para password
+          const usuarioEncontrado = usuarios.find((u) => {
+            const usuarioMatch = (u.usuario || "").trim() === usernameLimpio;
+            const passwordMatch = (u.password || "").trim() === passwordLimpio;
+            
+            if (usuarioMatch && !passwordMatch) {
+              console.log(" Usuario encontrado pero contraseña incorrecta");
+              console.log("   Esperado:", u.password);
+              console.log("   Recibido:", passwordLimpio);
+            }
+            
+            return usuarioMatch && passwordMatch;
+          });
 
           if (usuarioEncontrado) {
             // Login exitoso: guardar el usuario actual
@@ -80,7 +97,8 @@ export default {
 
             // Mostrar notificación
             this.mostrarNotificacion = true;
-            console.log("✅ Login exitoso para usuario:", this.username);
+            console.log(" Login exitoso para usuario:", usuarioEncontrado.usuario);
+            console.log("   Perfil:", usuarioEncontrado.idPerfil === 1 ? "Admin" : usuarioEncontrado.idPerfil === 2 ? "Trabajador" : "Cliente");
 
             // Redirigir después de 2 segundos
             setTimeout(() => {
@@ -88,10 +106,12 @@ export default {
             }, 2000);
           } else {
             this.error = "Usuario o contraseña incorrectos";
-            console.warn("❌ Credenciales inválidas");
+            console.warn(" Credenciales inválidas");
+            console.warn("   Usuario ingresado:", usernameLimpio);
+            console.warn("   Contraseña ingresada:", passwordLimpio ? "***" : "(vacía)");
           }
         } catch (err) {
-          console.error("❌ Error al iniciar sesión:", err);
+          console.error(" Error al iniciar sesión:", err);
           this.error = "Error inesperado: " + err.message;
         } finally {
           this.loading = false;
@@ -110,96 +130,141 @@ export default {
 </script>
 
 <style scoped>
-body {
-  overflow: hidden;
-  margin: 0;
-}
-
 .login-page-bg {
-  min-height: 100vh;
   background: url('@/assets/imagenesHome/fondooojpeg.jpeg') no-repeat center;
   background-size: cover;
+  min-height: 100vh;
   display: flex;
-  align-items: center;
   justify-content: center;
+  align-items: center;
+  padding: 20px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 .login {
-  max-width: 220px;
+  background: white;
+  padding: 40px;
+  border-radius: 12px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
   width: 100%;
-  padding: 30px 30px;
-  background: rgba(249, 249, 249, 0.76);
-  border-radius: 8px;
-  box-shadow: 0 2px 45px #000e;
+  max-width: 450px;
+  animation: slideIn 0.3s ease-in-out;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+h2 {
+  text-align: center;
+  color: #333;
+  margin-bottom: 30px;
+  font-size: 28px;
+  font-weight: 600;
+}
+
+form {
   display: flex;
   flex-direction: column;
-  align-items: center;
+  gap: 15px;
 }
 
-.login h2 {
-  margin-bottom: 20px;
-  margin-top: auto;
-  color: #333;
+div {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
 }
 
-.login label {
-  display: block;
-  margin-bottom: 6px;
-  font-weight: bold;
-  color: #333;
+label {
+  color: #555;
+  font-weight: 600;
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
-.login input {
-  width: 100%;
-  padding: 8px;
-  margin-bottom: 16px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  box-sizing: border-box;
+input {
+  padding: 12px 15px;
+  border: 2px solid #e0e0e0;
+  border-radius: 6px;
+  font-size: 14px;
+  transition: all 0.3s ease;
+  font-family: inherit;
 }
 
-.login button {
-  width: 50%;
-  padding: 10px;
-  background: #000000;
-  color: #fff;
+input:focus {
+  outline: none;
+  border-color: #c92b0f;
+  box-shadow: 0 0 0 3px rgba(201, 43, 15, 0.1);
+}
+
+input:hover {
+  border-color: #bbb;
+}
+
+button {
+  padding: 12px 20px;
+  margin-top: 10px;
+  background: linear-gradient(135deg, #c00a0a 0%, #920909 100%);
+  color: white;
   border: none;
-  border-radius: 4px;
-  font-weight: bold;
-  margin: 5px 0 5px 0;
+  border-radius: 6px;
+  font-size: 16px;
+  font-weight: 600;
   cursor: pointer;
-  transition: 0.2s ease;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 1px;
 }
 
-.login button:disabled {
+button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 20px rgba(201, 43, 15, 0.4);
+}
+
+button:disabled {
   opacity: 0.6;
   cursor: not-allowed;
 }
 
-.login button:hover:not(:disabled) {
-  background: #333;
+.error-text {
+  color: #e74c3c;
+  font-size: 12px;
+  font-weight: 500;
 }
 
-.error-text {
-  color: red;
-  margin-top: 5px;
+.error-alert {
+  background-color: #fadbd8;
+  padding: 10px;
+  border-radius: 4px;
   text-align: center;
+  margin-top: 10px;
 }
 
 .registro-texto {
-  margin-top: 15px;
-  font-size: 14px;
-  color: #333;
   text-align: center;
+  margin-top: 20px;
+  color: #777;
+  font-size: 14px;
 }
 
 .registro-link {
-  color: blue;
-  font-weight: bold;
+  color: #cc2009;
   text-decoration: none;
+  font-weight: 600;
+  transition: color 0.3s ease;
 }
 
 .registro-link:hover {
+  color: #920909;
   text-decoration: underline;
 }
 
@@ -275,6 +340,22 @@ body {
   to {
     transform: translateX(400px);
     opacity: 0;
+  }
+}
+
+@media (max-width: 600px) {
+  .login {
+    padding: 30px 20px;
+  }
+
+  h2 {
+    font-size: 24px;
+    margin-bottom: 20px;
+  }
+
+  button {
+    padding: 10px 15px;
+    font-size: 14px;
   }
 }
 </style>

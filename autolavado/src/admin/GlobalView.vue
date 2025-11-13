@@ -8,7 +8,7 @@
     </div>
     <div class="servicios">
         <div class="servicio">
-            <router-link to="/PulidorasAdmin">
+            <router-link to="/admin/pulidoras">
                 <img src="@/assets/imagenesHome/pulidora.webp" alt="">
                 <p class="texto-imagen">PULIDORAS Y<br><span>CERAS</span> </p>
                 <p class="texto-invisible">BRILLO PROFESIONAL<br>PROTECION DURADERA<br>ACADO ESPEJO</p>
@@ -16,7 +16,7 @@
 
         </div>
         <div class="servicio">
-            <router-link to="/Admin-Pinturas">
+            <router-link to="/admin/pinturas">
                 <img src="@/assets/imagenesHome/pintura.webp" alt="">
             <p class="texto-imagen">PINTURAS PARA<br><span>AUTOS</span></p>
             <p class="texto-invisible">COLORES ORIGINALES<br>RESISTENCIA GARANTIZADA<br>APLICACION PRECISA</p>
@@ -24,7 +24,7 @@
             
         </div>
         <div class="servicio">
-            <router-link to="/Admin-Shampoos">
+            <router-link to="/admin/shampoos">
                 <img src="@/assets/imagenesHome/shampu.webp" alt="">
                 <p class="texto-imagen">SHAMPOO PARA<br><span>AUTOS</span> </p>
                 <p class="texto-invisible">ESPUMA ACTIVA<br>LIMPIEZA PROFUNDA<br>CUIDADO DE PINTURA</p>
@@ -33,7 +33,7 @@
 
         </div>
         <div class="servicio">
-            <router-link to="/Admin-Hidrobombas">
+            <router-link to="/admin/hidrobombas">
                 <img src="@/assets/imagenesHome/hidrobomba.webp" alt="">
                 <p class="texto-imagen">HIDROBOMBAS Y<br><span>MAS</span> </p>
                 <p class="texto-invisible">ALTA PRESION<br>AHORRO DE AGUA<br>MAXIMA EFICIENCIA</p>
@@ -41,6 +41,13 @@
             </router-link>
             
 
+        </div>
+        <div class="servicio">
+            <router-link to="/admin/citas">
+                <img src="@/assets/imagenesHome/hidrobomba.webp" alt="">
+                <p class="texto-imagen">GESTIÓN DE<br><span>CITAS</span> </p>
+                <p class="texto-invisible">VER RESERVAS<br>CONFIRMAR CITAS<br>GESTIÓN COMPLETA</p>
+            </router-link>
         </div>
     </div>
     <MiFooter></MiFooter>
@@ -87,11 +94,23 @@ a {
 
 .servicios {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(5, 1fr);
     gap: 20px;
     margin-top: -150px;
     padding: 100px;
     overflow: hidden;
+}
+
+@media (max-width: 1200px) {
+    .servicios {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .servicios {
+        grid-template-columns: repeat(2, 1fr);
+    }
 }
 
 .servicio img {

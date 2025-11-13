@@ -40,7 +40,7 @@
                             </div>
                             <button @click="agregarAlCarrito(producto)" class="btn-agregar"
                                 :disabled="producto.cantidad === 0">
-                                🛒 Agregar
+ Agregar
                             </button>
                         </div>
                     </div>
@@ -77,10 +77,10 @@ export default {
         }
     },
     methods: {
-        async cargarProductos() {
+        async cargarProductos(forzarRecarga = false) {
             this.cargando = true
             try {
-                const todosLosProductos = await cargarProductos()
+                const todosLosProductos = await cargarProductos(forzarRecarga)
                 // Filtrar solo pulidoras (categoría 3)
                 this.productos = todosLosProductos.filter((p) => p.id_categoria === 3)
             } catch (error) {
@@ -102,12 +102,30 @@ export default {
                 cantidad: 1,
             }
 
-            this.cartStore.addToCart(item)
-            alert(`✅ ${producto.nombre} agregado al carrito`)
+            const resultado = this.cartStore.addToCart(item)
+            if (resultado.success) {
+                alert(` ${producto.nombre} agregado al carrito`)
+            } else {
+                alert(` ${resultado.mensaje}`)
+            }
         },
     },
     mounted() {
         this.cargarProductos()
+        
+        // Guardar referencia de la función para poder removerla después
+        this.recargarProductos = () => {
+            this.cargarProductos(true)
+        }
+        
+        // Escuchar evento de actualización de productos
+        window.addEventListener('productosActualizados', this.recargarProductos)
+    },
+    beforeUnmount() {
+        // Limpiar listener al desmontar el componente
+        if (this.recargarProductos) {
+            window.removeEventListener('productosActualizados', this.recargarProductos)
+        }
     },
 }
 </script>

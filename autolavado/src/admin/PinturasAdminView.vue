@@ -14,7 +14,7 @@
           class="input-texto"
         />
         <ButtonPrime
-          @click="buscarpintura"
+          @click="buscarPintura"
           label="Buscar"
           icon="pi pi-search"
           class="btn-buscar"
@@ -34,7 +34,7 @@
       </div>
       <div class="btn">
         <ButtonPrime @click="guardarCambios" label="Guardar Cambios" icon="pi pi-save" class="btn-guardar" />
-        <ButtonPrime @click="eliminarProducto(index)" label="Eliminar productos" class="btn-eliminar"></ButtonPrime>
+        <ButtonPrime @click="eliminarProductoSeleccionado" label="Eliminar Producto" class="btn-eliminar"></ButtonPrime>
       </div>
       
     </div>
@@ -108,7 +108,7 @@ import MiHeader from '@/components/compoHome/MiHeaderNew.vue';
 
 
 export default {
-  name: 'Admin-Pinturas',
+  name: 'AdminPinturas',
   components: { MiHeader, MiFooter },
   data() {
     return {
@@ -138,26 +138,122 @@ export default {
     };
   },
   created() {
+    // Cargar desde el sistema unificado de productos
+    const productosJSON = localStorage.getItem('productos')
+    const todosLosProductos = productosJSON ? JSON.parse(productosJSON) : []
     
-    const guardadas = localStorage.getItem('pinturas')
-    this.pinturas = guardadas ? JSON.parse(guardadas) : []
+    // Filtrar solo pinturas (categoría 2)
+    this.pinturas = todosLosProductos.filter(p => p.id_categoria === 2)
+    
+    // Si no hay productos en el sistema unificado, intentar cargar desde la lista específica
+    if (this.pinturas.length === 0) {
+      const guardadas = localStorage.getItem('pinturas')
+      this.pinturas = guardadas ? JSON.parse(guardadas) : []
+    }
   },
   methods: {
-    buscarpintura() {
+    buscarPintura() {
       this.pinturaseleccionado = this.pinturas.find(
         (p) => p.id_pintura === Number(this.idBuscado)
       );
       this.busquedaRealizada = true;
     },
     guardarCambios() {
-      
-      localStorage.setItem('pinturas', JSON.stringify(this.pinturas));
-      alert('Cambios guardados correctamente.');
+      try {
+        // Encontrar el índice del producto seleccionado
+        const indice = this.pinturas.findIndex(
+          (p) => p.id_pintura === this.pinturaseleccionado.id_pintura
+        );
+
+        if (indice !== -1) {
+          // Actualizar el producto en el array local
+          this.pinturas[indice] = { ...this.pinturaseleccionado };
+          
+          // Actualizar en el sistema unificado de productos
+          const productosJSON = localStorage.getItem('productos')
+          let todosLosProductos = productosJSON ? JSON.parse(productosJSON) : []
+          
+          const indiceGlobal = todosLosProductos.findIndex(p => 
+            p.id_categoria === 2 && p.id_pintura === this.pinturaseleccionado.id_pintura
+          )
+          
+          if (indiceGlobal !== -1) {
+            todosLosProductos[indiceGlobal] = { ...this.pinturaseleccionado }
+            localStorage.setItem('productos', JSON.stringify(todosLosProductos))
+          }
+          
+          // También guardar en la lista específica
+          localStorage.setItem('pinturas', JSON.stringify(this.pinturas));
+          
+          // Emitir evento para actualizar vistas
+          window.dispatchEvent(new CustomEvent('productosActualizados'))
+          
+          alert(' Pintura actualizada correctamente');
+        } else {
+          alert(' No se encontró la pintura');
+        }
+      } catch (error) {
+        console.error('Error guardando cambios:', error)
+        alert(' Error al guardar: ' + error.message)
+      }
     },
     eliminarProducto(index) {
       if (confirm("¿Seguro que quieres eliminar este producto?")) {
+        const productoEliminado = this.pinturas[index]
+        
+        // Eliminar del array local
         this.pinturas.splice(index, 1);
+        
+        // Eliminar del sistema unificado de productos
+        const productosJSON = localStorage.getItem('productos')
+        let todosLosProductos = productosJSON ? JSON.parse(productosJSON) : []
+        
+        todosLosProductos = todosLosProductos.filter(p => 
+          !(p.id_categoria === 2 && p.id_pintura === productoEliminado.id_pintura)
+        )
+        
+        localStorage.setItem("productos", JSON.stringify(todosLosProductos));
         localStorage.setItem("pinturas", JSON.stringify(this.pinturas));
+        
+        // Emitir evento para actualizar vistas
+        window.dispatchEvent(new CustomEvent('productosActualizados'))
+        
+        alert(' Producto eliminado correctamente');
+      }
+    },
+    eliminarProductoSeleccionado() {
+      if (!this.pinturaseleccionado) {
+        alert(' No hay producto seleccionado');
+        return;
+      }
+      
+      if (confirm(`¿Seguro que quieres eliminar "${this.pinturaseleccionado.nombre}"?`)) {
+        const indice = this.pinturas.findIndex(
+          (p) => p.id_pintura === this.pinturaseleccionado.id_pintura
+        );
+        
+        if (indice !== -1) {
+          // Eliminar del array local
+          this.pinturas.splice(indice, 1);
+          
+          // Eliminar del sistema unificado de productos
+          const productosJSON = localStorage.getItem('productos')
+          let todosLosProductos = productosJSON ? JSON.parse(productosJSON) : []
+          
+          todosLosProductos = todosLosProductos.filter(p => 
+            !(p.id_categoria === 2 && p.id_pintura === this.pinturaseleccionado.id_pintura)
+          )
+          
+          localStorage.setItem("productos", JSON.stringify(todosLosProductos));
+          localStorage.setItem("pinturas", JSON.stringify(this.pinturas));
+          
+          // Emitir evento para actualizar vistas
+          window.dispatchEvent(new CustomEvent('productosActualizados'))
+          
+          this.pinturaseleccionado = null;
+          this.busquedaRealizada = false;
+          alert(' Producto eliminado correctamente');
+        }
       }
     },
     pesoCOL(valor) {
@@ -170,34 +266,103 @@ export default {
     cargarImagen(e) {
       const file = e.target.files[0]
       if (file) {
+        // Solo guardar el nombre del archivo, no el contenido base64
+        const nombreArchivo = file.name
+        // Para preview, usar FileReader pero no guardar en el producto
         const reader = new FileReader()
         reader.onload = () => {
-          this.nuevo.imagen = reader.result
           this.nuevo.imagenPreview = reader.result
+          // Guardar solo la ruta/nombre del archivo
+          this.nuevo.imagen = `/imagenesPinturas/${nombreArchivo}`
         }
         reader.readAsDataURL(file)
       }
     },
-    agregarProducto() {
-      // Crear copia del producto
-      const producto = { ...this.nuevo }
-      this.pinturas.push(producto)
+    async agregarProducto() {
+      try {
+        // Validar que todos los campos requeridos estén llenos
+        if (!this.nuevo.id_pintura || !this.nuevo.nombre || !this.nuevo.marca || 
+            !this.nuevo.precio || !this.nuevo.cantidad) {
+          alert(' Por favor completa todos los campos requeridos')
+          return
+        }
 
-      // Guardar en localStorage
-      localStorage.setItem('pinturas', JSON.stringify(this.pinturas))
+        // Crear producto normalizado
+        const producto = {
+          id_pintura: Number(this.nuevo.id_pintura),
+          id_categoria: 2, // Pinturas
+          nombre: this.nuevo.nombre.trim(),
+          marca: this.nuevo.marca.trim(),
+          precio: Number(this.nuevo.precio),
+          raiting: Number(this.nuevo.raiting) || 4.5,
+          cantidad: Number(this.nuevo.cantidad),
+          imagen: this.nuevo.imagen || '/imagenesPinturas/default.jpg',
+          // Normalizar ID de producto
+          id_producto: `2-${this.nuevo.id_pintura}`
+        }
 
-      alert('✅ Producto agregado correctamente')
+        // Agregar a la lista local
+        this.pinturas.push(producto)
 
-      // Limpiar formulario
-      this.nuevo = {
-        id_pintura: '',
-        nombre: '',
-        marca: '',
-        precio: '',
-        raiting: '',
-        cantidad: '',
-        imagen: '',
-        imagenPreview: null
+        // Cargar productos existentes desde localStorage
+        const productosJSON = localStorage.getItem('productos')
+        let todosLosProductos = productosJSON ? JSON.parse(productosJSON) : []
+
+        // Verificar si el producto ya existe
+        const existe = todosLosProductos.find(p => 
+          p.id_categoria === 2 && p.id_pintura === producto.id_pintura
+        )
+
+        if (existe) {
+          // Actualizar producto existente
+          const indice = todosLosProductos.findIndex(p => 
+            p.id_categoria === 2 && p.id_pintura === producto.id_pintura
+          )
+          todosLosProductos[indice] = { ...todosLosProductos[indice], ...producto }
+        } else {
+          // Agregar nuevo producto
+          todosLosProductos.push(producto)
+        }
+
+        // Guardar en el sistema unificado de productos
+        try {
+          localStorage.setItem('productos', JSON.stringify(todosLosProductos))
+        } catch (error) {
+          if (error.name === 'QuotaExceededError') {
+            alert(' Error: No hay suficiente espacio en el almacenamiento. Por favor, elimina algunos productos o limpia el localStorage.')
+            // Revertir cambios locales
+            this.pinturas.pop()
+            return
+          }
+          throw error
+        }
+
+        // También guardar en la lista específica de pinturas (para compatibilidad)
+        try {
+          localStorage.setItem('pinturas', JSON.stringify(this.pinturas))
+        } catch (error) {
+          console.warn('No se pudo guardar en pinturas específico:', error)
+        }
+
+        // Emitir evento para actualizar vistas
+        window.dispatchEvent(new CustomEvent('productosActualizados'))
+
+        alert(' Producto agregado correctamente')
+
+        // Limpiar formulario
+        this.nuevo = {
+          id_pintura: '',
+          nombre: '',
+          marca: '',
+          precio: '',
+          raiting: '',
+          cantidad: '',
+          imagen: '',
+          imagenPreview: null
+        }
+      } catch (error) {
+        console.error('Error agregando producto:', error)
+        alert(' Error al agregar producto: ' + error.message)
       }
     }
   },
@@ -242,8 +407,8 @@ export default {
     gap: 10px;
     border-radius: 5px;
     background-color: #b62323 !important;
-    pointer-events: none;
     color: #FFFFFF !important;
+    cursor: pointer;
 }
 
 

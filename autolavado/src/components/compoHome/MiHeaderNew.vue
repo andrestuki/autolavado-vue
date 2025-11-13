@@ -8,10 +8,11 @@
 
             <ul class="nav-links">
                 <li><router-link to="/inicio">Inicio</router-link></li>
-                <li><span class="nav-label">Tienda</span></li>
+                <li><a href="#" @click.prevent="desplazarATienda" class="nav-label">Tienda</a></li>
                 <li><router-link to="/cart"><i class="pi pi-shopping-cart" aria-hidden="true"
                             style="margin-right:8px"></i>Carrito</router-link></li>
-                <li v-if="!isLogged"><router-link to="/registro">Registrarse</router-link></li>
+                <li v-if="!isLogged"><router-link to="/login">Iniciar sesión</router-link></li>
+                <li v-if="!isLogged"><router-link to="/signup">Registrarse</router-link></li>
                 <li v-if="isAdmin"><router-link to="/global">Admin</router-link></li>
             </ul>
 
@@ -50,7 +51,28 @@ export default {
             router.push("/inicio");
         }
 
-        return { isAdmin, isLogged, displayName, logout };
+        function desplazarATienda() {
+            // Si estamos en la página de inicio, hacer scroll directamente
+            if (router.currentRoute.value.path === '/inicio' || router.currentRoute.value.path === '/') {
+                const seccionProductos = document.getElementById('tienda-productos');
+                if (seccionProductos) {
+                    seccionProductos.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            } else {
+                // Si estamos en otra página, navegar a inicio y luego hacer scroll
+                router.push('/inicio').then(() => {
+                    // Esperar a que la página se cargue antes de hacer scroll
+                    setTimeout(() => {
+                        const seccionProductos = document.getElementById('tienda-productos');
+                        if (seccionProductos) {
+                            seccionProductos.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                        }
+                    }, 100);
+                });
+            }
+        }
+
+        return { isAdmin, isLogged, displayName, logout, desplazarATienda };
     },
 };
 </script>
@@ -110,10 +132,15 @@ header {
     text-decoration: none;
     padding: 8px 12px;
     border-radius: 16px;
+    cursor: pointer;
 }
 
 .nav-links a:hover {
     background-color: rgb(224, 25, 25);
+}
+
+.nav-label {
+    cursor: pointer;
 }
 
 .user-area {

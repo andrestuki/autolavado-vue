@@ -192,7 +192,7 @@ export default {
                     // Crear el nuevo usuario
                     const nuevoUsuario = {
                         idUsuario: idUsuario,
-                        idPerfil: 1, // Perfil por defecto (cliente)
+                        idPerfil: 3, // Perfil por defecto (cliente) - 1=Admin, 2=Trabajador, 3=Cliente
                         usuario: this.formData.username.trim(),
                         email: this.formData.email.trim(),
                         password: this.formData.password, // En producción, hashear la contraseña
@@ -207,7 +207,7 @@ export default {
                     localStorage.setItem("usuarios", JSON.stringify(usuarios));
 
                     this.success = "¡Cuenta creada exitosamente! Redirigiendo...";
-                    console.log("✅ Usuario registrado:", nuevoUsuario.usuario);
+                    console.log(" Usuario registrado:", nuevoUsuario.usuario);
 
                     // Hacer login automático
                     authStore.login({
@@ -222,7 +222,7 @@ export default {
                         this.$router.push("/inicio");
                     }, 2000);
                 } catch (err) {
-                    console.error("❌ Error al registrarse:", err);
+                    console.error(" Error al registrarse:", err);
                     this.error = "Error inesperado: " + err.message;
                 } finally {
                     this.loading = false;
@@ -242,7 +242,8 @@ export default {
 
 <style scoped>
 .signup-page-bg {
-    background: linear-gradient(135deg, #c92913 0%, #f85d5d 100%);
+    background: url('@/assets/imagenesHome/fondooojpeg.jpeg') no-repeat center;
+    background-size: cover;
     min-height: 100vh;
     display: flex;
     justify-content: center;

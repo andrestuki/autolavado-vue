@@ -3,17 +3,15 @@ import { defineStore } from 'pinia'
 export const useCartStore = defineStore('cart', {
   state: () => ({
     cartItems: JSON.parse(localStorage.getItem('carrito')) || [],
+    ultimaRutaCompra: localStorage.getItem('ultimaRutaCompra') || '/inicio',
   }),
 
   getters: {
-    // Obtener cantidad de items en el carrito
     itemCount: (state) => state.cartItems.length,
 
-    // Obtener cantidad total de productos (sumando cantidades)
     totalQuantity: (state) => 
       state.cartItems.reduce((total, item) => total + (item.cantidad || 1), 0),
 
-    // Obtener total del carrito
     cartTotal: (state) => 
       state.cartItems.reduce((total, item) => {
         const price = Number(item.precio) || 0
@@ -21,7 +19,6 @@ export const useCartStore = defineStore('cart', {
         return total + (price * quantity)
       }, 0),
 
-    // Obtener subtotal formateado
     formattedTotal: (state) => {
       const total = state.cartItems.reduce((sum, item) => {
         return sum + (Number(item.precio) || 0) * (Number(item.cantidad) || 1)
@@ -31,24 +28,86 @@ export const useCartStore = defineStore('cart', {
   },
 
   actions: {
-    // Agregar producto al carrito
+    obtenerStockDisponible(producto) {
+      try {
+        const productosJSON = localStorage.getItem('productos')
+        const productos = productosJSON ? JSON.parse(productosJSON) : []
+        const idProducto = this.obtenerIdProducto(producto)
+
+        // Función auxiliar para obtener ID de producto
+        const obtenerIdProductoLocal = (p) => {
+          if (p.id_producto && p.id_producto.includes('-')) {
+            return p.id_producto
+          }
+          const id = p.id_hidrobomba || p.id_pulidora || p.id_shampoo || p.id_pintura
+          return `${p.id_categoria}-${id}`
+        }
+
+        const productoEnCatalogo = productos.find(p => {
+          const idCatalogo = obtenerIdProductoLocal(p)
+          return idCatalogo === idProducto
+        })
+
+        if (productoEnCatalogo) {
+          return Number(productoEnCatalogo.cantidad) || 0
+        }
+
+        const productoAlternativo = productos.find(p => {
+          if (producto.id_categoria === 1 && producto.id_hidrobomba) {
+            return p.id_categoria === 1 && p.id_hidrobomba === producto.id_hidrobomba
+          }
+          if (producto.id_categoria === 2 && producto.id_pintura) {
+            return p.id_categoria === 2 && p.id_pintura === producto.id_pintura
+          }
+          if (producto.id_categoria === 3 && producto.id_pulidora) {
+            return p.id_categoria === 3 && p.id_pulidora === producto.id_pulidora
+          }
+          if (producto.id_categoria === 4 && producto.id_shampoo) {
+            return p.id_categoria === 4 && p.id_shampoo === producto.id_shampoo
+          }
+          return false
+        })
+
+        return productoAlternativo ? (Number(productoAlternativo.cantidad) || 0) : 0
+      } catch (error) {
+        console.error('Error obteniendo stock:', error)
+        return 0
+      }
+    },
+
     addToCart(producto) {
-      // Normalizar el ID del producto
       const idProducto = this.obtenerIdProducto(producto)
       
-      // Verificar si el producto ya existe
+      const stockDisponible = this.obtenerStockDisponible(producto)
+      
+      if (stockDisponible <= 0) {
+        return { 
+          success: false, 
+          mensaje: `El producto "${producto.nombre}" está agotado` 
+        }
+      }
+
       const existente = this.cartItems.find(item => 
         this.obtenerIdProducto(item) === idProducto
       )
 
+      const cantidadAAgregar = Number(producto.cantidad) || 1
+      const cantidadActualEnCarrito = existente ? (Number(existente.cantidad) || 0) : 0
+      const nuevaCantidadTotal = cantidadActualEnCarrito + cantidadAAgregar
+
+      if (nuevaCantidadTotal > stockDisponible) {
+        return { 
+          success: false, 
+          mensaje: `Solo hay ${stockDisponible} unidades disponibles de "${producto.nombre}". Ya tienes ${cantidadActualEnCarrito} en el carrito.` 
+        }
+      }
+
       if (existente) {
-        // Aumentar cantidad si ya existe
-        existente.cantidad = (existente.cantidad || 1) + (producto.cantidad || 1)
+        existente.cantidad = nuevaCantidadTotal
       } else {
-        // Agregar nuevo producto
         const nuevoItem = {
           ...producto,
-          cantidad: producto.cantidad || 1,
+          cantidad: cantidadAAgregar,
           id_producto: idProducto,
           nombre: producto.nombre,
           precio: producto.precio,
@@ -58,26 +117,32 @@ export const useCartStore = defineStore('cart', {
       }
 
       this.guardarCarrito()
-      console.log('✅ Producto agregado al carrito:', producto.nombre)
+      
+      if (typeof window !== 'undefined' && window.location) {
+        const rutaActual = window.location.pathname
+        if (rutaActual.includes('/pinturas') || rutaActual.includes('/hidrobombas') || 
+            rutaActual.includes('/pulidoras') || rutaActual.includes('/shampoos')) {
+          this.ultimaRutaCompra = rutaActual
+          localStorage.setItem('ultimaRutaCompra', rutaActual)
+        }
+      }
+      
+      console.log('Producto agregado al carrito:', producto.nombre)
+      return { success: true, mensaje: 'Producto agregado al carrito' }
     },
 
-    // Método auxiliar para obtener ID consistente
     obtenerIdProducto(producto) {
-      // Si ya tiene id_producto normalizado, usarlo
       if (producto.id_producto && !producto.id_producto.includes('-')) {
         return producto.id_producto
       }
       
-      // Si es normalizado (contiene guion), usarlo
       if (producto.id_producto && producto.id_producto.includes('-')) {
         return producto.id_producto
       }
       
-      // Sino, crear uno basado en categoría e ID
       const id = producto.id_hidrobomba || producto.id_pulidora || producto.id_shampoo || producto.id_pintura
       return `${producto.id_categoria}-${id}`
     },
-    // Eliminar producto del carrito
     removeFromCart(idProducto) {
       const index = this.cartItems.findIndex(item => 
         this.obtenerIdProducto(item) === idProducto
@@ -87,54 +152,62 @@ export const useCartStore = defineStore('cart', {
         const nombreProducto = this.cartItems[index].nombre
         this.cartItems.splice(index, 1)
         this.guardarCarrito()
-        console.log('✅ Producto eliminado del carrito:', nombreProducto)
+        console.log('Producto eliminado del carrito:', nombreProducto)
       }
     },
 
-    // Actualizar cantidad de un producto
     updateQuantity(idProducto, cantidad) {
       const item = this.cartItems.find(item => 
         this.obtenerIdProducto(item) === idProducto
       )
 
-      if (item) {
-        const nuevaCantidad = Number(cantidad)
-        if (nuevaCantidad <= 0) {
-          this.removeFromCart(idProducto)
-        } else {
-          item.cantidad = nuevaCantidad
-          this.guardarCarrito()
-          console.log('✅ Cantidad actualizada:', item.nombre, 'x' + nuevaCantidad)
+      if (!item) {
+        return { success: false, mensaje: 'Producto no encontrado en el carrito' }
+      }
+
+      const nuevaCantidad = Number(cantidad)
+      
+      if (nuevaCantidad <= 0) {
+        this.removeFromCart(idProducto)
+        return { success: true, mensaje: 'Producto eliminado del carrito' }
+      }
+
+      const stockDisponible = this.obtenerStockDisponible(item)
+      
+      if (nuevaCantidad > stockDisponible) {
+        return { 
+          success: false, 
+          mensaje: `Solo hay ${stockDisponible} unidades disponibles de "${item.nombre}"` 
         }
       }
+
+      item.cantidad = nuevaCantidad
+      this.guardarCarrito()
+      console.log('Cantidad actualizada:', item.nombre, 'x' + nuevaCantidad)
+      return { success: true, mensaje: 'Cantidad actualizada' }
     },
 
-    // Limpiar todo el carrito
     clearCart() {
       this.cartItems = []
       this.guardarCarrito()
-      console.log('✅ Carrito vaciado')
+      console.log('Carrito vaciado')
     },
 
-    // Guardar carrito en localStorage
     guardarCarrito() {
       localStorage.setItem('carrito', JSON.stringify(this.cartItems))
     },
 
-    // Cargar carrito del localStorage
     cargarCarrito() {
       const carritoGuardado = localStorage.getItem('carrito')
       this.cartItems = carritoGuardado ? JSON.parse(carritoGuardado) : []
     },
 
-    // Finalizar compra
     finalizarCompra(datosCompra = {}) {
       if (this.cartItems.length === 0) {
         return { success: false, mensaje: 'El carrito está vacío' }
       }
 
       try {
-        // Obtener usuario actual
         const usuarioJSON = localStorage.getItem('user')
         const usuario = usuarioJSON ? JSON.parse(usuarioJSON) : null
 
@@ -142,7 +215,30 @@ export const useCartStore = defineStore('cart', {
           return { success: false, mensaje: 'Debes iniciar sesión para comprar' }
         }
 
-        // Crear orden
+        const productosSinStock = []
+        for (const item of this.cartItems) {
+          const stockDisponible = this.obtenerStockDisponible(item)
+          const cantidadSolicitada = Number(item.cantidad) || 1
+          
+          if (stockDisponible < cantidadSolicitada) {
+            productosSinStock.push({
+              nombre: item.nombre,
+              disponible: stockDisponible,
+              solicitado: cantidadSolicitada
+            })
+          }
+        }
+
+        if (productosSinStock.length > 0) {
+          const mensaje = productosSinStock.map(p => 
+            `"${p.nombre}": solo hay ${p.disponible} disponibles (solicitaste ${p.solicitado})`
+          ).join(', ')
+          return { 
+            success: false, 
+            mensaje: `Stock insuficiente: ${mensaje}` 
+          }
+        }
+
         const orden = {
           idOrden: Date.now(),
           idUsuario: usuario.idUsuario,
@@ -156,86 +252,103 @@ export const useCartStore = defineStore('cart', {
           metodoPago: datosCompra.metodoPago || 'pendiente',
         }
 
-        // Actualizar inventario - Restar productos del catálogo
         this.actualizarInventario(this.cartItems)
 
-        // Guardar orden en localStorage
         const ordenesJSON = localStorage.getItem('ordenes')
         const ordenes = ordenesJSON ? JSON.parse(ordenesJSON) : []
         ordenes.push(orden)
         localStorage.setItem('ordenes', JSON.stringify(ordenes))
 
-        // Limpiar carrito
         this.clearCart()
 
-        console.log('✅ Compra finalizada:', orden.idOrden)
+        console.log('Compra finalizada:', orden.idOrden)
         return {
           success: true,
           mensaje: 'Compra realizada exitosamente',
           orden: orden,
         }
       } catch (error) {
-        console.error('❌ Error al finalizar compra:', error)
+        console.error('Error al finalizar compra:', error)
         return { success: false, mensaje: 'Error al procesar la compra' }
       }
     },
 
-    // Actualizar inventario después de la compra
     actualizarInventario(productosComprados) {
       try {
         const productosJSON = localStorage.getItem('productos')
         let productos = productosJSON ? JSON.parse(productosJSON) : []
 
-        console.log('🔍 Productos a actualizar:', productosComprados)
-        console.log('📦 Total de productos en catálogo:', productos.length)
+        console.log('Productos a actualizar:', productosComprados)
+        console.log('Total de productos en catálogo:', productos.length)
 
-        // Restar la cantidad de cada producto comprado
+        const obtenerIdProductoLocal = (producto) => {
+          if (producto.id_producto && !producto.id_producto.includes('-')) {
+            return producto.id_producto
+          }
+          if (producto.id_producto && producto.id_producto.includes('-')) {
+            return producto.id_producto
+          }
+          const id = producto.id_hidrobomba || producto.id_pulidora || producto.id_shampoo || producto.id_pintura
+          return `${producto.id_categoria}-${id}`
+        }
+
         productosComprados.forEach(productoComprado => {
-          console.log('🔎 Buscando producto:', {
-            id_categoria: productoComprado.id_categoria,
-            id_hidrobomba: productoComprado.id_hidrobomba,
-            id_pintura: productoComprado.id_pintura,
-            id_pulidora: productoComprado.id_pulidora,
-            id_shampoo: productoComprado.id_shampoo,
-            id_producto: productoComprado.id_producto,
-          })
+          const cantidadComprada = Number(productoComprado.cantidad) || 1
+          let productoEncontrado = null
+          let indice = -1
 
-          // Buscar por el ID correspondiente según la categoría
-          const indice = productos.findIndex(p => {
-            if (productoComprado.id_categoria === 1 && productoComprado.id_hidrobomba) {
-              return p.id_categoria === 1 && p.id_hidrobomba === productoComprado.id_hidrobomba
-            }
-            if (productoComprado.id_categoria === 2 && productoComprado.id_pintura) {
-              return p.id_categoria === 2 && p.id_pintura === productoComprado.id_pintura
-            }
-            if (productoComprado.id_categoria === 3 && productoComprado.id_pulidora) {
-              return p.id_categoria === 3 && p.id_pulidora === productoComprado.id_pulidora
-            }
-            if (productoComprado.id_categoria === 4 && productoComprado.id_shampoo) {
-              return p.id_categoria === 4 && p.id_shampoo === productoComprado.id_shampoo
-            }
-            return false
-          })
+          if (productoComprado.id_producto) {
+            indice = productos.findIndex(p => {
+              if (p.id_producto === productoComprado.id_producto) {
+                return true
+              }
+              const idProductoCatalogo = obtenerIdProductoLocal(p)
+              return idProductoCatalogo === productoComprado.id_producto
+            })
+          }
+
+          if (indice === -1) {
+            indice = productos.findIndex(p => {
+              if (productoComprado.id_categoria === 1 && productoComprado.id_hidrobomba) {
+                return p.id_categoria === 1 && p.id_hidrobomba === productoComprado.id_hidrobomba
+              }
+              if (productoComprado.id_categoria === 2 && productoComprado.id_pintura) {
+                return p.id_categoria === 2 && p.id_pintura === productoComprado.id_pintura
+              }
+              if (productoComprado.id_categoria === 3 && productoComprado.id_pulidora) {
+                return p.id_categoria === 3 && p.id_pulidora === productoComprado.id_pulidora
+              }
+              if (productoComprado.id_categoria === 4 && productoComprado.id_shampoo) {
+                return p.id_categoria === 4 && p.id_shampoo === productoComprado.id_shampoo
+              }
+              return false
+            })
+          }
 
           if (indice !== -1) {
-            const cantidadAnterior = productos[indice].cantidad
-            const nuevaCantidad = Math.max(0, productos[indice].cantidad - productoComprado.cantidad)
+            productoEncontrado = productos[indice]
+            const cantidadAnterior = Number(productoEncontrado.cantidad) || 0
+            const nuevaCantidad = Math.max(0, cantidadAnterior - cantidadComprada)
+            
             productos[indice].cantidad = nuevaCantidad
-            console.log(`✅ ${productos[indice].nombre}: ${cantidadAnterior} → ${nuevaCantidad} unidades`)
+            
+            console.log(`${productoEncontrado.nombre}: ${cantidadAnterior} → ${nuevaCantidad} unidades (compradas: ${cantidadComprada})`)
           } else {
-            console.warn(`⚠️ Producto NO encontrado en catálogo:`, productoComprado.nombre)
+            console.warn(`Producto NO encontrado en catálogo:`, {
+              nombre: productoComprado.nombre,
+              id_producto: productoComprado.id_producto,
+              id_categoria: productoComprado.id_categoria,
+            })
           }
         })
 
-        // Guardar productos actualizados
         localStorage.setItem('productos', JSON.stringify(productos))
-        console.log('✅ Inventario actualizado completamente')
+        console.log('Inventario actualizado completamente en localStorage')
       } catch (error) {
-        console.error('❌ Error actualizando inventario:', error)
+        console.error('Error actualizando inventario:', error)
       }
     },
 
-    // Obtener historial de compras del usuario
     obtenerHistorial() {
       const usuarioJSON = localStorage.getItem('user')
       const usuario = usuarioJSON ? JSON.parse(usuarioJSON) : null

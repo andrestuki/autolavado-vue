@@ -1,6 +1,6 @@
 <template>
 
-    <div class="textos">
+    <div id="tienda-productos" class="textos">
         <h4 class="servicios-titulo">Productos de Lavado</h4>
         <p class="servicios-descripcion">Vehículos limpios - Buenos Productos <br>
             Precios asequibles

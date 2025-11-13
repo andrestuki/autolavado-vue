@@ -7,9 +7,9 @@
 
       <ul class="nav-links">
         <li><router-link to="/inicio">Inicio</router-link></li>
-        <li><span class="nav-label">Tienda</span></li>
+        <li><a href="#" @click.prevent="desplazarATienda" class="nav-label">Tienda</a></li>
         <li><router-link to="/cart"><i class="pi pi-shopping-cart" aria-hidden="true" style="margin-right:8px"></i>Carrito</router-link></li>
-        <li v-if="!isLogged"><router-link to="/registro">Registrarse</router-link></li>
+        <li v-if="!isLogged"><router-link to="/signup">Registrarse</router-link></li>
         <li v-if="isAdmin"><router-link to="/global">Admin</router-link></li>
       </ul>
 
@@ -31,9 +31,9 @@
 
         <ul class="nav-links">
           <li><router-link to="/inicio">Inicio</router-link></li>
-          <li><span class="nav-label">Tienda</span></li>
+          <li><a href="#" @click.prevent="desplazarATienda" class="nav-label">Tienda</a></li>
           <li><router-link to="/cart"><i class="pi pi-shopping-cart" aria-hidden="true" style="margin-right:8px"></i>Carrito</router-link></li>
-          <li v-if="!isLogged"><router-link to="/registro">Registrarse</router-link></li>
+          <li v-if="!isLogged"><router-link to="/signup">Registrarse</router-link></li>
           <li v-if="isAdmin"><router-link to="/global">Admin</router-link></li>
         </ul>
 
@@ -409,9 +409,9 @@ header {
 
       <ul class="nav-links" :class="{ open: menuOpen }">
         <li><router-link to="/inicio">Inicio</router-link></li>
-        <li><span class="nav-label">Tienda</span></li>
+        <li><a href="#" @click.prevent="desplazarATienda" class="nav-label">Tienda</a></li>
         <li><router-link to="/cart"><i class="pi pi-shopping-cart" aria-hidden="true" style="margin-right:8px"></i>Carrito</router-link></li>
-        <li v-if="!isLogged"><router-link to="/registro">Registrarse</router-link></li>
+        <li v-if="!isLogged"><router-link to="/signup">Registrarse</router-link></li>
         <li v-if="isAdmin"><router-link to="/global">Admin</router-link></li>
       </ul>
 
@@ -459,7 +459,28 @@ export default {
       router.push('/inicio');
     }
 
-    return { isAdmin, isLogged, user, displayName, logout, menuOpen, toggleMenu };
+    function desplazarATienda() {
+      // Si estamos en la página de inicio, hacer scroll directamente
+      if (router.currentRoute.value.path === '/inicio' || router.currentRoute.value.path === '/') {
+        const seccionProductos = document.getElementById('tienda-productos');
+        if (seccionProductos) {
+          seccionProductos.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      } else {
+        // Si estamos en otra página, navegar a inicio y luego hacer scroll
+        router.push('/inicio').then(() => {
+          // Esperar a que la página se cargue antes de hacer scroll
+          setTimeout(() => {
+            const seccionProductos = document.getElementById('tienda-productos');
+            if (seccionProductos) {
+              seccionProductos.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+          }, 100);
+        });
+      }
+    }
+
+    return { isAdmin, isLogged, user, displayName, logout, menuOpen, toggleMenu, desplazarATienda };
   },
 <template>
   <header>
@@ -472,7 +493,7 @@ export default {
         <router-link to="/inicio">
           <li>Inicio</li>
         </router-link>
-        <li>Tienda</li>
+        <li><a href="#" @click.prevent="desplazarATienda">Tienda</a></li>
         <!-- Enlace al carrito de compras -->
         <router-link to="/cart">
           <li>
@@ -480,7 +501,7 @@ export default {
             Carrito
           </li>
         </router-link>
-        <router-link v-if="!isLogged" to="/registro">
+        <router-link v-if="!isLogged" to="/signup">
           <li>Registrarse</li>
         </router-link>
         <router-link v-if="isAdmin" to="/global">

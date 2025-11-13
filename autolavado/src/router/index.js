@@ -26,6 +26,10 @@ const routes = [
     meta: { title: "Registro" },
   },
   {
+    path: "/registro",
+    redirect: "/signup",
+  },
+  {
     path: "/hidrobombas",
     name: "hidrobombas",
     component: HidrobombasView,
@@ -57,33 +61,56 @@ const routes = [
   },
   {
     path: "/global",
-    name: "/global",
+    name: "global",
     component: () => import("@/admin/GlobalView.vue"),
-    meta: { title: "global" },
+    meta: { title: "Admin - Panel Principal" },
   },
   {
-    path: "/Pulidorasadmin",
-    name: "/Pulidorasadmin",
+    path: "/admin/pulidoras",
+    name: "admin-pulidoras",
     component: () => import("@/admin/PulidorasAdminView.vue"),
-    meta: { title: "Pulidoras admin" },
+    meta: { title: "Admin - Pulidoras" },
+  },
+  {
+    path: "/admin/pinturas",
+    name: "admin-pinturas",
+    component: () => import("@/admin/PinturasAdminView.vue"),
+    meta: { title: "Admin - Pinturas" },
+  },
+  {
+    path: "/admin/shampoos",
+    name: "admin-shampoos",
+    component: () => import("@/admin/ShampoosAdminView.vue"),
+    meta: { title: "Admin - Shampoos" },
+  },
+  {
+    path: "/admin/hidrobombas",
+    name: "admin-hidrobombas",
+    component: () => import("@/admin/HidrobombasAdminView.vue"),
+    meta: { title: "Admin - Hidrobombas" },
+  },
+  {
+    path: "/admin/citas",
+    name: "admin-citas",
+    component: () => import("@/admin/CitasAdminView.vue"),
+    meta: { title: "Admin - Gestión de Citas" },
+  },
+  // Redirecciones para mantener compatibilidad con rutas antiguas
+  {
+    path: "/Pulidorasadmin",
+    redirect: "/admin/pulidoras",
   },
   {
     path: "/Admin-Pinturas",
-    name: "/Admin-Pinturas",
-    component: () => import("@/admin/PinturasAdminView.vue"),
-    meta: { title: "Pulidoras admin" },
+    redirect: "/admin/pinturas",
   },
   {
     path: "/Admin-Shampoos",
-    name: "/Admin-Shampoos",
-    component: () => import("@/admin/ShampoosAdminView.vue"),
-    meta: { title: "Pulidoras admin" },
+    redirect: "/admin/shampoos",
   },
   {
     path: "/Admin-Hidrobombas",
-    name: "/Admin-Hidrobombas",
-    component: () => import("@/admin/HidrobombasAdminView.vue"),
-    meta: { title: "Pulidoras admin" },
+    redirect: "/admin/hidrobombas",
   },
   {
     path: "/inicio",

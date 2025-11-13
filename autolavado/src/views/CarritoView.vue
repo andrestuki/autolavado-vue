@@ -1,21 +1,18 @@
 <template>
   <div class="carrito-container">
     <div class="carrito-header">
-      <h1>🛒 Mi Carrito</h1>
+      <h1>Mi Carrito</h1>
       <router-link to="/" class="btn-volver">← Volver a compras</router-link>
     </div>
 
-    <!-- Carrito Vacío -->
     <div v-if="cartStore.itemCount === 0" class="carrito-vacio">
-      <div class="icono-vacio">🛒</div>
+      <div class="icono-vacio"></div>
       <h2>Tu carrito está vacío</h2>
       <p>¡Agrega productos para empezar a comprar!</p>
-      <router-link to="/" class="btn-comprar">Ir a Comprar</router-link>
+      <a href="#" @click.prevent="irATienda" class="btn-comprar">Ir a Comprar</a>
     </div>
 
-    <!-- Carrito con Productos -->
     <div v-else class="carrito-contenido">
-      <!-- Tabla de productos -->
       <div class="tabla-wrapper">
         <table class="tabla-carrito">
           <thead>
@@ -53,7 +50,7 @@
               <td class="subtotal" data-label="Subtotal">${{ (Number(item.precio) * item.cantidad).toLocaleString('es-CO') }}</td>
               <td class="accion" data-label="Acción">
                 <button @click="eliminarProducto(obtenerIdProducto(item))" class="btn-eliminar" title="Eliminar">
-                  🗑️ Eliminar
+                  Eliminar
                 </button>
               </td>
             </tr>
@@ -61,7 +58,6 @@
         </table>
       </div>
 
-      <!-- Resumen -->
       <div class="carrito-resumen">
         <div class="resumen-detalles">
           <div class="linea-resumen">
@@ -82,7 +78,6 @@
           </div>
         </div>
 
-        <!-- Opciones de envío -->
         <div class="opciones-envio">
           <h4>Tipo de Envío</h4>
           <label class="radio-opcion">
@@ -99,7 +94,6 @@
           </label>
         </div>
 
-        <!-- Botones de acción -->
         <div class="acciones">
           <button @click="limpiarCarrito" class="btn-limpiar">Limpiar Carrito</button>
           <button @click="finalizarCompra" class="btn-comprar" :disabled="procesando">
@@ -109,12 +103,11 @@
       </div>
     </div>
 
-    <!-- Modal de confirmación -->
     <div v-if="mostrarModal" class="modal-overlay" @click="cerrarModal">
       <div class="modal" @click.stop>
         <div class="modal-header">
-          <h2>✅ Compra Realizada</h2>
-          <button @click="cerrarModal" class="btn-cerrar">✕</button>
+          <h2>Compra Realizada</h2>
+          <button @click="cerrarModal" class="btn-cerrar">X</button>
         </div>
         <div class="modal-body">
           <p><strong>Número de Orden:</strong> #{{ ultimaOrden?.idOrden }}</p>
@@ -131,7 +124,7 @@
           </div>
         </div>
         <div class="modal-footer">
-          <router-link to="/" class="btn-modal">Continuar Comprando</router-link>
+          <router-link :to="rutaContinuarComprando" class="btn-modal">Continuar Comprando</router-link>
           <router-link to="/ordenes" class="btn-modal btn-secundario">Ver Mis Órdenes</router-link>
         </div>
       </div>
@@ -142,9 +135,14 @@
 <script>
 import { useCartStore } from '@/stores/cart'
 import { useAuthStore } from '@/stores/auth'
+import { useRouter } from 'vue-router'
 
 export default {
   name: 'CarritoView',
+  setup() {
+    const router = useRouter()
+    return { router }
+  },
   data() {
     return {
       cartStore: useCartStore(),
@@ -168,24 +166,40 @@ export default {
       const impuesto = this.cartStore.cartTotal * 0.19
       return this.cartStore.cartTotal + impuesto + this.montoEnvio
     },
+    rutaContinuarComprando() {
+      return this.cartStore.ultimaRutaCompra || '/inicio'
+    },
   },
   methods: {
     incrementarCantidad(idProducto) {
       const item = this.cartStore.cartItems.find(i => this.obtenerIdProducto(i) === idProducto)
       if (item) {
-        this.cartStore.updateQuantity(idProducto, item.cantidad + 1)
+        const resultado = this.cartStore.updateQuantity(idProducto, item.cantidad + 1)
+        if (!resultado.success) {
+          alert(resultado.mensaje)
+        }
       }
     },
     decrementarCantidad(idProducto) {
       const item = this.cartStore.cartItems.find(i => this.obtenerIdProducto(i) === idProducto)
       if (item && item.cantidad > 1) {
-        this.cartStore.updateQuantity(idProducto, item.cantidad - 1)
+        const resultado = this.cartStore.updateQuantity(idProducto, item.cantidad - 1)
+        if (!resultado.success) {
+          alert(resultado.mensaje)
+        }
       }
     },
     actualizarCantidad(idProducto, event) {
       const nuevaCantidad = Number(event.target.value)
       if (nuevaCantidad > 0) {
-        this.cartStore.updateQuantity(idProducto, nuevaCantidad)
+        const resultado = this.cartStore.updateQuantity(idProducto, nuevaCantidad)
+        if (!resultado.success) {
+          alert(resultado.mensaje)
+          const item = this.cartStore.cartItems.find(i => this.obtenerIdProducto(i) === idProducto)
+          if (item) {
+            event.target.value = item.cantidad
+          }
+        }
       }
     },
     eliminarProducto(idProducto) {
@@ -195,12 +209,10 @@ export default {
       }
     },
     obtenerIdProducto(producto) {
-      // Si ya tiene id_producto normalizado (contiene guion), usarlo
       if (producto.id_producto && producto.id_producto.includes('-')) {
         return producto.id_producto
       }
       
-      // Sino, crear uno basado en categoría e ID
       const id = producto.id_hidrobomba || producto.id_pulidora || producto.id_shampoo || producto.id_pintura
       return `${producto.id_categoria}-${id}`
     },
@@ -211,7 +223,7 @@ export default {
     },
     finalizarCompra() {
       if (!this.authStore.isLoggedIn) {
-        alert('⚠️ Debes iniciar sesión para comprar')
+        alert('Debes iniciar sesión para comprar')
         this.$router.push('/login')
         return
       }
@@ -230,9 +242,11 @@ export default {
         if (resultado.success) {
           this.ultimaOrden = resultado.orden
           this.mostrarModal = true
-          console.log('✅ Compra finalizada:', resultado.orden)
+          console.log('Compra finalizada:', resultado.orden)
+          
+          window.dispatchEvent(new CustomEvent('productosActualizados'))
         } else {
-          alert('❌ ' + resultado.mensaje)
+          alert(resultado.mensaje)
         }
 
         this.procesando = false
@@ -240,7 +254,7 @@ export default {
     },
     cerrarModal() {
       this.mostrarModal = false
-      this.$router.push('/')
+      this.$router.push(this.rutaContinuarComprando)
     },
     formatearFecha(fecha) {
       if (!fecha) return ''
@@ -252,13 +266,26 @@ export default {
         minute: '2-digit',
       })
     },
+    irATienda() {
+      if (this.router.currentRoute.value.path === '/inicio' || this.router.currentRoute.value.path === '/') {
+        const seccionProductos = document.getElementById('tienda-productos');
+        if (seccionProductos) {
+          seccionProductos.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      } else {
+        this.router.push('/inicio').then(() => {
+          setTimeout(() => {
+            const seccionProductos = document.getElementById('tienda-productos');
+            if (seccionProductos) {
+              seccionProductos.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+          }, 100);
+        });
+      }
+    },
   },
   mounted() {
     this.cartStore.cargarCarrito()
-    if (!this.authStore.isLoggedIn) {
-      // Podrías redirigir a login o mostrar un mensaje
-      // this.$router.push('/login')
-    }
   },
 }
 </script>

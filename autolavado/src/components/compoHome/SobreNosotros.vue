@@ -16,10 +16,10 @@
         el uso de productos químicos agresivos.
       </p>
       <ul>
-        <li>✔️ Mantenga su auto más limpio por más tiempo.</li>
-        <li>✔️ Secado con toalla con gamuza y microfibra.</li>
-        <li>✔️ Polvo de frenos y contaminantes limpiados de las llantas.</li>
-        <li>✔️ Completamente aspirado, incluidas las zonas de difícil acceso.</li>
+        <li> Mantenga su auto más limpio por más tiempo.</li>
+        <li> Secado con toalla con gamuza y microfibra.</li>
+        <li> Polvo de frenos y contaminantes limpiados de las llantas.</li>
+        <li> Completamente aspirado, incluidas las zonas de difícil acceso.</li>
       </ul>
       <div class="botones">
         <button @click="openMapModal">¿Cómo llegar?</button>
@@ -29,7 +29,7 @@
       <div v-if="showMapModal" class="map-overlay" @click.self="closeMapModal" role="dialog" aria-modal="true"
         aria-label="Mapa de ubicación">
         <div class="map-modal">
-          <button class="map-close" @click="closeMapModal" aria-label="Cerrar mapa">✕</button>
+          <button class="map-close" @click="closeMapModal" aria-label="Cerrar mapa">X</button>
           <!-- Iframe embebido de Google Maps: cambia la query en src para apuntar a la dirección deseada -->
           <div class="map-container">
             <iframe :src="mapSrc" frameborder="0" allowfullscreen aria-hidden="false" tabindex="0"></iframe>

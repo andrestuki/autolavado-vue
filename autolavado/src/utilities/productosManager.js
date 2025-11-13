@@ -5,7 +5,19 @@
 
 let productosCache = null
 
-export async function cargarProductos() {
+export async function cargarProductos(forzarRecarga = false) {
+  // Si se fuerza recarga, limpiar caché
+  if (forzarRecarga) {
+    productosCache = null
+  }
+
+  // Priorizar productos desde localStorage si existen
+  const productosLocalStorage = cargarProductosDeLocalStorage()
+  if (productosLocalStorage && productosLocalStorage.length > 0) {
+    productosCache = productosLocalStorage
+    return productosCache
+  }
+
   // Si ya están en caché, devolverlos
   if (productosCache) {
     return productosCache
@@ -19,6 +31,10 @@ export async function cargarProductos() {
       // Normalizar los productos
       productos = productos.map(normalizarProducto)
       productosCache = productos
+      // Guardar en localStorage si no existe
+      if (!localStorage.getItem('productos')) {
+        guardarProductosEnLocalStorage(productos)
+      }
       return productosCache
     }
   } catch (error) {
@@ -27,6 +43,10 @@ export async function cargarProductos() {
 
   // Si falla, retornar productos de ejemplo (fallback)
   productosCache = getProductosDefault()
+  // Guardar en localStorage si no existe
+  if (!localStorage.getItem('productos')) {
+    guardarProductosEnLocalStorage(productosCache)
+  }
   return productosCache
 }
 
@@ -160,12 +180,60 @@ export function cargarProductosDeLocalStorage() {
   try {
     const productos = localStorage.getItem('productos')
     if (productos) {
-      productosCache = JSON.parse(productos)
-      return productosCache
+      const productosParseados = JSON.parse(productos)
+      productosCache = productosParseados
+      return productosParseados
     }
     return null
   } catch (error) {
     console.error('Error cargando productos de localStorage:', error)
     return null
+  }
+}
+
+// Función para recargar productos desde localStorage (útil después de actualizar stock)
+export function recargarProductosDesdeLocalStorage() {
+  productosCache = null
+  return cargarProductosDeLocalStorage()
+}
+
+// Función para limpiar imágenes base64 de productos y optimizar almacenamiento
+export function limpiarImagenesBase64() {
+  try {
+    const productosJSON = localStorage.getItem('productos')
+    if (!productosJSON) return { limpiados: 0, espacioAhorrado: 0 }
+    
+    let productos = JSON.parse(productosJSON)
+    let limpiados = 0
+    const tamañoAntes = productosJSON.length
+    
+    productos = productos.map(producto => {
+      // Si la imagen es base64 (empieza con data:), reemplazarla con ruta por defecto
+      if (producto.imagen && producto.imagen.startsWith('data:')) {
+        limpiados++
+        const categoria = producto.id_categoria
+        let rutaDefault = '/imagenesProductos/default.jpg'
+        
+        if (categoria === 1) rutaDefault = '/imagenesHidrobombas/default.jpg'
+        else if (categoria === 2) rutaDefault = '/imagenesPinturas/default.jpg'
+        else if (categoria === 3) rutaDefault = '/imagenesPulidoras/default.jpg'
+        else if (categoria === 4) rutaDefault = '/imagenesShampoos/default.jpg'
+        
+        return { ...producto, imagen: rutaDefault }
+      }
+      return producto
+    })
+    
+    const productosLimpios = JSON.stringify(productos)
+    const tamañoDespues = productosLimpios.length
+    const espacioAhorrado = tamañoAntes - tamañoDespues
+    
+    localStorage.setItem('productos', productosLimpios)
+    productosCache = productos
+    
+    return { limpiados, espacioAhorrado }
+  } catch (error) {
+    console.error('Error limpiando imágenes:', error)
+    return { limpiados: 0, espacioAhorrado: 0, error: error.message }
   }
 }

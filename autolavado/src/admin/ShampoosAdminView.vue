@@ -14,7 +14,7 @@
           class="input-texto"
         />
         <ButtonPrime
-          @click="buscarshampoo"
+          @click="buscarShampoo"
           label="Buscar"
           icon="pi pi-search"
           class="btn-buscar"
@@ -34,7 +34,7 @@
       </div>
       <div class="btn">
         <ButtonPrime @click="guardarCambios" label="Guardar Cambios" icon="pi pi-save" class="btn-guardar" />
-        <ButtonPrime @click="eliminarProducto(index)" label="Eliminar productos" class="btn-eliminar"></ButtonPrime>
+        <ButtonPrime @click="eliminarProductoSeleccionado" label="Eliminar Producto" class="btn-eliminar"></ButtonPrime>
       </div>
       
     </div>
@@ -108,7 +108,7 @@ import MiHeader from '@/components/compoHome/MiHeaderNew.vue';
 
 
 export default {
-  name: 'Admin-Shampoos',
+  name: 'AdminShampoos',
   components: { MiHeader, MiFooter },
   data() {
     return {
@@ -138,26 +138,113 @@ export default {
     };
   },
   created() {
+    const productosJSON = localStorage.getItem('productos')
+    const todosLosProductos = productosJSON ? JSON.parse(productosJSON) : []
     
-    const guardadas = localStorage.getItem('shampoos')
-    this.shampoos = guardadas ? JSON.parse(guardadas) : []  
+    this.shampoos = todosLosProductos.filter(p => p.id_categoria === 4)
+    
+    if (this.shampoos.length === 0) {
+      const guardadas = localStorage.getItem('shampoos')
+      this.shampoos = guardadas ? JSON.parse(guardadas) : []
+    }
   },
   methods: {
-    buscarshampoo() {
+    buscarShampoo() {
       this.shampooseleccionado = this.shampoos.find(
         (p) => p.id_shampoo === Number(this.idBuscado)
       );
       this.busquedaRealizada = true;
     },
     guardarCambios() {
-      
-      localStorage.setItem('shampoos', JSON.stringify(this.shampoos));
-      alert('Cambios guardados correctamente.');
+      try {
+        const indice = this.shampoos.findIndex(
+          (p) => p.id_shampoo === this.shampooseleccionado.id_shampoo
+        );
+
+        if (indice !== -1) {
+          this.shampoos[indice] = { ...this.shampooseleccionado };
+          
+          const productosJSON = localStorage.getItem('productos')
+          let todosLosProductos = productosJSON ? JSON.parse(productosJSON) : []
+          
+          const indiceGlobal = todosLosProductos.findIndex(p => 
+            p.id_categoria === 4 && p.id_shampoo === this.shampooseleccionado.id_shampoo
+          )
+          
+          if (indiceGlobal !== -1) {
+            todosLosProductos[indiceGlobal] = { ...this.shampooseleccionado }
+            localStorage.setItem('productos', JSON.stringify(todosLosProductos))
+          }
+          
+          localStorage.setItem('shampoos', JSON.stringify(this.shampoos));
+          
+          window.dispatchEvent(new CustomEvent('productosActualizados'))
+          
+          alert(' Shampoo actualizado correctamente');
+        } else {
+          alert(' No se encontró el shampoo');
+        }
+      } catch (error) {
+        console.error('Error guardando cambios:', error)
+        alert(' Error al guardar: ' + error.message)
+      }
     },
     eliminarProducto(index) {
       if (confirm("¿Seguro que quieres eliminar este producto?")) {
+        const productoEliminado = this.shampoos[index]
+        
+        // Eliminar del array local
         this.shampoos.splice(index, 1);
+        
+        // Eliminar del sistema unificado de productos
+        const productosJSON = localStorage.getItem('productos')
+        let todosLosProductos = productosJSON ? JSON.parse(productosJSON) : []
+        
+        todosLosProductos = todosLosProductos.filter(p => 
+          !(p.id_categoria === 4 && p.id_shampoo === productoEliminado.id_shampoo)
+        )
+        
+        localStorage.setItem("productos", JSON.stringify(todosLosProductos));
         localStorage.setItem("shampoos", JSON.stringify(this.shampoos));
+        
+        // Emitir evento para actualizar vistas
+        window.dispatchEvent(new CustomEvent('productosActualizados'))
+        
+        alert(' Producto eliminado correctamente');
+      }
+    },
+    eliminarProductoSeleccionado() {
+      if (!this.shampooseleccionado) {
+        alert(' No hay producto seleccionado');
+        return;
+      }
+      
+      if (confirm(`¿Seguro que quieres eliminar "${this.shampooseleccionado.nombre}"?`)) {
+        const indice = this.shampoos.findIndex(
+          (p) => p.id_shampoo === this.shampooseleccionado.id_shampoo
+        );
+        
+        if (indice !== -1) {
+          // Eliminar del array local
+          this.shampoos.splice(indice, 1);
+          
+          // Eliminar del sistema unificado de productos
+          const productosJSON = localStorage.getItem('productos')
+          let todosLosProductos = productosJSON ? JSON.parse(productosJSON) : []
+          
+          todosLosProductos = todosLosProductos.filter(p => 
+            !(p.id_categoria === 4 && p.id_shampoo === this.shampooseleccionado.id_shampoo)
+          )
+          
+          localStorage.setItem("productos", JSON.stringify(todosLosProductos));
+          localStorage.setItem("shampoos", JSON.stringify(this.shampoos));
+          
+          window.dispatchEvent(new CustomEvent('productosActualizados'))
+          
+          this.shampooseleccionado = null;
+          this.busquedaRealizada = false;
+          alert(' Producto eliminado correctamente');
+        }
       }
     },
     pesoCOL(valor) {
@@ -170,34 +257,88 @@ export default {
     cargarImagen(e) {
       const file = e.target.files[0]
       if (file) {
+        const nombreArchivo = file.name
         const reader = new FileReader()
         reader.onload = () => {
-          this.nuevo.imagen = reader.result
           this.nuevo.imagenPreview = reader.result
+          this.nuevo.imagen = `/imagenesShampoos/${nombreArchivo}`
         }
         reader.readAsDataURL(file)
       }
     },
-    agregarProducto() {
-      // Crear copia del producto
-      const producto = { ...this.nuevo }
-      this.shampoos.push(producto)
+    async agregarProducto() {
+      try {
+        if (!this.nuevo.id_shampoo || !this.nuevo.nombre || !this.nuevo.marca || 
+            !this.nuevo.precio || !this.nuevo.cantidad) {
+          alert(' Por favor completa todos los campos requeridos')
+          return
+        }
 
-      // Guardar en localStorage
-      localStorage.setItem('shampoos', JSON.stringify(this.shampoos))
+        const producto = {
+          id_shampoo: Number(this.nuevo.id_shampoo),
+          id_categoria: 4,
+          nombre: this.nuevo.nombre.trim(),
+          marca: this.nuevo.marca.trim(),
+          precio: Number(this.nuevo.precio),
+          raiting: Number(this.nuevo.raiting) || 4.5,
+          cantidad: Number(this.nuevo.cantidad),
+          imagen: this.nuevo.imagen || '/imagenesShampoos/default.jpg',
+          id_producto: `4-${this.nuevo.id_shampoo}`
+        }
 
-      alert('✅ Producto agregado correctamente')
+        this.shampoos.push(producto)
 
-      // Limpiar formulario
-      this.nuevo = {
-        id_shampoo: '',
-        nombre: '',
-        marca: '',
-        precio: '',
-        raiting: '',
-        cantidad: '',
-        imagen: '',
-        imagenPreview: null
+        const productosJSON = localStorage.getItem('productos')
+        let todosLosProductos = productosJSON ? JSON.parse(productosJSON) : []
+
+        const existe = todosLosProductos.find(p => 
+          p.id_categoria === 4 && p.id_shampoo === producto.id_shampoo
+        )
+
+        if (existe) {
+          const indice = todosLosProductos.findIndex(p => 
+            p.id_categoria === 4 && p.id_shampoo === producto.id_shampoo
+          )
+          todosLosProductos[indice] = { ...todosLosProductos[indice], ...producto }
+        } else {
+          todosLosProductos.push(producto)
+        }
+
+        try {
+          localStorage.setItem('productos', JSON.stringify(todosLosProductos))
+        } catch (error) {
+          if (error.name === 'QuotaExceededError') {
+            alert(' Error: No hay suficiente espacio en el almacenamiento. Por favor, elimina algunos productos o limpia el localStorage.')
+            this.shampoos.pop()
+            return
+          }
+          throw error
+        }
+
+        try {
+          localStorage.setItem('shampoos', JSON.stringify(this.shampoos))
+        } catch (error) {
+          console.warn('No se pudo guardar en shampoos específico:', error)
+        }
+
+        // Emitir evento para actualizar vistas
+        window.dispatchEvent(new CustomEvent('productosActualizados'))
+
+        alert(' Producto agregado correctamente')
+
+        this.nuevo = {
+          id_shampoo: '',
+          nombre: '',
+          marca: '',
+          precio: '',
+          raiting: '',
+          cantidad: '',
+          imagen: '',
+          imagenPreview: null
+        }
+      } catch (error) {
+        console.error('Error agregando producto:', error)
+        alert(' Error al agregar producto: ' + error.message)
       }
     }
   },
@@ -242,8 +383,8 @@ export default {
     gap: 10px;
     border-radius: 5px;
     background-color: #b62323 !important;
-    pointer-events: none;
     color: #FFFFFF !important;
+    cursor: pointer;
 }
 
 

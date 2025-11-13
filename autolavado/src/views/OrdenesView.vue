@@ -1,7 +1,7 @@
 <template>
     <div class="ordenes-container">
         <div class="ordenes-header">
-            <h1>📦 Mis Órdenes</h1>
+            <h1> Mis Órdenes</h1>
             <router-link to="/" class="btn-volver">← Volver</router-link>
         </div>
 
@@ -58,7 +58,6 @@
                 </div>
 
                 <div class="orden-acciones">
-                    <button @click="descargarRecibo(orden)" class="btn-recibo">📄 Descargar Recibo</button>
                     <button @click="repetirCompra(orden)" class="btn-repetir">🔄 Repetir Compra</button>
                 </div>
             </div>
@@ -89,7 +88,6 @@ export default {
             const ordenesJSON = localStorage.getItem('ordenes')
             const todasLasOrdenes = ordenesJSON ? JSON.parse(ordenesJSON) : []
 
-            // Filtrar órdenes del usuario actual
             this.ordenes = todasLasOrdenes
                 .filter(orden => orden.idUsuario === this.authStore.idUsuario)
                 .sort((a, b) => new Date(b.fecha) - new Date(a.fecha))
@@ -111,49 +109,6 @@ export default {
                 express: 'Express',
             }
             return textos[tipo] || tipo
-        },
-        descargarRecibo(orden) {
-            const contenido = `
-RECIBO DE COMPRA
-================
-
-Número de Orden: #${orden.idOrden}
-Fecha: ${this.formatearFecha(orden.fecha)}
-Cliente: ${orden.usuario}
-Email: ${orden.email}
-
-PRODUCTOS:
-----------
-${orden.productos
-                    .map(
-                        p =>
-                            `${p.nombre}
-  Cantidad: ${p.cantidad}
-  Precio unitario: $${Number(p.precio).toLocaleString('es-CO')}
-  Subtotal: $${(Number(p.precio) * p.cantidad).toLocaleString('es-CO')}
-`
-                    )
-                    .join('\n')}
-
-RESUMEN:
---------
-Subtotal: $${Number(orden.total).toLocaleString('es-CO')}
-Impuesto (19%): $${(Number(orden.total) * 0.19).toLocaleString('es-CO')}
-Envío: $${orden.datosEnvio?.costo || 0}
-TOTAL: $${(Number(orden.total) + Number(orden.total) * 0.19 + (orden.datosEnvio?.costo || 0)).toLocaleString('es-CO')}
-
-Estado: ${orden.estado}
-Tipo de Envío: ${this.tipoEnvioTexto(orden.datosEnvio?.tipo)}
-
-Gracias por tu compra!
-      `
-
-            const blob = new Blob([contenido], { type: 'text/plain' })
-            const url = URL.createObjectURL(blob)
-            const link = document.createElement('a')
-            link.href = url
-            link.download = `recibo-${orden.idOrden}.txt`
-            link.click()
         },
         repetirCompra(orden) {
             if (confirm('¿Quieres agregar estos productos al carrito?')) {
@@ -404,7 +359,6 @@ Gracias por tu compra!
     gap: 10px;
 }
 
-.btn-recibo,
 .btn-repetir {
     flex: 1;
     padding: 10px 15px;
@@ -414,18 +368,6 @@ Gracias por tu compra!
     font-size: 13px;
     font-weight: 600;
     transition: all 0.3s ease;
-}
-
-.btn-recibo {
-    background: #db3434;
-    color: white;
-}
-
-.btn-recibo:hover {
-    background: #b92929;
-}
-
-.btn-repetir {
     background: #27ae60;
     color: white;
 }
@@ -533,7 +475,6 @@ Gracias por tu compra!
         gap: 8px;
     }
 
-    .btn-recibo,
     .btn-repetir {
         width: 100%;
         padding: 10px;
@@ -672,7 +613,6 @@ Gracias por tu compra!
         padding-top: 10px;
     }
 
-    .btn-recibo,
     .btn-repetir {
         width: 100%;
         padding: 8px 10px;
