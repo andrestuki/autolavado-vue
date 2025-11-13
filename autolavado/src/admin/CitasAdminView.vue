@@ -7,18 +7,8 @@
         <div class="contenedor-busqueda">
             <h2 class="subtitulo">Buscar cita por placa o correo</h2>
             <div class="input-grupo">
-                <input
-                    v-model="busqueda"
-                    type="text"
-                    placeholder="Ingrese placa o correo"
-                    class="input-texto"
-                />
-                <ButtonPrime
-                    @click="buscarCita"
-                    label="Buscar"
-                    icon="pi pi-search"
-                    class="btn-buscar"
-                />
+                <input v-model="busqueda" type="text" placeholder="Ingrese placa o correo" class="input-texto" />
+                <ButtonPrime @click="buscarCita" label="Buscar" icon="pi pi-search" class="btn-buscar" />
             </div>
         </div>
 
@@ -95,7 +85,8 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr v-for="cita in citasFiltradas" :key="cita.idCita" @click="seleccionarCita(cita)" class="fila-clickeable">
+                    <tr v-for="cita in citasFiltradas" :key="cita.idCita" @click="seleccionarCita(cita)"
+                        class="fila-clickeable">
                         <td>{{ cita.idCita }}</td>
                         <td>{{ cita.nombre }}</td>
                         <td>{{ cita.correo }}</td>
@@ -161,11 +152,11 @@ export default {
                 alert('Por favor ingresa una placa o correo para buscar');
                 return;
             }
-            
+
             const busquedaLower = this.busqueda.toLowerCase().trim();
             this.citaSeleccionada = this.citas.find(
-                (c) => c.placa.toLowerCase() === busquedaLower || 
-                       c.correo.toLowerCase() === busquedaLower
+                (c) => c.placa.toLowerCase() === busquedaLower ||
+                    c.correo.toLowerCase() === busquedaLower
             );
             this.busquedaRealizada = true;
         },
@@ -182,7 +173,7 @@ export default {
                 if (indice !== -1) {
                     this.citas[indice] = { ...this.citaSeleccionada };
                     localStorage.setItem('citas', JSON.stringify(this.citas));
-                    
+
                     alert('Cita actualizada correctamente');
                     this.cargarCitas();
                     this.citaSeleccionada = null;
@@ -199,16 +190,16 @@ export default {
                 alert('No hay cita seleccionada');
                 return;
             }
-            
+
             if (confirm(`¿Seguro que quieres eliminar la cita de "${this.citaSeleccionada.nombre}"?`)) {
                 const indice = this.citas.findIndex(
                     (c) => c.idCita === this.citaSeleccionada.idCita
                 );
-                
+
                 if (indice !== -1) {
                     this.citas.splice(indice, 1);
                     localStorage.setItem("citas", JSON.stringify(this.citas));
-                    
+
                     this.citaSeleccionada = null;
                     this.busquedaRealizada = false;
                     alert('Cita eliminada correctamente');
@@ -414,4 +405,3 @@ export default {
     text-align: center;
 }
 </style>
-

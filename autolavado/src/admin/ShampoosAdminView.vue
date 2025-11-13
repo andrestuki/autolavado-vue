@@ -7,23 +7,12 @@
     <div class="contenedor-busqueda">
       <h2 class="subtitulo">Buscar shampoo por ID</h2>
       <div class="input-grupo">
-        <input
-          v-model="idBuscado"
-          type="number"
-          placeholder="Ingrese el ID de la shampoo"
-          class="input-texto"
-        />
-        <ButtonPrime
-          @click="buscarShampoo"
-          label="Buscar"
-          icon="pi pi-search"
-          class="btn-buscar"
-          
-        />
+        <input v-model="idBuscado" type="number" placeholder="Ingrese el ID de la shampoo" class="input-texto" />
+        <ButtonPrime @click="buscarShampoo" label="Buscar" icon="pi pi-search" class="btn-buscar" />
       </div>
     </div>
 
- 
+
     <div v-if="shampooseleccionado" class="formulario-editar">
       <h3 class="subtitulo">Editar shampoo</h3>
 
@@ -36,7 +25,7 @@
         <ButtonPrime @click="guardarCambios" label="Guardar Cambios" icon="pi pi-save" class="btn-guardar" />
         <ButtonPrime @click="eliminarProductoSeleccionado" label="Eliminar Producto" class="btn-eliminar"></ButtonPrime>
       </div>
-      
+
     </div>
 
     <div v-else-if="busquedaRealizada" class="mensaje-error">
@@ -71,7 +60,7 @@
       </table>
     </div>
 
-    
+
     <div class="admin-agregar">
       <h2>Agregar nueva shampoo</h2>
 
@@ -84,8 +73,9 @@
         <input v-model="nuevo.cantidad" type="number" min="0" placeholder="Stock" required />
         <input type="file" accept="image/*" @change="cargarImagen" />
 
-        <ButtonPrime class="btn-agregar" @click="agregarProducto()" label="AGREGAR" icon="pi pi-check" iconPos="right" />
-        
+        <ButtonPrime class="btn-agregar" @click="agregarProducto()" label="AGREGAR" icon="pi pi-check"
+          iconPos="right" />
+
       </form>
 
       <div v-if="nuevo.imagenPreview" class="preview">
@@ -112,11 +102,20 @@ export default {
   components: { MiHeader, MiFooter },
   data() {
     return {
-        
-        shampoos: [],
-        idBuscado: '',
-        shampooseleccionado: null,
-        busquedaRealizada: false,
+
+      shampoos: [],
+      idBuscado: '',
+      shampooseleccionado: null,
+      busquedaRealizada: false,
+      id_shampoo: '',
+      nombre: '',
+      marca: '',
+      precio: '',
+      raiting: '',
+      cantidad: '',
+      imagen: '',
+      imagenPreview: null,
+      nuevo: {
         id_shampoo: '',
         nombre: '',
         marca: '',
@@ -124,25 +123,16 @@ export default {
         raiting: '',
         cantidad: '',
         imagen: '',
-        imagenPreview: null,
-        nuevo: {
-            id_shampoo: '',
-            nombre: '',
-            marca: '',
-            precio: '',
-            raiting: '',
-            cantidad: '',
-            imagen: '',
-            imagenPreview: null
-        }
+        imagenPreview: null
+      }
     };
   },
   created() {
     const productosJSON = localStorage.getItem('productos')
     const todosLosProductos = productosJSON ? JSON.parse(productosJSON) : []
-    
+
     this.shampoos = todosLosProductos.filter(p => p.id_categoria === 4)
-    
+
     if (this.shampoos.length === 0) {
       const guardadas = localStorage.getItem('shampoos')
       this.shampoos = guardadas ? JSON.parse(guardadas) : []
@@ -163,23 +153,23 @@ export default {
 
         if (indice !== -1) {
           this.shampoos[indice] = { ...this.shampooseleccionado };
-          
+
           const productosJSON = localStorage.getItem('productos')
           let todosLosProductos = productosJSON ? JSON.parse(productosJSON) : []
-          
-          const indiceGlobal = todosLosProductos.findIndex(p => 
+
+          const indiceGlobal = todosLosProductos.findIndex(p =>
             p.id_categoria === 4 && p.id_shampoo === this.shampooseleccionado.id_shampoo
           )
-          
+
           if (indiceGlobal !== -1) {
             todosLosProductos[indiceGlobal] = { ...this.shampooseleccionado }
             localStorage.setItem('productos', JSON.stringify(todosLosProductos))
           }
-          
+
           localStorage.setItem('shampoos', JSON.stringify(this.shampoos));
-          
+
           window.dispatchEvent(new CustomEvent('productosActualizados'))
-          
+
           alert(' Shampoo actualizado correctamente');
         } else {
           alert(' No se encontró el shampoo');
@@ -192,24 +182,21 @@ export default {
     eliminarProducto(index) {
       if (confirm("¿Seguro que quieres eliminar este producto?")) {
         const productoEliminado = this.shampoos[index]
-        
-        // Eliminar del array local
+
         this.shampoos.splice(index, 1);
-        
-        // Eliminar del sistema unificado de productos
+
         const productosJSON = localStorage.getItem('productos')
         let todosLosProductos = productosJSON ? JSON.parse(productosJSON) : []
-        
-        todosLosProductos = todosLosProductos.filter(p => 
+
+        todosLosProductos = todosLosProductos.filter(p =>
           !(p.id_categoria === 4 && p.id_shampoo === productoEliminado.id_shampoo)
         )
-        
+
         localStorage.setItem("productos", JSON.stringify(todosLosProductos));
         localStorage.setItem("shampoos", JSON.stringify(this.shampoos));
-        
-        // Emitir evento para actualizar vistas
+
         window.dispatchEvent(new CustomEvent('productosActualizados'))
-        
+
         alert(' Producto eliminado correctamente');
       }
     },
@@ -218,29 +205,27 @@ export default {
         alert(' No hay producto seleccionado');
         return;
       }
-      
+
       if (confirm(`¿Seguro que quieres eliminar "${this.shampooseleccionado.nombre}"?`)) {
         const indice = this.shampoos.findIndex(
           (p) => p.id_shampoo === this.shampooseleccionado.id_shampoo
         );
-        
+
         if (indice !== -1) {
-          // Eliminar del array local
           this.shampoos.splice(indice, 1);
-          
-          // Eliminar del sistema unificado de productos
+
           const productosJSON = localStorage.getItem('productos')
           let todosLosProductos = productosJSON ? JSON.parse(productosJSON) : []
-          
-          todosLosProductos = todosLosProductos.filter(p => 
+
+          todosLosProductos = todosLosProductos.filter(p =>
             !(p.id_categoria === 4 && p.id_shampoo === this.shampooseleccionado.id_shampoo)
           )
-          
+
           localStorage.setItem("productos", JSON.stringify(todosLosProductos));
           localStorage.setItem("shampoos", JSON.stringify(this.shampoos));
-          
+
           window.dispatchEvent(new CustomEvent('productosActualizados'))
-          
+
           this.shampooseleccionado = null;
           this.busquedaRealizada = false;
           alert(' Producto eliminado correctamente');
@@ -268,8 +253,8 @@ export default {
     },
     async agregarProducto() {
       try {
-        if (!this.nuevo.id_shampoo || !this.nuevo.nombre || !this.nuevo.marca || 
-            !this.nuevo.precio || !this.nuevo.cantidad) {
+        if (!this.nuevo.id_shampoo || !this.nuevo.nombre || !this.nuevo.marca ||
+          !this.nuevo.precio || !this.nuevo.cantidad) {
           alert(' Por favor completa todos los campos requeridos')
           return
         }
@@ -291,12 +276,12 @@ export default {
         const productosJSON = localStorage.getItem('productos')
         let todosLosProductos = productosJSON ? JSON.parse(productosJSON) : []
 
-        const existe = todosLosProductos.find(p => 
+        const existe = todosLosProductos.find(p =>
           p.id_categoria === 4 && p.id_shampoo === producto.id_shampoo
         )
 
         if (existe) {
-          const indice = todosLosProductos.findIndex(p => 
+          const indice = todosLosProductos.findIndex(p =>
             p.id_categoria === 4 && p.id_shampoo === producto.id_shampoo
           )
           todosLosProductos[indice] = { ...todosLosProductos[indice], ...producto }
@@ -321,7 +306,6 @@ export default {
           console.warn('No se pudo guardar en shampoos específico:', error)
         }
 
-        // Emitir evento para actualizar vistas
         window.dispatchEvent(new CustomEvent('productosActualizados'))
 
         alert(' Producto agregado correctamente')
@@ -342,49 +326,48 @@ export default {
       }
     }
   },
-  
-  
+
+
 
 };
 </script>
 
 <style scoped>
-
-
 .btn {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin: 10px;
-    gap: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 10px;
+  gap: 20px;
 
 }
-.btn-buscar{
-    width: 100px;
-    height: 30px;
-    gap: 10px;
-    border-radius: 5px;
-    background-color: #14a542 !important;
-    color: #FFFFFF !important;
+
+.btn-buscar {
+  width: 100px;
+  height: 30px;
+  gap: 10px;
+  border-radius: 5px;
+  background-color: #14a542 !important;
+  color: #FFFFFF !important;
 }
 
 .btn-guardar {
-    width: 270px;
-    height: 30px;
-    gap: 10px;
-    border-radius: 5px;
-    background-color: #0F172A !important;
-    color: #FFFFFF !important;
+  width: 270px;
+  height: 30px;
+  gap: 10px;
+  border-radius: 5px;
+  background-color: #0F172A !important;
+  color: #FFFFFF !important;
 }
 
 .btn-eliminar {
-    width: 270px;
-    height: 30px;
-    gap: 10px;
-    border-radius: 5px;
-    background-color: #b62323 !important;
-    color: #FFFFFF !important;
-    cursor: pointer;
+  width: 270px;
+  height: 30px;
+  gap: 10px;
+  border-radius: 5px;
+  background-color: #b62323 !important;
+  color: #FFFFFF !important;
+  cursor: pointer;
 }
 
 
@@ -494,6 +477,7 @@ export default {
   margin-top: 1rem;
   text-align: center;
 }
+
 .admin-agregar {
   max-width: 600px;
   margin: 40px auto;
@@ -581,11 +565,4 @@ input[type="file"] {
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
   transition: transform 0.4s ease;
 }
-
-
-
-
-
-
-
 </style>

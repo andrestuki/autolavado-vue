@@ -7,23 +7,12 @@
     <div class="contenedor-busqueda">
       <h2 class="subtitulo">Buscar pintura por ID</h2>
       <div class="input-grupo">
-        <input
-          v-model="idBuscado"
-          type="number"
-          placeholder="Ingrese el ID de la pintura"
-          class="input-texto"
-        />
-        <ButtonPrime
-          @click="buscarPintura"
-          label="Buscar"
-          icon="pi pi-search"
-          class="btn-buscar"
-          
-        />
+        <input v-model="idBuscado" type="number" placeholder="Ingrese el ID de la pintura" class="input-texto" />
+        <ButtonPrime @click="buscarPintura" label="Buscar" icon="pi pi-search" class="btn-buscar" />
       </div>
     </div>
 
- 
+
     <div v-if="pinturaseleccionado" class="formulario-editar">
       <h3 class="subtitulo">Editar pintura</h3>
 
@@ -36,7 +25,7 @@
         <ButtonPrime @click="guardarCambios" label="Guardar Cambios" icon="pi pi-save" class="btn-guardar" />
         <ButtonPrime @click="eliminarProductoSeleccionado" label="Eliminar Producto" class="btn-eliminar"></ButtonPrime>
       </div>
-      
+
     </div>
 
     <div v-else-if="busquedaRealizada" class="mensaje-error">
@@ -71,7 +60,7 @@
       </table>
     </div>
 
-    
+
     <div class="admin-agregar">
       <h2>Agregar nueva pintura</h2>
 
@@ -84,8 +73,9 @@
         <input v-model="nuevo.cantidad" type="number" min="0" placeholder="Stock" required />
         <input type="file" accept="image/*" @change="cargarImagen" />
 
-        <ButtonPrime class="btn-agregar" @click="agregarProducto()" label="AGREGAR" icon="pi pi-check" iconPos="right" />
-        
+        <ButtonPrime class="btn-agregar" @click="agregarProducto()" label="AGREGAR" icon="pi pi-check"
+          iconPos="right" />
+
       </form>
 
       <div v-if="nuevo.imagenPreview" class="preview">
@@ -112,11 +102,20 @@ export default {
   components: { MiHeader, MiFooter },
   data() {
     return {
-        
- 
-        idBuscado: '',
-        pinturaseleccionado: null,
-        busquedaRealizada: false,
+
+
+      idBuscado: '',
+      pinturaseleccionado: null,
+      busquedaRealizada: false,
+      id_pintura: '',
+      nombre: '',
+      marca: '',
+      precio: '',
+      raiting: '',
+      cantidad: '',
+      imagen: '',
+      imagenPreview: null,
+      nuevo: {
         id_pintura: '',
         nombre: '',
         marca: '',
@@ -124,28 +123,16 @@ export default {
         raiting: '',
         cantidad: '',
         imagen: '',
-        imagenPreview: null,
-        nuevo: {
-            id_pintura: '',
-            nombre: '',
-            marca: '',
-            precio: '',
-            raiting: '',
-            cantidad: '',
-            imagen: '',
-            imagenPreview: null
-        }
+        imagenPreview: null
+      }
     };
   },
   created() {
-    // Cargar desde el sistema unificado de productos
     const productosJSON = localStorage.getItem('productos')
     const todosLosProductos = productosJSON ? JSON.parse(productosJSON) : []
-    
-    // Filtrar solo pinturas (categoría 2)
+
     this.pinturas = todosLosProductos.filter(p => p.id_categoria === 2)
-    
-    // Si no hay productos en el sistema unificado, intentar cargar desde la lista específica
+
     if (this.pinturas.length === 0) {
       const guardadas = localStorage.getItem('pinturas')
       this.pinturas = guardadas ? JSON.parse(guardadas) : []
@@ -160,34 +147,29 @@ export default {
     },
     guardarCambios() {
       try {
-        // Encontrar el índice del producto seleccionado
         const indice = this.pinturas.findIndex(
           (p) => p.id_pintura === this.pinturaseleccionado.id_pintura
         );
 
         if (indice !== -1) {
-          // Actualizar el producto en el array local
           this.pinturas[indice] = { ...this.pinturaseleccionado };
-          
-          // Actualizar en el sistema unificado de productos
+
           const productosJSON = localStorage.getItem('productos')
           let todosLosProductos = productosJSON ? JSON.parse(productosJSON) : []
-          
-          const indiceGlobal = todosLosProductos.findIndex(p => 
+
+          const indiceGlobal = todosLosProductos.findIndex(p =>
             p.id_categoria === 2 && p.id_pintura === this.pinturaseleccionado.id_pintura
           )
-          
+
           if (indiceGlobal !== -1) {
             todosLosProductos[indiceGlobal] = { ...this.pinturaseleccionado }
             localStorage.setItem('productos', JSON.stringify(todosLosProductos))
           }
-          
-          // También guardar en la lista específica
+
           localStorage.setItem('pinturas', JSON.stringify(this.pinturas));
-          
-          // Emitir evento para actualizar vistas
+
           window.dispatchEvent(new CustomEvent('productosActualizados'))
-          
+
           alert(' Pintura actualizada correctamente');
         } else {
           alert(' No se encontró la pintura');
@@ -200,24 +182,21 @@ export default {
     eliminarProducto(index) {
       if (confirm("¿Seguro que quieres eliminar este producto?")) {
         const productoEliminado = this.pinturas[index]
-        
-        // Eliminar del array local
+
         this.pinturas.splice(index, 1);
-        
-        // Eliminar del sistema unificado de productos
+
         const productosJSON = localStorage.getItem('productos')
         let todosLosProductos = productosJSON ? JSON.parse(productosJSON) : []
-        
-        todosLosProductos = todosLosProductos.filter(p => 
+
+        todosLosProductos = todosLosProductos.filter(p =>
           !(p.id_categoria === 2 && p.id_pintura === productoEliminado.id_pintura)
         )
-        
+
         localStorage.setItem("productos", JSON.stringify(todosLosProductos));
         localStorage.setItem("pinturas", JSON.stringify(this.pinturas));
-        
-        // Emitir evento para actualizar vistas
+
         window.dispatchEvent(new CustomEvent('productosActualizados'))
-        
+
         alert(' Producto eliminado correctamente');
       }
     },
@@ -226,30 +205,27 @@ export default {
         alert(' No hay producto seleccionado');
         return;
       }
-      
+
       if (confirm(`¿Seguro que quieres eliminar "${this.pinturaseleccionado.nombre}"?`)) {
         const indice = this.pinturas.findIndex(
           (p) => p.id_pintura === this.pinturaseleccionado.id_pintura
         );
-        
+
         if (indice !== -1) {
-          // Eliminar del array local
           this.pinturas.splice(indice, 1);
-          
-          // Eliminar del sistema unificado de productos
+
           const productosJSON = localStorage.getItem('productos')
           let todosLosProductos = productosJSON ? JSON.parse(productosJSON) : []
-          
-          todosLosProductos = todosLosProductos.filter(p => 
+
+          todosLosProductos = todosLosProductos.filter(p =>
             !(p.id_categoria === 2 && p.id_pintura === this.pinturaseleccionado.id_pintura)
           )
-          
+
           localStorage.setItem("productos", JSON.stringify(todosLosProductos));
           localStorage.setItem("pinturas", JSON.stringify(this.pinturas));
-          
-          // Emitir evento para actualizar vistas
+
           window.dispatchEvent(new CustomEvent('productosActualizados'))
-          
+
           this.pinturaseleccionado = null;
           this.busquedaRealizada = false;
           alert(' Producto eliminado correctamente');
@@ -266,13 +242,10 @@ export default {
     cargarImagen(e) {
       const file = e.target.files[0]
       if (file) {
-        // Solo guardar el nombre del archivo, no el contenido base64
         const nombreArchivo = file.name
-        // Para preview, usar FileReader pero no guardar en el producto
         const reader = new FileReader()
         reader.onload = () => {
           this.nuevo.imagenPreview = reader.result
-          // Guardar solo la ruta/nombre del archivo
           this.nuevo.imagen = `/imagenesPinturas/${nombreArchivo}`
         }
         reader.readAsDataURL(file)
@@ -280,76 +253,62 @@ export default {
     },
     async agregarProducto() {
       try {
-        // Validar que todos los campos requeridos estén llenos
-        if (!this.nuevo.id_pintura || !this.nuevo.nombre || !this.nuevo.marca || 
-            !this.nuevo.precio || !this.nuevo.cantidad) {
+        if (!this.nuevo.id_pintura || !this.nuevo.nombre || !this.nuevo.marca ||
+          !this.nuevo.precio || !this.nuevo.cantidad) {
           alert(' Por favor completa todos los campos requeridos')
           return
         }
 
-        // Crear producto normalizado
         const producto = {
           id_pintura: Number(this.nuevo.id_pintura),
-          id_categoria: 2, // Pinturas
+          id_categoria: 2,
           nombre: this.nuevo.nombre.trim(),
           marca: this.nuevo.marca.trim(),
           precio: Number(this.nuevo.precio),
           raiting: Number(this.nuevo.raiting) || 4.5,
           cantidad: Number(this.nuevo.cantidad),
           imagen: this.nuevo.imagen || '/imagenesPinturas/default.jpg',
-          // Normalizar ID de producto
           id_producto: `2-${this.nuevo.id_pintura}`
         }
 
-        // Agregar a la lista local
         this.pinturas.push(producto)
 
-        // Cargar productos existentes desde localStorage
         const productosJSON = localStorage.getItem('productos')
         let todosLosProductos = productosJSON ? JSON.parse(productosJSON) : []
 
-        // Verificar si el producto ya existe
-        const existe = todosLosProductos.find(p => 
+        const existe = todosLosProductos.find(p =>
           p.id_categoria === 2 && p.id_pintura === producto.id_pintura
         )
 
         if (existe) {
-          // Actualizar producto existente
-          const indice = todosLosProductos.findIndex(p => 
+          const indice = todosLosProductos.findIndex(p =>
             p.id_categoria === 2 && p.id_pintura === producto.id_pintura
           )
           todosLosProductos[indice] = { ...todosLosProductos[indice], ...producto }
         } else {
-          // Agregar nuevo producto
           todosLosProductos.push(producto)
         }
-
-        // Guardar en el sistema unificado de productos
         try {
           localStorage.setItem('productos', JSON.stringify(todosLosProductos))
         } catch (error) {
           if (error.name === 'QuotaExceededError') {
             alert(' Error: No hay suficiente espacio en el almacenamiento. Por favor, elimina algunos productos o limpia el localStorage.')
-            // Revertir cambios locales
             this.pinturas.pop()
             return
           }
           throw error
         }
 
-        // También guardar en la lista específica de pinturas (para compatibilidad)
         try {
           localStorage.setItem('pinturas', JSON.stringify(this.pinturas))
         } catch (error) {
           console.warn('No se pudo guardar en pinturas específico:', error)
         }
 
-        // Emitir evento para actualizar vistas
         window.dispatchEvent(new CustomEvent('productosActualizados'))
 
         alert(' Producto agregado correctamente')
 
-        // Limpiar formulario
         this.nuevo = {
           id_pintura: '',
           nombre: '',
@@ -366,49 +325,48 @@ export default {
       }
     }
   },
-  
-  
+
+
 
 };
 </script>
 
 <style scoped>
-
-
 .btn {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin: 10px;
-    gap: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 10px;
+  gap: 20px;
 
 }
-.btn-buscar{
-    width: 100px;
-    height: 30px;
-    gap: 10px;
-    border-radius: 5px;
-    background-color: #14a542 !important;
-    color: #FFFFFF !important;
+
+.btn-buscar {
+  width: 100px;
+  height: 30px;
+  gap: 10px;
+  border-radius: 5px;
+  background-color: #14a542 !important;
+  color: #FFFFFF !important;
 }
 
 .btn-guardar {
-    width: 270px;
-    height: 30px;
-    gap: 10px;
-    border-radius: 5px;
-    background-color: #0F172A !important;
-    color: #FFFFFF !important;
+  width: 270px;
+  height: 30px;
+  gap: 10px;
+  border-radius: 5px;
+  background-color: #0F172A !important;
+  color: #FFFFFF !important;
 }
 
 .btn-eliminar {
-    width: 270px;
-    height: 30px;
-    gap: 10px;
-    border-radius: 5px;
-    background-color: #b62323 !important;
-    color: #FFFFFF !important;
-    cursor: pointer;
+  width: 270px;
+  height: 30px;
+  gap: 10px;
+  border-radius: 5px;
+  background-color: #b62323 !important;
+  color: #FFFFFF !important;
+  cursor: pointer;
 }
 
 
@@ -518,6 +476,7 @@ export default {
   margin-top: 1rem;
   text-align: center;
 }
+
 .admin-agregar {
   max-width: 600px;
   margin: 40px auto;
@@ -605,11 +564,4 @@ input[type="file"] {
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
   transition: transform 0.4s ease;
 }
-
-
-
-
-
-
-
 </style>

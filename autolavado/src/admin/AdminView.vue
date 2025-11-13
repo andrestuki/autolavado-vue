@@ -5,7 +5,7 @@
         <h2>Buscar pulidora por ID</h2>
         <input v-model="idBuscado" placeholder="Ingrese ID del pulidora" />
         <buttonPrime @click="buscarpulidora">Buscar</buttonPrime>
-        
+
         <div v-if="pulidoraSeleccionado">
             <h3>Editar pulidora</h3>
             <input v-model="pulidoraSeleccionado.nombre" placeholder="Nombre" />
@@ -33,7 +33,6 @@ import MiFooter from '@/components/compoHome/MiFooter.vue';
 import MiHeader from '@/components/compoHome/MiHeaderNew.vue';
 
 
-// Ejemplo de lista de pulidoras
 
 export default {
     name: 'AdminView',
@@ -65,28 +64,28 @@ export default {
             const formatoMonedaColombia = new Intl.NumberFormat('es-CO', {
                 style: 'currency',
                 currency: 'COP',
-                minimumFractionDigits: 0, // Ensures two decimal places for cents
-                maximumFractionDigits: 0  // Ensures two decimal places for cents
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0
             }).format(valor);
 
             return formatoMonedaColombia;
         },
         guardarCambios() {
-      
+
             const index = this.pulidoras.findIndex(
                 p => p.id_pulidora === this.pulidoraSeleccionado.id_pulidora
             );
 
-          
-            if (index !== -1) {
-                 this.pulidoras[index] = { ...this.pulidoraSeleccionado };
 
-      
+            if (index !== -1) {
+                this.pulidoras[index] = { ...this.pulidoraSeleccionado };
+
+
                 localStorage.setItem('pulidoras', JSON.stringify(this.pulidoras));
 
-                 alert('Pulidora actualizada correctamente');
+                alert('Pulidora actualizada correctamente');
             } else {
-                 alert('No se encontró la pulidora');
+                alert('No se encontró la pulidora');
             }
         }
     }
